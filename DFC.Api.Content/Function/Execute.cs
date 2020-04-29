@@ -8,19 +8,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using Neo4j.Driver;
-using System.Runtime.CompilerServices;
-
-//todo: update to func v3, core 3.1, c# 8
-//todo: nullable reference types
-//todo: sonar
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
@@ -106,7 +97,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 if (_contentTypeMapSettings.CurrentValue.OverrideUri)
                 {
-                    //Change to just use URI when neo has been updated
+                    //Change to use request path when neo has been updated
                     var uri = $"http://nationalcareers.service.gov.uk/{queryParameters.ContentType}/{queryParameters.Id}";
                     return string.Format(contentByIdCypher, uri);
                 }
