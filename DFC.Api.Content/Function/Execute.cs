@@ -23,7 +23,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private const string contentByIdCypher = "MATCH (n {{uri:'{0}'}}) return n;";
         private const string contentGetAllCypher = "MATCH (n:{0}) return n;";
 
-        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, INeo4JHelper neo4JHelper)
+        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, INeo4JHelper neo4JHelper)
         {
             _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
             _neo4JHelper = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
@@ -32,7 +32,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}")] HttpRequest req, string contentType, Guid? id,
-            ILogger log, ExecutionContext context)
+            ILogger log)
         {
             try
             {
