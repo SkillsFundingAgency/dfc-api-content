@@ -55,7 +55,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                     throw ApiFunctionException.BadRequest($"Required parameter contentType not found in path.");
                 }
 
-                var queryParameters = new QueryParameters { ContentType = contentType.ToLower(), Id = id };
+                var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
                 var queryToExecute = this.BuildQuery(queryParameters, req.Path.Value);
@@ -86,7 +86,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             log.LogInformation($"Attempting to query neo4j with the following query: {query}");
 
             try
-            {   
+            {
                 return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(query, new Dictionary<string, object>());
             }
             catch (Exception ex)
