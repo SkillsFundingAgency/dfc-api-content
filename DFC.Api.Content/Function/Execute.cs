@@ -29,8 +29,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
         private readonly INeo4JHelper _neo4JHelper;
 
-        private static string contentByIdCypher = "MATCH (n {{uri:'{0}'}}) return n;";
-        private static string contentGetAllCypher = "MATCH (n:{0}) return n;";
+        private const string contentByIdCypher = "MATCH (n {{uri:'{0}'}}) return n;";
+        private const string contentGetAllCypher = "MATCH (n:{0}) return n;";
 
         public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, INeo4JHelper neo4JHelper)
         {
@@ -104,7 +104,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             else
             {
-
                 if (_contentTypeMapSettings.CurrentValue.OverrideUri)
                 {
                     //Change to just use URI when neo has been updated

@@ -23,9 +23,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
 
             builder.Services.AddSingleton<IConfiguration>(config);
 
+            builder.Services.AddOptions<ServiceTaxonomyApiSettings>()
+                .Configure<IConfiguration>((settings, configuration) => { configuration.Bind(settings); });
+
             builder.Services.AddOptions<ContentTypeMapSettings>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentTypeMap").Bind(settings); });
+
             builder.Services.AddSingleton<INeo4JHelper, Neo4JHelper>();
+
         }
     }
 }
