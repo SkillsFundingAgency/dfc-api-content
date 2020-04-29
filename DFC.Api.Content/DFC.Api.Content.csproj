@@ -22,9 +22,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StartUp\" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
