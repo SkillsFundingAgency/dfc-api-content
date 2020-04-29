@@ -38,14 +38,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         }
         
         //todo: create package for DFC.ServiceTaxonomy.Neo4j??
-        public async Task<object> ExecuteCypherQueryInNeo4JAsync(string query, IDictionary<string, object> statementParameters)
+        public async Task<object> ExecuteCypherQueryInNeo4JAsync(string query)
         {
             IAsyncSession session = _neo4JDriver.AsyncSession();
             try
             {
                 return await session.ReadTransactionAsync(async tx =>
                 {
-                    _resultCursor = await tx.RunAsync(query, statementParameters);
+                    _resultCursor = await tx.RunAsync(query);
                     return await GetListOfRecordsAsync();
                 });
             }

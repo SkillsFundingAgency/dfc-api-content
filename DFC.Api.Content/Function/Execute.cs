@@ -78,7 +78,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(query, new Dictionary<string, object>());
+                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(query);
             }
             catch (Exception ex)
             {
