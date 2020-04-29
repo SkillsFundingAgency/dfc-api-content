@@ -64,6 +64,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 
             var neoRecords = records.SelectMany(x => x.Values.Values);
 
+            if(neoRecords.Count() == 1)
+            {
+                return neoRecords.FirstOrDefault();
+            }
+
             return neoRecords;
         }
 

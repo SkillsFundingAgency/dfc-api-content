@@ -20,7 +20,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
         private readonly INeo4JHelper _neo4JHelper;
 
-        private const string contentByIdCypher = "MATCH (n {{uri:'{0}'}}) return n;";
+        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', rel:REPLACE(labels(d), 'ncs','goats')}} as destinationUris with {{ data: properties(s), links: collect(destinationUris)}} as sourceNodeWithOutgoingRelationships return sourceNodeWithOutgoingRelationships";
+
         private const string contentGetAllCypher = "MATCH (n:{0}) return n;";
 
         public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, INeo4JHelper neo4JHelper)
