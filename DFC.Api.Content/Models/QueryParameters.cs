@@ -6,7 +6,5 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Models
     {
         public string ContentType { get; set; }
         public Guid? Id { get; set; }
-
-        public string RequestPath { get; set; }
     }
 }
