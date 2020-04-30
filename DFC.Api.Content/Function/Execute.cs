@@ -26,12 +26,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{ href:d.uri, type:'GET', rel:labels(d)}} as destinationUris with {{ properties: properties(s), links: collect(destinationUris)}} as sourceNodeWithOutgoingRelationships return {{ properties:sourceNodeWithOutgoingRelationships.properties, links:sourceNodeWithOutgoingRelationships.links}}";
 
-        private const string contentGetAllCypher = "MATCH (n:{0}) return properties(n);";
+        private const string contentGetAllCypher = "MATCH (n:{0}) with {{properties: properties(n)}} as data return data.properties;";
 
-        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase neo4JHelper)
+        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase graphDatabase)
         {
             _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
-            graphDatabase = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
+            this.graphDatabase = graphDatabase ?? throw new ArgumentNullException(nameof(graphDatabase));
         }
 
         [FunctionName("Execute")]
@@ -58,8 +58,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute, log);
 
-                if (recordsResult == null)
-                    return new NoContentResult();
+                var serializedResult = JsonConvert.SerializeObject(recordsResult);
+
+                if (recordsResult == null || !recordsResult.Any())
+                    return new NotFoundObjectResult(null);
 
                 log.LogInformation("request has successfully been completed with results");
 

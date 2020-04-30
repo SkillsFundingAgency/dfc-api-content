@@ -1,0 +1,26 @@
+﻿using Neo4j.Driver;
+using System.Collections.Generic;
+
+namespace DFC.Api.Content.UnitTests.Models
+{
+    public class Record : IRecord
+    {
+        public object this[int index] => Values[Keys[index]];
+        public object this[string key] => Values[key];
+
+        public IReadOnlyDictionary<string, object> Values { get; }
+        public IReadOnlyList<string> Keys { get; }
+
+        public Record(string[] keys, object[] values)
+        {
+            var valueKeys = new Dictionary<string, object>();
+
+            for (var i = 0; i < keys.Length; i++)
+            {
+                valueKeys.Add(keys[i], values[i]);
+            }
+            Values = valueKeys;
+            Keys = keys;
+        }
+    }
+}
