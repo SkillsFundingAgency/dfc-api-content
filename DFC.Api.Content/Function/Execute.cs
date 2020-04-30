@@ -1,4 +1,3 @@
-using DFC.ServiceTaxonomy.ApiFunction.Helpers;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,22 +11,26 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using DFC.ServiceTaxonomy.Neo4j.Services;
+using DFC.Api.Content.Models.Cypher;
+using Neo4j.Driver;
+using System.Linq;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
-        private readonly INeo4JHelper _neo4JHelper;
+        private readonly IGraphDatabase graphDatabase;
 
-        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', rel:REPLACE(labels(d), 'ncs','goats')}} as destinationUris with {{ data: properties(s), links: collect(destinationUris)}} as sourceNodeWithOutgoingRelationships return sourceNodeWithOutgoingRelationships";
+        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{ href:d.uri, type:'GET', rel:labels(d)}} as destinationUris with {{ properties: properties(s), links: collect(destinationUris)}} as sourceNodeWithOutgoingRelationships return {{ properties:sourceNodeWithOutgoingRelationships.properties, links:sourceNodeWithOutgoingRelationships.links}}";
 
-        private const string contentGetAllCypher = "MATCH (n:{0}) return n;";
+        private const string contentGetAllCypher = "MATCH (n:{0}) return properties(n);";
 
-        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, INeo4JHelper neo4JHelper)
+        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase neo4JHelper)
         {
             _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
-            _neo4JHelper = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
+            graphDatabase = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
         }
 
         [FunctionName("Execute")]
@@ -52,14 +55,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 //Could move in to helper class
                 var queryToExecute = this.BuildQuery(queryParameters, req.Path.Value);
 
-                object recordsResult = await ExecuteCypherQuery(queryToExecute, log);
+                var recordsResult = await ExecuteCypherQuery(queryToExecute, log);
 
                 if (recordsResult == null)
                     return new NoContentResult();
 
                 log.LogInformation("request has successfully been completed with results");
 
-                return new OkObjectResult(recordsResult);
+                return new OkObjectResult(FormatResponse(recordsResult));
             }
             catch (ApiFunctionException e)
             {
@@ -73,13 +76,23 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private async Task<object> ExecuteCypherQuery(string query, ILogger log)
+        private object FormatResponse(IEnumerable<IRecord> recordsResult)
+        {
+            if (recordsResult.Count() == 1)
+            {
+                return recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault();
+            }
+
+            return recordsResult.SelectMany(z => z.Values).Select(y=>y.Value);
+        }
+
+        private async Task<IEnumerable<IRecord>> ExecuteCypherQuery(string query, ILogger log)
         {
             log.LogInformation($"Attempting to query neo4j with the following query: {query}");
 
             try
             {
-                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(query);
+                return await graphDatabase.Run(new GenericCypherQuery(query));
             }
             catch (Exception ex)
             {
