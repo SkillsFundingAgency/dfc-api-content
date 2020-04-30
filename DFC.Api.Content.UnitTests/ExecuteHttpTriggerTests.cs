@@ -22,14 +22,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 {
     public class ExecuteHttpTriggerTests
     {
-        private const string DefaultFunctionName = "GetAllSkills";
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly ExecutionContext _executionContext;
         private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _graphConfig;
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapConfig;
-        private readonly IResultSummary _resultSummary;
         private readonly IGraphDatabase _graphDatabase;
 
         public ExecuteHttpTriggerTests()
@@ -37,12 +34,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var context = new DefaultHttpContext();
             _request = context.Request;
 
-            _executionContext = new ExecutionContext();
-
             _graphConfig = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
             A.CallTo(() => _graphConfig.CurrentValue).Returns(new ServiceTaxonomyApiSettings
             {
-                Function = DefaultFunctionName,
                 Neo4jUrl = "bolt://localhost:11002",
                 Neo4jUser = "NeoUser",
                 Neo4jPassword = "NeoPass",
@@ -58,7 +52,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             }); ;
 
             _log = A.Fake<ILogger>();
-            _resultSummary = A.Fake<IResultSummary>();
             _graphDatabase = A.Fake<IGraphDatabase>();
 
             //A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(_resultSummary);
