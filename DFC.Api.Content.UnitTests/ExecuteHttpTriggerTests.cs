@@ -1,24 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Threading.Tasks;
-using System.Web.Http;
 using DFC.Api.Content.Models.Cypher;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.Neo4j.Services;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Neo4j.Driver;
-using Neo4j.Driver.Internal.Result;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -71,36 +65,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             _executeFunction = new Execute(_contentTypeMapConfig, _graphDatabase);
         }
-
-        //[Fact]
-        //public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsInternalServerErrorResult()
-        //{
-        //    _graphConfig.CurrentValue.Function = null;
-
-        //    var result = await RunFunction();
-
-        //    var internalServerErrorResult = result as InternalServerErrorResult;
-
-        //    // Assert
-        //    Assert.IsAssignableFrom<IActionResult>(result);
-        //    Assert.True(result is InternalServerErrorResult);
-        //    Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
-        //{
-        //    A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
-
-        //    var result = await RunFunction();
-
-        //    var badRequestObjectResult = result as BadRequestObjectResult;
-
-        //    // Assert
-        //    Assert.IsAssignableFrom<IActionResult>(result);
-        //    Assert.True(result is BadRequestObjectResult);
-        //    Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
-        //}
 
         [Fact]
         public async Task Execute_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
