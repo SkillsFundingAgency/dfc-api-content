@@ -1,20 +1,129 @@
 ﻿{
-  "ncs__SalaryStarter": "12500",
-  "ncs__HtbCareerTips": "<p>Time spent caring for someone you know also counts as having experience in a caring role.</p>",
-  "skos__prefLabel": "Care worker",
-  "ncs__CareerPathAndProgression": "<p>You could progress to a more senior role, managing people or services.</p><p>As your career develops, you can move on to higher level qualifications, such as a foundation degree, social work degree or Level 5 Diploma in Leadership and Management for Adult Care.</p>",
-  "ncs__WorkingPatternDetails": "on shifts",
-  "ncs__ModifiedDate": "2020-04-28T09:45:16.348673000Z",
-  "ncs__HtbTitleOptions": "as_defined",
-  "ncs__SalaryExperienced": "25000",
-  "ncs__HtbFurtherInformation": "<p>You can find out more about careers in care from <a href=\"https://www.skillsforcare.org.uk/Careers-in-care/Job-roles/Job-roles-in-social-care.aspx\">Think Care Careers</a> and <a href=\"https://www.scie.org.uk/socialcaretv/\">Social Care TV</a>.</p>",
-  "ncs__WorkingPattern": "evenings / weekends",
-  "uri": "http://nationalcareers.service.gov.uk/jobprofile/4f00d4b5-ba96-49d4-a5b9-cd593f01af1d",
-  "ncs__Description": "<p>Care workers help vulnerable people to manage their daily activities and to live as independently as possible.</p>",
-  "ncs__WorkingHoursDetails": "a week",
-  "ncs__JobProfileWebsiteUrl": "care-worker",
-  "ncs__MaximumHours": 40.0,
-  "ncs__MinimumHours": 35.0,
-  "ncs__CreatedDate": "2020-04-20T06:07:57.115806100Z",
-  "ncs__WitDigitalSkillsLevel": "<p>to be able to carry out basic tasks on a computer or hand-held device</p>"
-}
+    "Values": {
+      "{ properties:sourceNodeWithOutgoingRelationships.properties, links:sourceNodeWithOutgoingRelationships.links}": {
+        "links": [
+          {
+            "rel": [ "Resource", "ncs__WorkRoute" ],
+            "href": "http://nationalcareers.service.gov.uk/workroute/350dbe51-1ced-4c41-9a53-64305f9f28cb",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__WorkingEnvironment" ],
+            "href": "http://nationalcareers.service.gov.uk/workingenvironment/605a7a5f-b240-4649-aad8-cc115ed75c84",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/2907a286-b361-4103-91c9-4ca19452907c",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/6ae2fc17-8377-4767-8eb3-67879cfd9732",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__Restriction" ],
+            "href": "http://nationalcareers.service.gov.uk/restriction/58df6181-9fe6-4b11-9cbb-88293235a722",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__UniversityRoute" ],
+            "href": "http://nationalcareers.service.gov.uk/universityroute/67241a20-b446-49b2-ad5f-5d4310b22e1e",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/141f9adc-491a-4d52-a7ab-f210a1cca8ca",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/48b64639-faa7-471c-8081-8828067bf29c",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__ApprenticeshipRoute" ],
+            "href": "http://nationalcareers.service.gov.uk/apprenticeshiproute/f92a06c7-9fbd-4c10-8094-bc6cf11f0ed4",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/ab67df13-0a0c-4271-a50a-9e0f173d5471",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/f325057c-f20d-499a-a851-f46516a33ca2",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__SOCCode" ],
+            "href": "http://nationalcareers.service.gov.uk/soccode/fcf24064-44f8-4f95-a2f0-c210611bc4a8",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "esco__MemberConcept", "esco__Occupation", "skos__Concept" ],
+            "href": "http://data.europa.eu/esco/occupation/03d79393-7b30-4159-945b-01963eddd302",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__ApprenticeshipStandard" ],
+            "href": "http://nationalcareers.service.gov.uk/apprenticeshipstandard/9afd4b76-e41b-4691-af52-d957c789e5cd",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__VolunteeringRoute" ],
+            "href": "http://nationalcareers.service.gov.uk/volunteeringroute/3060b5b2-a7c9-405b-b1bf-ae7c033d68af",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__WorkingLocation" ],
+            "href": "http://nationalcareers.service.gov.uk/workinglocation/8da092cc-1d7d-42f8-abc6-6292081dccb5",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/82377307-ec93-49a0-b63c-a2d8f9246dba",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__Registration" ],
+            "href": "http://nationalcareers.service.gov.uk/registration/1bed66d0-25f7-499f-8685-b3ef396d3650",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__Restriction" ],
+            "href": "http://nationalcareers.service.gov.uk/restriction/cc1c2650-0cd3-417e-bc7e-3dec12813300",
+            "type": "GET"
+          },
+          {
+            "rel": [ "Resource", "ncs__DayToDayTask" ],
+            "href": "http://nationalcareers.service.gov.uk/daytodaytask/89feb5c2-bee1-4bfb-8245-f1929b5e9793",
+            "type": "GET"
+          }
+        ],
+        "properties": {
+          "ncs__HtbCareerTips": "<p>You can do a <a href=\"https://getintoteaching.education.gov.uk/explore-my-options/teacher-training-routes/subject-knowledge-enhancement-ske-courses\">subject knowledge enhancement</a>\ncourse to improve your understanding of the subject you want to teach.</p><p>You can also attend <a href=\"https://getintoteaching.education.gov.uk/teaching-events\">teacher training events</a> before you apply to get advice about the profession, the different training routes and funding. You can attend events in person and online.</p>",
+          "ncs__SalaryStarter": "24373",
+          "ncs__HtbBodies": "",
+          "skos__prefLabel": "Primary school teacher",
+          "ncs__CareerPathAndProgression": "<p>You could teach pupils with special educational needs or move into pastoral care.</p><p>With experience, you could become a <a href=\"https://www.gov.uk/guidance/specialist-leaders-of-education-a-guide-for-potential-applicants\">specialist leader of education</a>, supporting teachers in other schools.</p><p>You could also be a curriculum leader, deputy head and headteacher, or move into private tuition.</p>",
+          "ncs__WorkingPatternDetails": "attending events or appointments",
+          "ncs__ModifiedDate": "2020-04-20T07:01:30.144122700Z",
+          "ncs__HtbFurtherInformation": "<p>You can discover more about how to become a teacher from <a href=\"https://getintoteaching.education.gov.uk/\">Get Into Teaching</a>.</p><p>You can also search for jobs through the <a href=\"https://teaching-vacancies.service.gov.uk/\">Teaching Vacancies</a> service.</p>",
+          "ncs__SalaryExperienced": "40490",
+          "ncs__WorkingPattern": "evenings",
+          "ncs__Description": "<p>Primary school teachers are responsible for the educational, social and emotional development of children from age 5 to 11.</p>",
+          "uri": "http://nationalcareers.service.gov.uk/jobprofile/09889391-60a7-4956-99c0-324051bb96cf",
+          "ncs__WorkingHoursDetails": "term time",
+          "ncs__JobProfileWebsiteUrl": "primary-school-teacher",
+          "ncs__MaximumHours": 40.0,
+          "ncs__MinimumHours": 37.0,
+          "ncs__CreatedDate": "2020-04-20T06:07:57.115806100Z",
+          "ncs__WitDigitalSkillsLevel": "<p>to be able to use a computer and the main software packages competently</p>"
+        }
+      }
+    },
+    "Keys": [ "{ properties:sourceNodeWithOutgoingRelationships.properties, links:sourceNodeWithOutgoingRelationships.links}" ]
+  }

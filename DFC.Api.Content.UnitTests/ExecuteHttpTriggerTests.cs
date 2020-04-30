@@ -20,6 +20,7 @@ using Microsoft.Extensions.Primitives;
 using Neo4j.Driver;
 using Neo4j.Driver.Internal.Result;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -157,9 +158,30 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var resultJson = okObjectResult.Value.ToString();
 
-            var equal = string.Equals(recordJson, resultJson, StringComparison.CurrentCultureIgnoreCase);
+            var equal = JToken.DeepEquals(JToken.Parse(recordJson), JToken.Parse(resultJson));
             Assert.True(equal);
         }
+
+        [Fact]
+        public async Task Execute_GetJobProfile_ReturnsCorrectJsonResponse()
+        {
+            var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_2.json");
+
+            var cypherQuery = new GenericCypherQuery("");
+
+            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJson) }) });
+
+            var result = await RunFunction("test1", Guid.NewGuid());
+            var okObjectResult = result as OkObjectResult;
+
+            // Assert
+            Assert.True(result is OkObjectResult);
+
+            var resultJson = okObjectResult.Value.ToString();
+
+            var equal = JToken.DeepEquals(JToken.Parse(recordJson), JToken.Parse(resultJson));
+        }
+
 
         private async Task<IActionResult> RunFunction(string contentType, Guid? id)
         {
