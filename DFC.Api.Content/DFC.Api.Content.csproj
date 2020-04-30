@@ -5,7 +5,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.json" />
+    <None Remove="appsettings-template.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="1.0.0" />
@@ -23,7 +23,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appsettings.json">
+    <Content Include="appsettings-template.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
