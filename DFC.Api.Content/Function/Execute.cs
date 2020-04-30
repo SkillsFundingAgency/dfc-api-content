@@ -15,6 +15,7 @@ using DFC.ServiceTaxonomy.Neo4j.Services;
 using DFC.Api.Content.Models.Cypher;
 using Neo4j.Driver;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
@@ -80,10 +81,22 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             if (recordsResult.Count() == 1)
             {
-                return recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault();
+                return ReplaceNamespaces(recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault());
             }
 
-            return recordsResult.SelectMany(z => z.Values).Select(y=>y.Value);
+            return ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y=>y.Value));
+        }
+
+        private object ReplaceNamespaces(object input)
+        {
+            var serializedJson = JsonConvert.SerializeObject(input);
+
+            foreach(var key in _contentTypeMapSettings.CurrentValue.ReversedContentTypeMap.Keys)
+            {
+                serializedJson = serializedJson.Replace(key, _contentTypeMapSettings.CurrentValue.ReversedContentTypeMap[key]);
+            }
+
+            return serializedJson;
         }
 
         private async Task<IEnumerable<IRecord>> ExecuteCypherQuery(string query, ILogger log)
@@ -124,7 +137,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string MapContentTypeToNamespace(string contentType)
         {
-            _contentTypeMapSettings.CurrentValue.Values.TryGetValue(contentType.ToLower(), out string mappedValue);
+            _contentTypeMapSettings.CurrentValue.ContentTypeMap.TryGetValue(contentType.ToLower(), out string mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
