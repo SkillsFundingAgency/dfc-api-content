@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DFC.Api.Content.Models.Cypher;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
+using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Services;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _graphConfig;
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapConfig;
         private readonly IGraphDatabase _graphDatabase;
 
@@ -33,16 +33,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             var context = new DefaultHttpContext();
             _request = context.Request;
-
-            _graphConfig = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
-            A.CallTo(() => _graphConfig.CurrentValue).Returns(new ServiceTaxonomyApiSettings
-            {
-                Neo4jUrl = "bolt://localhost:11002",
-                Neo4jUser = "NeoUser",
-                Neo4jPassword = "NeoPass",
-                Scheme = "https://",
-                ApplicationName = "ServiceTaxonomy"
-            });
 
             _contentTypeMapConfig = A.Fake<IOptionsMonitor<ContentTypeMapSettings>>();
             A.CallTo(() => _contentTypeMapConfig.CurrentValue).Returns(new ContentTypeMapSettings
