@@ -1,4 +1,5 @@
-﻿using DFC.ServiceTaxonomy.ApiFunction.Models;
+﻿using DFC.Api.Content.Helpers;
+using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.ApiFunction.StartUp;
 using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Log;
@@ -34,6 +35,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
             builder.Services.AddTransient<ILogger, NeoLogger>();
             builder.Services.AddSingleton<INeoDriverBuilder, NeoDriverBuilder>();
             builder.Services.AddSingleton<IGraphDatabase, NeoGraphDatabase>();
+            builder.Services.AddSingleton<IJsonFormatHelper, JsonFormatHelper>();
 
         }
     }

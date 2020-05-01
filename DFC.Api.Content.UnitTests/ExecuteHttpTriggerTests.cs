@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Models.Cypher;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
@@ -11,6 +12,7 @@ using DFC.ServiceTaxonomy.Neo4j.Services;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
 using Neo4j.Driver;
@@ -28,6 +30,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly HttpRequest _request;
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapConfig;
         private readonly IGraphDatabase _graphDatabase;
+        private readonly IJsonFormatHelper _jsonHelper;
 
         public ExecuteHttpTriggerTests()
         {
@@ -45,8 +48,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _graphDatabase = A.Fake<IGraphDatabase>();
 
             //A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(_resultSummary);
-
-            _executeFunction = new Execute(_contentTypeMapConfig, _graphDatabase);
+            _jsonHelper = new JsonFormatHelper(_contentTypeMapConfig);
+            _executeFunction = new Execute(_contentTypeMapConfig, _graphDatabase, _jsonHelper);
         }
 
         [Fact]
@@ -120,10 +123,30 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             // Assert
             Assert.True(result is OkObjectResult);
 
-            var resultJson = okObjectResult.Value.ToString();
+            var parsedRecordJson = _jsonHelper.ReplaceNamespaces(_jsonHelper.CreateSingleRootObject(recordJson));
 
-            var equal = JToken.DeepEquals(JToken.Parse(recordJson), JToken.Parse(resultJson));
+            var equal = JToken.DeepEquals(JToken.Parse(okObjectResult.Value.ToString()), JToken.Parse(parsedRecordJson));
             Assert.True(equal);
+        }
+
+        [Fact]
+        public void TestSomething()
+        {
+            var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_2.json");
+
+            var objToReturn = new JObject();
+
+            JObject rss = JObject.Parse(recordJson);
+
+            var val1 = rss["_links"];
+            objToReturn.Add(new JProperty("_links", val1));
+
+            foreach(var child in rss["data"].Children())
+            {
+                objToReturn.Add(child);
+            }
+           
+
         }
 
 

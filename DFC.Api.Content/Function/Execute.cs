@@ -16,22 +16,25 @@ using DFC.Api.Content.Models.Cypher;
 using Neo4j.Driver;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using DFC.Api.Content.Helpers;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
         private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
-        private readonly IGraphDatabase graphDatabase;
-
+        private readonly IGraphDatabase _graphDatabase;
+        private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN '' ELSE n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         private const string contentGetAllCypher = "MATCH (n:{0}) with {{properties: properties(n)}} as data return data.properties;";
 
-        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase graphDatabase)
+        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {
             _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
-            this.graphDatabase = graphDatabase ?? throw new ArgumentNullException(nameof(graphDatabase));
+            _graphDatabase = graphDatabase ?? throw new ArgumentNullException(nameof(graphDatabase));
+            _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
         [FunctionName("Execute")]
@@ -83,23 +86,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             if (recordsResult.Count() == 1)
             {
-                return ReplaceNamespaces(recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault());
+                return _jsonFormatHelper.CreateSingleRootObject(_jsonFormatHelper.ReplaceNamespaces(recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault()));
             }
 
-            return ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y=>y.Value));
+            return _jsonFormatHelper.ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y => y.Value));
         }
 
-        private object ReplaceNamespaces(object input)
-        {
-            var serializedJson = JsonConvert.SerializeObject(input);
-
-            foreach(var key in _contentTypeMapSettings.CurrentValue.ReversedContentTypeMap.Keys)
-            {
-                serializedJson = serializedJson.Replace(key, _contentTypeMapSettings.CurrentValue.ReversedContentTypeMap[key]);
-            }
-
-            return serializedJson;
-        }
+        
 
         private async Task<IEnumerable<IRecord>> ExecuteCypherQuery(string query, ILogger log)
         {
@@ -107,7 +100,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                return await graphDatabase.Run(new GenericCypherQuery(query));
+                return await _graphDatabase.Run(new GenericCypherQuery(query));
             }
             catch (Exception ex)
             {

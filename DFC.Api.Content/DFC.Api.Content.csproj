@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings-template.json" />
+    <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="1.0.0" />
@@ -26,8 +27,8 @@
     <Content Include="appsettings-template.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
