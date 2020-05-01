@@ -76,7 +76,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResultResult()
+        public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResult()
         {
             var result = await RunFunction("test1", null);
 
@@ -123,6 +123,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var resultJson = okObjectResult.Value.ToString();
 
             var equal = JToken.DeepEquals(JToken.Parse(recordJson), JToken.Parse(resultJson));
+            Assert.True(equal);
         }
 
 

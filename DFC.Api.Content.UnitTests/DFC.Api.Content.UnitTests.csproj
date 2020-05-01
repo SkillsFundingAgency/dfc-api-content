@@ -9,10 +9,7 @@
     <None Remove="Files\JobProfileRecordResponse_2.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Files\JobProfileRecordResponse_1.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\JobProfileRecordResponse_2.json">
+    <Content Include="Files\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
