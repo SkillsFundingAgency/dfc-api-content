@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace DFC.Api.Content.UnitTests.Models
 {
-    public class Record : IRecord
+    //Class taken from Neo4J Driver library and made public for testing only
+    internal class Record : IRecord
     {
         public object this[int index] => Values[Keys[index]];
         public object this[string key] => Values[key];
