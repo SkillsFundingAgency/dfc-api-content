@@ -86,7 +86,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNoContentResult()
+        public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResultResult()
         {
             var result = await RunFunction("test1", null);
 
@@ -102,8 +102,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_GetAllJobProfiles_ReturnsCorrectJsonResponse()
         {
             var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_1.json");
-
-            var cypherQuery = new GenericCypherQuery("");
 
             A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJson) }) });
 
@@ -123,8 +121,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_GetJobProfile_ReturnsCorrectJsonResponse()
         {
             var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_2.json");
-
-            var cypherQuery = new GenericCypherQuery("");
 
             A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJson) }) });
 
