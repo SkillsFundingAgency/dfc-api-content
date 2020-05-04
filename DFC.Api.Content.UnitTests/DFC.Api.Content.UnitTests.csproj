@@ -7,9 +7,25 @@
   <ItemGroup>
     <None Remove="Files\JobProfileRecordResponse_1.json" />
     <None Remove="Files\JobProfileRecordResponse_2.json" />
+    <None Remove="Files\Output\JobProfileRecordOutput_GetAll.json" />
+    <None Remove="Files\Output\JobProfileRecordOutput_GetById.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\Input\JobProfileRecordInput_GetAll.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\Input\JobProfileRecordInput_GetById.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\Output\JobProfileRecordOutput_GetAll.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\Output\JobProfileRecordOutput_GetById.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

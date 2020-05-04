@@ -16,8 +16,9 @@ using DFC.Api.Content.Models.Cypher;
 using Neo4j.Driver;
 using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using DFC.Api.Content.Helpers;
+using DFC.Api.Content.Enums;
+using DFC.Api.Content.Models;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
@@ -59,7 +60,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 //Could move in to helper class
                 var queryToExecute = this.BuildQuery(queryParameters, req.Path.Value);
 
-                var recordsResult = await ExecuteCypherQuery(queryToExecute, log);
+                var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
                 var serializedResult = JsonConvert.SerializeObject(recordsResult);
 
@@ -68,7 +69,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation("request has successfully been completed with results");
 
-                return new OkObjectResult(FormatResponse(recordsResult));
+                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType));
             }
             catch (ApiFunctionException e)
             {
@@ -81,18 +82,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 return new InternalServerErrorResult();
             }
         }
-
-        private object FormatResponse(IEnumerable<IRecord> recordsResult)
-        {
-            if (recordsResult.Count() == 1)
-            {
-                return _jsonFormatHelper.CreateSingleRootObject(_jsonFormatHelper.ReplaceNamespaces(recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault()));
-            }
-
-            return _jsonFormatHelper.ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y => y.Value));
-        }
-
-        
 
         private async Task<IEnumerable<IRecord>> ExecuteCypherQuery(string query, ILogger log)
         {
@@ -108,12 +97,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private string BuildQuery(QueryParameters queryParameters, string requestPath)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath)
         {
             if (!queryParameters.Id.HasValue)
             {
                 //GetAll Query
-                return string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType));
+                return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType)), RequestType.GetAll);
             }
             else
             {
@@ -121,11 +110,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 {
                     //Change to use request path when neo has been updated
                     var uri = $"http://nationalcareers.service.gov.uk/{queryParameters.ContentType}/{queryParameters.Id}";
-                    return string.Format(contentByIdCypher, uri);
+                    return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
                 }
                 else
                 {
-                    return string.Format(contentByIdCypher, requestPath);
+                    return new ExecuteQuery(string.Format(contentByIdCypher, requestPath), RequestType.GetById);
                 }
             }
         }

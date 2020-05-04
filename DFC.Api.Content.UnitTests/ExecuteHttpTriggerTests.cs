@@ -7,13 +7,10 @@ using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Models.Cypher;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
-using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Services;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
 using Neo4j.Driver;
 using Newtonsoft.Json;
@@ -46,8 +43,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             _log = A.Fake<ILogger>();
             _graphDatabase = A.Fake<IGraphDatabase>();
+            _jsonHelper = A.Fake<IJsonFormatHelper>();
 
-            //A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(_resultSummary);
             _jsonHelper = new JsonFormatHelper(_contentTypeMapConfig);
             _executeFunction = new Execute(_contentTypeMapConfig, _graphDatabase, _jsonHelper);
         }
@@ -94,9 +91,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_GetAllJobProfiles_ReturnsCorrectJsonResponse()
         {
-            var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_1.json");
+            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetAll.json");
+            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetAll.json");
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJson) }) });
+            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
 
             var result = await RunFunction("test1", null);
             var okObjectResult = result as OkObjectResult;
@@ -106,16 +104,19 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var resultJson = okObjectResult.Value.ToString();
 
-            var equal = JToken.DeepEquals(JToken.Parse(recordJson), JToken.Parse(resultJson));
+            var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
             Assert.True(equal);
         }
 
         [Fact]
         public async Task Execute_GetJobProfile_ReturnsCorrectJsonResponse()
         {
-            var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_2.json");
+            var recordJsonInput = JToken.Parse(File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetById.json"));
+            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetById.json");
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJson) }) });
+            var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
+
+            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(driverRecords);
 
             var result = await RunFunction("test1", Guid.NewGuid());
             var okObjectResult = result as OkObjectResult;
@@ -123,32 +124,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             // Assert
             Assert.True(result is OkObjectResult);
 
-            var parsedRecordJson = _jsonHelper.ReplaceNamespaces(_jsonHelper.CreateSingleRootObject(recordJson));
-
-            var equal = JToken.DeepEquals(JToken.Parse(okObjectResult.Value.ToString()), JToken.Parse(parsedRecordJson));
+            var equal = JToken.DeepEquals(JToken.Parse(okObjectResult.Value.ToString()), JToken.Parse(expectedJsonOutput));
             Assert.True(equal);
         }
-
-        [Fact]
-        public void TestSomething()
-        {
-            var recordJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/JobProfileRecordResponse_2.json");
-
-            var objToReturn = new JObject();
-
-            JObject rss = JObject.Parse(recordJson);
-
-            var val1 = rss["_links"];
-            objToReturn.Add(new JProperty("_links", val1));
-
-            foreach(var child in rss["data"].Children())
-            {
-                objToReturn.Add(child);
-            }
-           
-
-        }
-
 
         private async Task<IActionResult> RunFunction(string contentType, Guid? id)
         {
