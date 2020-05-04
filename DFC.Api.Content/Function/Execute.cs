@@ -45,6 +45,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
+                SetContentTypeHeader(req);
+
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
 
@@ -81,6 +83,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+
+        private static void SetContentTypeHeader(HttpRequest req)
+        {
+            req.HttpContext.Response.Headers.Remove("content-type");
+            req.HttpContext.Response.Headers.Add("content-type", "application/hal+json");
         }
 
         private async Task<IEnumerable<IRecord>> ExecuteCypherQuery(string query, ILogger log)
