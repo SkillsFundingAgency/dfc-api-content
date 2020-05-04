@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Models
 {
     public class ContentTypeMapSettings
     {
+        public ContentTypeMapSettings()
+        {
+            ContentTypeMap = new Dictionary<string, string>();
+        }
+
         public bool OverrideUri { get; set; }
         public Dictionary<string, string> ContentTypeMap { get; set; }
 

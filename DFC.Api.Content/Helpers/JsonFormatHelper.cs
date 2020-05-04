@@ -1,4 +1,5 @@
 ﻿using DFC.Api.Content.Enums;
+using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using Microsoft.Extensions.Options;
 using Neo4j.Driver;
@@ -26,7 +27,14 @@ namespace DFC.Api.Content.Helpers
                 case RequestType.GetAll:
                     return this.ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y => y.Value));
                 case RequestType.GetById:
-                    return this.CreateSingleRootObject(this.ReplaceNamespaces(recordsResult.Select(z => z.Values).FirstOrDefault().Values.FirstOrDefault()));
+                    var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
+                    if (recordValues != null)
+                    {
+                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues));
+                    }
+
+                    throw ApiFunctionException.InternalServerError($"Request Type: {type} records contain unformattable response");
+
                 default:
                     throw new NotSupportedException($"Request Type: {type} not supported");
             }
@@ -36,9 +44,9 @@ namespace DFC.Api.Content.Helpers
         {
             var objToReturn = new JObject();
 
-            JObject neoJsonObj = JObject.Parse(input.ToString());
+            JObject neoJsonObj = JObject.Parse(input.ToString() ?? string.Empty);
 
-            foreach (var child in neoJsonObj["data"].Children())
+            foreach (var child in neoJsonObj["data"]!.Children())
             {
                 objToReturn.Add(child);
             }

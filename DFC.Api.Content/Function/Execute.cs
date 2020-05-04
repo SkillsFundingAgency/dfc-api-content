@@ -15,7 +15,6 @@ using DFC.ServiceTaxonomy.Neo4j.Services;
 using DFC.Api.Content.Models.Cypher;
 using Neo4j.Driver;
 using System.Linq;
-using Newtonsoft.Json;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Enums;
 using DFC.Api.Content.Models;
@@ -45,12 +44,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                SetContentTypeHeader(req);
-
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
-
-                bool development = environment == "Development";
 
                 if (string.IsNullOrWhiteSpace(contentType))
                 {
@@ -64,13 +59,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
-                var serializedResult = JsonConvert.SerializeObject(recordsResult);
-
                 if (recordsResult == null || !recordsResult.Any())
                     return new NotFoundObjectResult(null);
 
                 log.LogInformation("request has successfully been completed with results");
 
+                SetContentTypeHeader(req);
                 return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType));
             }
             catch (ApiFunctionException e)
@@ -129,7 +123,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string MapContentTypeToNamespace(string contentType)
         {
-            _contentTypeMapSettings.CurrentValue.ContentTypeMap.TryGetValue(contentType.ToLower(), out string mappedValue);
+            _contentTypeMapSettings.CurrentValue.ContentTypeMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {

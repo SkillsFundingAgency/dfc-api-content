@@ -1,7 +1,4 @@
 ﻿using DFC.Api.Content.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DFC.Api.Content.Models
 {
