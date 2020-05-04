@@ -5,12 +5,6 @@
     <ProjectGuid>{3998DD4A-3D9B-407C-B4B4-16DF16515ED5}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Files\JobProfileRecordResponse_1.json" />
-    <None Remove="Files\JobProfileRecordResponse_2.json" />
-    <None Remove="Files\Output\JobProfileRecordOutput_GetAll.json" />
-    <None Remove="Files\Output\JobProfileRecordOutput_GetById.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Files/Input/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
