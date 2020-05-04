@@ -2,9 +2,11 @@
 using Neo4j.Driver;
 using System.Collections.Generic;
 using DFC.ServiceTaxonomy.Neo4j.Queries;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DFC.Api.Content.Models.Cypher
 {
+    [ExcludeFromCodeCoverage]
     public class GenericCypherQuery : IQuery<IRecord>
     {
         public string QueryToRun { get; set; }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Web.Http;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApiFunctionException : Exception
     {
