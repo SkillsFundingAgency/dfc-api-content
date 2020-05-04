@@ -8,12 +8,14 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neo4j.Driver;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 [assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
 
 namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
 {
+    [ExcludeFromCodeCoverage]
     public class FunctionStartupExtension : FunctionsStartup
     {
         public override void Configure(IFunctionsHostBuilder builder)
