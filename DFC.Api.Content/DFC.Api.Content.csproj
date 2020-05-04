@@ -4,6 +4,7 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
+    <ProjectGuid>{3eba975f-8dfb-4a1b-88c5-1a6588c1466c}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings-template.json" />
