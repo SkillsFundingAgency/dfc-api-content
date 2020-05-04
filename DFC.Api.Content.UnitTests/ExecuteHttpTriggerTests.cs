@@ -111,7 +111,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_GetJobProfile_ReturnsCorrectJsonResponse()
         {
-            var recordJsonInput = JToken.Parse(File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetById.json"));
+            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetById.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetById.json");
 
             var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
