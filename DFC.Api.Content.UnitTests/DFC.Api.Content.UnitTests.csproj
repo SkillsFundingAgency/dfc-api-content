@@ -11,21 +11,10 @@
     <None Remove="Files\Output\JobProfileRecordOutput_GetById.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Files\*">
+    <Content Include="Files/Input/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Files\Input\JobProfileRecordInput_GetAll.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\Input\JobProfileRecordInput_GetById.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\Output\JobProfileRecordOutput_GetAll.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\Output\JobProfileRecordOutput_GetById.json">
+    <Content Include="Files/Output/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
