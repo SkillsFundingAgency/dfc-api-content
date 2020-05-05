@@ -64,6 +64,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation("request has successfully been completed with results");
 
+                SetContentTypeHeader(req);
                 return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType));
             }
             catch (ApiFunctionException e)
