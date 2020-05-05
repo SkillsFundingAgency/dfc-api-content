@@ -1,0 +1,21 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateBaseUrl": {
+            "value": "https://raw.githubusercontent.com/SkillsFundingAgency/cdh-central/master/Resources/"
+        },
+        "environmentName": {
+            "value": ""
+        },
+        "functionAppNames": {
+            "value": []
+        },
+        "sharedAppServicePlanName": {
+            "value": ""
+        },
+        "sharedAppServicePlanResourceGroup": {
+            "value": ""
+        }
+    }
+}
