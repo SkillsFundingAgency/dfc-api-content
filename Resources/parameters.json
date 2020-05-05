@@ -2,20 +2,20 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "templateBaseUrl": {
-            "value": "https://raw.githubusercontent.com/SkillsFundingAgency/cdh-central/master/Resources/"
+        "projectPrefix": {
+            "value": "__providerPortalPrefix__"
         },
-        "environmentName": {
-            "value": ""
+        "appServicePlanName": {
+            "value": "__providerPortalAppServicePlan__"
         },
-        "functionAppNames": {
-            "value": []
+        "Neo4jUrl": {
+            "value": "__neo4jUrl__"
         },
-        "sharedAppServicePlanName": {
-            "value": ""
+        "Neo4jUser": {
+            "value": "__neo4jUser__"
         },
-        "sharedAppServicePlanResourceGroup": {
-            "value": ""
+        "Neo4jPassword": {
+            "value": "__neo4jPassword__"
         }
     }
 }

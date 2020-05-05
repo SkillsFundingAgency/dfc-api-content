@@ -1,103 +1,129 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
   "parameters": {
-    "cosmosDbCollectionId": {
-      "type": "string"
+    "projectPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix for all resources created for the project (except storage account, see below). Should be in the format dfc-env-proj"
+      }
     },
-    "cosmosDbDatabaseId": {
-      "type": "string"
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the provider portal shared ASP in this environment"
+      }
     },
-    "cosmosDbEndpoint": {
-      "type": "string"
+    "Neo4jUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The url to the Neo4j database"
+      }
     },
-    "cosmosDbKey": {
-      "type": "string"
+    "Neo4jUser": {
+      "type": "string",
+      "metadata": {
+        "description": "The username to the Neo4j database"
+      }
     },
-    "environmentName": {
-      "type": "string"
-    },
-    "functionAppNames": {
-      "type": "array"
-    },
-    "serviceBusAccessKey": {
-      "type": "string"
-    },
-    "serviceBusAccessKeyName": {
-      "type": "string"
-    },
-    "serviceBusBaseAddress": {
-      "type": "string"
-    },
-    "serviceBusQueueName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "type": "string"
-    },
-    "templateBaseUrl": {
-      "type": "string"
+    "Neo4jPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password to the Neo4j database"
+      }
     }
   },
-    "variables": {
-        "functionAppTemplateUri": "[concat(parameters('templateBaseUrl'), '/deployments/function-app-resources.json')]",
-        "sharedAppServicePlanId": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
-    },
-    "resources": [
-        {
-            "name": "[concat('FunctionApp-', parameters('functionAppNames')[copyIndex()])]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('functionAppTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-              "parameters": {
-                "functionAppName": {
-                  "value": "[parameters('functionAppNames')[copyIndex()]]"
-                },
-                "appServicePlanId": {
-                  "value": "[variables('sharedAppServicePlanId')]"
-                },
-                "configEnvironmentName": {
-                  "value": "[parameters('environmentName')]"
-                },
-                "cosmosDbCollectionId": {
-                  "value": "[parameters('cosmosDbCollectionId')]"
-                },
-                "cosmosDbDatabaseId": {
-                  "value": "[parameters('cosmosDbDatabaseId')]"
-                },
-                "cosmosDbEndpoint": {
-                  "value": "[parameters('cosmosDbEndpoint')]"
-                },
-                "cosmosDbKey": {
-                  "value": "[parameters('cosmosDbKey')]"
-                },
-                "serviceBusAccessKey": {
-                  "value": "[parameters('serviceBusAccessKey')]"
-                },
-                "serviceBusAccessKeyName": {
-                  "value": "[parameters('serviceBusAccessKeyName')]"
-                },
-                "serviceBusBaseAddress": {
-                  "value": "[parameters('serviceBusBaseAddress')]"
-                },
-                "serviceBusQueueName": {
-                  "value": "[parameters('serviceBusQueueName')]"
-                }
-              }
-            },
-            "copy": {
-                "name": "FunctionAppCopy",
-                "count": "[length(parameters('functionAppNames'))]"
-            }
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
+    "functionAppName": "[concat(parameters('projectPrefix'),'-fa')]",
+    "functionAppInsightsName": "[concat(variables('functionAppName'),'-ai')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[variables('functionAppInsightsName')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'), 'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('functionAppInsightsName')]"
+          },
+          "attachedService": {
+            "value": ""
+          }
         }
-    ],
-    "outputs": {}
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[variables('functionAppName')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'), 'app-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServiceName": {
+            "value": "[variables('functionAppName')]"
+          },
+          "appServicePlanName": {
+            "value": "[parameters('appServicePlanName')]"
+          },
+          "appServicePlanResourceGroup": {
+            "value": "[resourcegroup().name]"
+          },
+          "appServiceType": {
+            "value": "functionapp"
+          },
+          "deployStagingSlot": {
+            "value": true
+          },
+          "appServiceAppSettings": {
+            "value": [
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~2"
+              },
+              {
+                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                "value": "1"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "Neo4jUrl",
+                "value": "[parameters('Neo4jUrl')]"
+              },
+              {
+                "name": "Neo4jUser",
+                "value": "[parameters('Neo4jUser')]"
+              },
+              {
+                "name": "Neo4jPassword",
+                "value": "[parameters('Neo4jPassword')]"
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[variables('functionAppInsightsName')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "appInsightInstrumentationKey": {
+      "type": "string",
+      "value": "[reference('courseDirectoryAppInsights').outputs.InstrumentationKey.value]"
+    }
+  }
 }
