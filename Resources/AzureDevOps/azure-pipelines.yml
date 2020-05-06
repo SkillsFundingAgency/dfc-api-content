@@ -31,11 +31,11 @@ stages:
           ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
           SolutionBaseName: '${{ variables.SolutionBaseName }}'
 
-      - task: PublishPipelineArtifact@0
-        displayName: Publish ArmTemplates artifact
-        inputs:
-          targetPath: '$(Build.SourcesDirectory)/Resources/ArmTemplates'
-          artifactName: ${{ variables.SolutionBaseName }}.ArmTemplates
+      #- task: PublishPipelineArtifact@0
+        #displayName: Publish ArmTemplates artifact
+        #inputs:
+          #targetPath: '$(Build.SourcesDirectory)/Resources/ArmTemplates'
+          #artifactName: ${{ variables.SolutionBaseName }}.ArmTemplates
 
 #Build and test application
   - job: BuildDotNetCore
