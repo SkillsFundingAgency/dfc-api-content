@@ -1,0 +1,21 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectPrefix": {
+            "value": "dfc-foo-cd"
+        },
+        "appServicePlanName": {
+            "value": "dfc-foo-prov-shared-asp"
+        },
+        "Neo4jUrl": {
+            "value": "http://some-database-instance/"
+        },
+        "Neo4jUser": {
+            "value": "someUsername"
+        },
+        "Neo4jPassword": {
+            "value": "not-a-real-password"
+        }
+    }
+}
