@@ -20,12 +20,12 @@ namespace DFC.Api.Content.Helpers
             _settings = settings;
         }
 
-        public string FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type)
+        public object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type)
         {
             switch (type)
             {
                 case RequestType.GetAll:
-                    return this.ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y => y.Value));
+                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value)));
                 case RequestType.GetById:
                     var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
                     if (recordValues != null)
@@ -40,7 +40,7 @@ namespace DFC.Api.Content.Helpers
             }
         }
 
-        private string CreateSingleRootObject(object input)
+        private object CreateSingleRootObject(object input)
         {
             var objToReturn = new JObject();
 
@@ -53,10 +53,10 @@ namespace DFC.Api.Content.Helpers
 
             objToReturn.Add(new JProperty("_links", neoJsonObj["_links"]));
 
-            return objToReturn.ToString();
+            return objToReturn;
         }
 
-        private string ReplaceNamespaces(object input)
+        private object ReplaceNamespaces(object input)
         {
             var serializedJson = JsonConvert.SerializeObject(input);
 
@@ -65,7 +65,7 @@ namespace DFC.Api.Content.Helpers
                 serializedJson = serializedJson.Replace($"\"{key}\"", $"\"{_settings.CurrentValue.ReversedContentTypeMap[key]}\"");
             }
 
-            return serializedJson;
+            return JsonConvert.DeserializeObject<object>(serializedJson);
         }
     }
 }
