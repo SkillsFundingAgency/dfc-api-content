@@ -102,7 +102,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             // Assert
             Assert.True(result is OkObjectResult);
 
-            var resultJson = okObjectResult.Value.ToString();
+            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
 
             var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
             Assert.True(equal);
