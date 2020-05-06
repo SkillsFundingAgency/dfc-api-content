@@ -34,18 +34,18 @@ stages:
       - task: PublishPipelineArtifact@0
         displayName: Publish ArmTemplates artifact
         inputs:
-            targetPath: '$(Build.SourcesDirectory)/Resources/ArmTemplates'
-            artifactName: ${{ variables.SolutionBaseName }}.ArmTemplates
+          targetPath: '$(Build.SourcesDirectory)/Resources/ArmTemplates'
+          artifactName: ${{ variables.SolutionBaseName }}.ArmTemplates
 
 #Build and test application
   - job: BuildDotNetCore
     displayName: Build-DotNetCore
-    
+
     steps:
-    - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcore-build-sonar.yml@dfc-devops
-      parameters:
-        SolutionBaseName: $(SolutionBaseName)
-        BuildPlatform: 'any cpu'
-        BuildConfiguration: 'release'
-        DotNetCoreVersion: '3.1.100'
-        TestSuffix: UnitTests
+     - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcore-build-sonar.yml@dfc-devops
+       parameters:
+          SolutionBaseName: $(SolutionBaseName)
+          BuildPlatform: 'any cpu'
+          BuildConfiguration: 'release'
+          DotNetCoreVersion: '3.1.100'
+          TestSuffix: UnitTests
