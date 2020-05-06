@@ -123,7 +123,7 @@
   "outputs": {
     "appInsightInstrumentationKey": {
       "type": "string",
-      "value": "[reference('courseDirectoryAppInsights').outputs.InstrumentationKey.value]"
+      "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
     }
   }
 }
