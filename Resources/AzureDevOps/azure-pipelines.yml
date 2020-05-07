@@ -27,10 +27,9 @@ stages:
   - job: TestArmTemplates
     displayName: "Test & package ARM template(s)"
     steps:
-      - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
+      - template: AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
         parameters:
-          ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
-          SolutionBaseName: '${{ variables.SolutionBaseName }}'
+          ArmTemplateRoot: '$(ArmTemplateRoot)
 
       #- task: PublishPipelineArtifact@0
         #displayName: Publish ArmTemplates artifact
@@ -43,11 +42,11 @@ stages:
     displayName: Build-DotNetCore
 
     steps:
-     - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
+     - template: AzureDevOpsTemplates/Build/dfc-dotnetcore-build-sonar.yml@dfc-devops
        parameters:
           SolutionBaseName: $(SolutionBaseName)
-          BuildPlatform: 'any cpu'
-          BuildConfiguration: 'release'
+          BuildPlatform: $(BuildPlatform)
+          BuildConfiguration: $(BuildConfiguration)
           DotNetCoreVersion: '3.1.100'
           PublishWebApp: true
           TestSuffix: UnitTests
