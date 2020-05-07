@@ -2,11 +2,20 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "projectPrefix": {
-            "value": "dfc-foo-cd"
+        "appSharedResourceGroup": {
+            "value": "dfc-dev-app-sharedresources-rg"
         },
-        "appServicePlanName": {
-            "value": "dfc-foo-prov-shared-asp"
+        "environment": {
+            "value": "FOO"
+        },
+        "sharedAppServicePlanName": {
+            "value": "dfc-dev-app-shared-asp"
+        },
+        "sharedAppServicePlanResourceGroup": {
+            "value": "dfc-dev-app-sharedresources-rg"
+        },
+        "FunctionAppName": {
+            "value": "dfc-dev-funcapp-v1-fa"
         },
         "Neo4jUrl": {
             "value": "http://some-database-instance/"

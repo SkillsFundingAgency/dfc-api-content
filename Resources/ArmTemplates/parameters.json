@@ -2,11 +2,26 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "projectPrefix": {
-            "value": "__providerPortalPrefix__"
+        "appSharedResourceGroup": {
+            "value": "__appSharedResourceGroup__"
         },
-        "appServicePlanName": {
-            "value": "__providerPortalAppServicePlan__"
+        "aspTier": {
+            "value": "__aspTier__"
+        },
+        "environment": {
+            "value": "__ReleaseEnvironmentName__",
+            "metadata": {
+                "comment": "Bug in tokenisation task prevents referencing Release.EnvironmentName directly.  https://github.com/TotalALM/VSTS-Tasks/issues/29"
+            }
+        },
+        "sharedAppServicePlanName": {
+        "value": "__sharedAppServicePlanName__"
+        },
+        "sharedAppServicePlanResourceGroup": {
+        "value": "__appSharedResourceGroup__"
+        },
+        "FunctionAppName": {
+        "value": "__FunctionAppName__"
         },
         "Neo4jUrl": {
             "value": "__neo4jUrl__"
