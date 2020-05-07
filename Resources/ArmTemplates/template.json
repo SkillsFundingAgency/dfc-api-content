@@ -55,7 +55,7 @@
     "appServicePlanResourceGroup": "[if(greater(length(parameters('SharedAppServicePlanResourceGroup')), 0), parameters('SharedAppServicePlanResourceGroup'), resourceGroup().name)]",
     "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
     "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
-    "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-content-ai'))]"
+    "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-cont-ai'))]"
   },
   "resources": [
     {
