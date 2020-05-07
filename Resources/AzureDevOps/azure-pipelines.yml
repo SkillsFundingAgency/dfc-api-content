@@ -27,7 +27,7 @@ stages:
   - job: TestArmTemplates
     displayName: "Test & package ARM template(s)"
     steps:
-      - template: AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
+      - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
         parameters:
           ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
           SolutionBaseName: '${{ variables.SolutionBaseName }}'
@@ -43,7 +43,7 @@ stages:
     displayName: Build-DotNetCore
 
     steps:
-     - template: AzureDevOpsTemplates/Build/dfc-dotnetcore-build-sonar.yml@dfc-devops
+     - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
        parameters:
           SolutionBaseName: $(SolutionBaseName)
           BuildPlatform: 'any cpu'
