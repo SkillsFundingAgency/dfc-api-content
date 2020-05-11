@@ -28,7 +28,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN '' ELSE n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
-        private const string contentGetAllCypher = "MATCH (n:{0}) with {{properties: properties(n)}} as data return data.properties;";
+        private const string contentGetAllCypher = "MATCH (s:{0}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN '' ELSE n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {

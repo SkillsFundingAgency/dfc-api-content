@@ -25,7 +25,7 @@ namespace DFC.Api.Content.Helpers
             switch (type)
             {
                 case RequestType.GetAll:
-                    return this.ReplaceNamespaces(recordsResult.SelectMany(z => z.Values).Select(y => y.Value));
+                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value)));
                 case RequestType.GetById:
                     var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
                     if (recordValues != null)
