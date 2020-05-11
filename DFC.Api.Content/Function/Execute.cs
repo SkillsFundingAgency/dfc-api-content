@@ -23,16 +23,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
-        private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
+        private readonly IOptionsMonitor<ContentTypeSettings> _contentTypeSettings;
         private readonly IGraphDatabase _graphDatabase;
         private readonly IJsonFormatHelper _jsonFormatHelper;
-        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN '' ELSE n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN '' ELSE n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         private const string contentGetAllCypher = "MATCH (n:{0}) with {{properties: properties(n)}} as data return data.properties;";
 
-        public Execute(IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
+        public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {
-            _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
+            _contentTypeSettings = ContentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(ContentTypeNameMapSettings));
             _graphDatabase = graphDatabase ?? throw new ArgumentNullException(nameof(graphDatabase));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
@@ -55,7 +55,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
-                var queryToExecute = this.BuildQuery(queryParameters, req.Path.Value);
+                var queryToExecute = this.BuildQuery(queryParameters);
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
@@ -99,7 +99,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters)
         {
             if (!queryParameters.Id.HasValue)
             {
@@ -108,26 +108,36 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             else
             {
-                if (_contentTypeMapSettings.CurrentValue.OverrideUri)
-                {
-                    //Change to use request path when neo has been updated
-                    var uri = $"http://nationalcareers.service.gov.uk/{queryParameters.ContentType}/{queryParameters.Id}";
-                    return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
-                }
-                else
-                {
-                    return new ExecuteQuery(string.Format(contentByIdCypher, requestPath), RequestType.GetById);
-                }
+                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value);
+                return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
+
             }
+        }
+
+        private string GenerateUri(string contentType, Guid id)
+        {
+
+            _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
+
+            if (string.IsNullOrWhiteSpace(mappedValue))
+            {
+
+                #pragma warning disable S1135 // Track uses of "TODO" tags
+                //TODO - Replace with API host
+                return $"http://nationalcareers.service.gov.uk/{contentType}/{id}";
+                #pragma warning restore S1135 // Track uses of "TODO" tags
+            }
+
+            return string.Format(mappedValue, id);
         }
 
         private string MapContentTypeToNamespace(string contentType)
         {
-            _contentTypeMapSettings.CurrentValue.ContentTypeMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
+            _contentTypeSettings.CurrentValue.ContentTypeNameMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-                throw ApiFunctionException.BadRequest($"Content Type {contentType} is not mapped in AppSettings");
+                throw ApiFunctionException.BadRequest($"Content Type Name {contentType} is not mapped in AppSettings");
             }
 
             return mappedValue;
