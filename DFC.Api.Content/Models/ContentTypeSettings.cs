@@ -11,7 +11,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Models
             ContentTypeNameMap = new Dictionary<string, string>();
         }
 
-        public bool OverrideUri { get; set; }
         public Dictionary<string, string> ContentTypeUriMap { get; set; }
         public Dictionary<string, string> ContentTypeNameMap { get; set; }
 

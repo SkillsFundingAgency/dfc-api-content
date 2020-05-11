@@ -37,7 +37,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentTypeSettings>>();
             A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentTypeSettings
             {
-                OverrideUri = false,
                 ContentTypeNameMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
             }); ;
 
