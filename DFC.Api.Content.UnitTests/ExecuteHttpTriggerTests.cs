@@ -25,7 +25,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapConfig;
+        private readonly IOptionsMonitor<ContentTypeSettings> _ContentTypeNameMapConfig;
         private readonly IGraphDatabase _graphDatabase;
         private readonly IJsonFormatHelper _jsonHelper;
 
@@ -34,19 +34,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var context = new DefaultHttpContext();
             _request = context.Request;
 
-            _contentTypeMapConfig = A.Fake<IOptionsMonitor<ContentTypeMapSettings>>();
-            A.CallTo(() => _contentTypeMapConfig.CurrentValue).Returns(new ContentTypeMapSettings
+            _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentTypeSettings>>();
+            A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentTypeSettings
             {
-                OverrideUri = false,
-                ContentTypeMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
+                ContentTypeNameMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
             }); ;
 
             _log = A.Fake<ILogger>();
             _graphDatabase = A.Fake<IGraphDatabase>();
             _jsonHelper = A.Fake<IJsonFormatHelper>();
 
-            _jsonHelper = new JsonFormatHelper(_contentTypeMapConfig);
-            _executeFunction = new Execute(_contentTypeMapConfig, _graphDatabase, _jsonHelper);
+            _jsonHelper = new JsonFormatHelper(_ContentTypeNameMapConfig);
+            _executeFunction = new Execute(_ContentTypeNameMapConfig, _graphDatabase, _jsonHelper);
         }
 
         [Fact]
