@@ -70,7 +70,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             catch (ApiFunctionException e)
             {
                 log.LogError(e.ToString());
-                return e.ActionResult;
+                return e.ActionResult ?? new InternalServerErrorResult();
             }
             catch (Exception e)
             {
