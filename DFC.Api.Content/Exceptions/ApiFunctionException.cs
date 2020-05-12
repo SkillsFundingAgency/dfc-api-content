@@ -11,7 +11,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
     [Serializable]
     public class ApiFunctionException : Exception
     {
-        public ActionResult ActionResult { get; }
+        public ActionResult? ActionResult { get; }
 
         public ApiFunctionException()
         {
@@ -24,23 +24,23 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
             ActionResult = actionResult;
         }
 
-        public ApiFunctionException(ActionResult actionResult, string message, Exception innerException)
-        : base(message, innerException)
+        public ApiFunctionException(ActionResult actionResult, string message, Exception? innerException)
+            : base(message, innerException)
         {
             ActionResult = actionResult;
         }
 
-        public static ApiFunctionException BadRequest(string message, Exception innerException = null)
+        public static ApiFunctionException BadRequest(string message, Exception? innerException = null)
         {
             return new ApiFunctionException(new BadRequestObjectResult(message), message, innerException);
         }
 
-        public static ApiFunctionException UnprocessableEntityObjectResult(string message, Exception innerException = null)
+        public static ApiFunctionException UnprocessableEntityObjectResult(string message, Exception? innerException = null)
         {
             return new ApiFunctionException(new UnprocessableEntityObjectResult(message), message, innerException);
         }
 
-        public static ApiFunctionException InternalServerError(string message, Exception innerException = null)
+        public static ApiFunctionException InternalServerError(string message, Exception? innerException = null)
         {
             return new ApiFunctionException(new InternalServerErrorResult(), message, innerException);
         }
