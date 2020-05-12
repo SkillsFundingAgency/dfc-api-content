@@ -29,8 +29,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
 
             builder.Services.AddSingleton<IConfiguration>(config);
 
-            builder.Services.AddOptions<ContentTypeMapSettings>()
-                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentTypeMap").Bind(settings); });
+            builder.Services.AddOptions<ContentTypeSettings>()
+                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentType").Bind(settings); });
 
             builder.Services.AddOptions<Neo4jConfiguration>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("Neo4j").Bind(settings); });

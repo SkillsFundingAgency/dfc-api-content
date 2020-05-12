@@ -13,9 +13,9 @@ namespace DFC.Api.Content.Helpers
 {
     public class JsonFormatHelper : IJsonFormatHelper
     {
-        private readonly IOptionsMonitor<ContentTypeMapSettings> _settings;
+        private readonly IOptionsMonitor<ContentTypeSettings> _settings;
 
-        public JsonFormatHelper(IOptionsMonitor<ContentTypeMapSettings> settings)
+        public JsonFormatHelper(IOptionsMonitor<ContentTypeSettings> settings)
         {
             _settings = settings;
         }
@@ -60,9 +60,9 @@ namespace DFC.Api.Content.Helpers
         {
             var serializedJson = JsonConvert.SerializeObject(input);
 
-            foreach (var key in _settings.CurrentValue.ReversedContentTypeMap.Keys)
+            foreach (var key in _settings.CurrentValue.ReversedContentTypeNameMap.Keys)
             {
-                serializedJson = serializedJson.Replace($"\"{key}\"", $"\"{_settings.CurrentValue.ReversedContentTypeMap[key]}\"");
+                serializedJson = serializedJson.Replace($"\"{key}\"", $"\"{_settings.CurrentValue.ReversedContentTypeNameMap[key]}\"");
             }
 
             return JsonConvert.DeserializeObject<object>(serializedJson);
