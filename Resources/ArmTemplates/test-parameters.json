@@ -23,7 +23,7 @@
     "FunctionAppName": {
       "value": "dfc-dev-funcapp-v1-fa"
     },
-    "ApimProductName": {
+    "ApimProductInstanceName": {
       "value": "test-api-product"
     },
     "Neo4jUrl": {
@@ -44,7 +44,7 @@
     "ApiName": {
       "value": "api-name"
     },
-    "ApiVersionNumber": {
+    "ApiVersion": {
       "value": "v15"
     },
    "ApimLoggerName": {

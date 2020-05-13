@@ -35,7 +35,7 @@
     "FunctionAppName": {
       "value": "__FunctionAppName__"
     },
-    "ApimProductName": {
+    "ApimProductInstanceName": {
       "value": "__ApimProductInstanceName__"
     },
     "ApimResourceGroup": {
@@ -44,7 +44,7 @@
     "ApiName": {
       "value": "__ApiName__"
     },
-    "ApiVersionNumber": {
+    "ApiVersion": {
       "value": "__ApiVersion__"
     },
     "ApimLoggerName": {

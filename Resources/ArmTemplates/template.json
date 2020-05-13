@@ -27,7 +27,7 @@
      "FunctionAppName": {
       "type": "string"
     },
-    "ApimProductName": {
+    "ApimProductInstanceName": {
       "type": "string"
     },
     "ApimResourceGroup": {
@@ -39,7 +39,7 @@
     "ApiName": {
       "type": "string"
     },
-    "ApiVersionNumber": {
+    "ApiVersion": {
       "type": "string"
     },
     "ApimLoggerName": {
@@ -80,7 +80,7 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "[parameters('ApimProductName')]"
+                    "value": "[parameters('ApimProductInstanceName')]"
                 }
             }
         }
@@ -107,7 +107,7 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "[parameters('ApimProductName')]"
+                    "value": "[parameters('ApimProductInstanceName')]"
                 }
             }
         }
