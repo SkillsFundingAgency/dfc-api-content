@@ -14,6 +14,12 @@
     "sharedAppServicePlanResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
     },
+    "aspTier": {
+      "value": "Standard"
+    },
+    "aspSize": {
+      "value": "1"
+    },
     "FunctionAppName": {
       "value": "dfc-dev-funcapp-v1-fa"
     },
