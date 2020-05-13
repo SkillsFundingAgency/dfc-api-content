@@ -1,54 +1,45 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "appSharedResourceGroup": {
-            "value": "__appSharedResourceGroup__"
-        },
-        "aspTier": {
-            "value": "__aspTier__"
-        },
-        "environment": {
-            "value": "__ReleaseEnvironmentName__",
-            "metadata": {
-                "comment": "Bug in tokenisation task prevents referencing Release.EnvironmentName directly.  https://github.com/TotalALM/VSTS-Tasks/issues/29"
-            }
-        },
-        "sharedAppServicePlanName": {
-        "value": "__sharedAppServicePlanName__"
-        },
-        "sharedAppServicePlanResourceGroup": {
-        "value": "__appSharedResourceGroup__"
-        },
-        "FunctionAppName": {
-        "value": "__FunctionAppName__"
-        },
-        "ApimProductInstanceName": {
-            "value": "__ApimProductInstanceName__"
-        },
-        "ApimResourceGroup": {
-            "value": "__SharedResourceGroupName__"
-        },
-        "ApimServiceName":  {
-            "value": "__ApimServiceName__"
-        },
-        "ApiName": {
-            "value": "__ApiName__"
-        },
-        "ApiVersionNumber": {
-            "value": "__ApiVersion__"
-        },
-        "ApimLoggerName": {
-            "value": "__ApimLoggerName__"
-        },
-        "Neo4jUrl": {
-            "value": "__neo4jUrl__"
-        },
-        "Neo4jUser": {
-            "value": "__neo4jUser__"
-        },
-        "Neo4jPassword": {
-            "value": "__neo4jPassword__"
-        }
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectPrefix": {
+      "value": "__projectPrefix__"
+    },
+    "storageAccountName": {
+      "value": "__StaxSharedStorageAccountName__"
+    },
+    "storageAccountResourceGroup": {
+      "value": "__StaxSharedResourceGroup__"
+    },
+    "appServicePlanSize": {
+      "value": "__appServicePlanSize__"
+    },
+    "appServicePlanInstances": {
+      "value": __aspInstances__
+    },
+    "aseHostingEnvironmentName": {
+      "value": "__AseHostingEnvironmentName__"
+    },
+    "aseResourceGroup": {
+      "value": "__aseResourceGroup__"
+    },
+    "Neo4jUrl": {
+      "value": "__neo4jUrl__"
+    },
+    "Neo4jUser": {
+      "value": "__neo4jUser__"
+    },
+    "Neo4jPassword": {
+      "value": "__neo4jPassword__"
+    },
+    "ApimResourceGroup": {
+      "value": "__SharedResourceGroupName__"
+    },
+    "ApimServiceName": {
+      "value": "__ApimServiceName__"
+    },
+    "WebsiteHostUrl": {
+      "value": "__WebsiteHostUrl__"
     }
+  }
 }
