@@ -2,11 +2,31 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "projectPrefix": {
+    "appSharedResourceGroup": {
+      "type": "string"
+    },
+    "aspInstances": {
+      "type": "int",
+      "defaultValue": 2
+    },
+    "aspSize": {
       "type": "string",
-      "metadata": {
-        "description": "Prefix for all resources created for the project (except storage account, see below). Should be in the format dfc-env-proj"
-      }
+      "defaultValue": ""
+    },
+    "aspTier": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "environment": {
+      "type": "string"
+    },
+    "sharedAppServicePlanName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "type": "string",
+      "defaultValue": ""
     },
     "storageAccountName": {
       "type": "string",
@@ -18,25 +38,6 @@
       "type": "string",
       "metadata": {
         "description": "Name of the project storage account's resource group"
-      }
-    },
-    "appServicePlanSize": {
-      "type": "string",
-      "defaultValue": "1",
-      "metadata": {
-          "description": "Size of the instances in the app service plan"
-      },
-      "allowedValues": [
-        "1",
-        "2",
-        "3"
-      ]
-    },
-    "appServicePlanInstances": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-          "description": "Number of instances in the app service plan"
       }
     },
     "aseHostingEnvironmentName": {
@@ -52,6 +53,27 @@
       "metadata": {
         "description": "Resource group the App Service Environment belongs to - only required if aseHostingEnvironmentName specified"
       }
+    },
+     "FunctionAppName": {
+      "type": "string"
+    },
+    "ApimProductName": {
+      "type": "string"
+    },
+    "ApimResourceGroup": {
+      "type": "string"
+    },
+    "ApimServiceName": {
+      "type": "string"
+    },
+    "ApiName": {
+      "type": "string"
+    },
+    "ApiVersionNumber": {
+      "type": "string"
+    },
+    "ApimLoggerName": {
+      "type": "string"
     },
     "Neo4jUrl": {
       "type": "string",
@@ -71,33 +93,17 @@
         "description": "The password to the Neo4j database"
       }
     },
-    "ApimResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "The resource group the shared apim instance is stored in"
-      }
-    },
-    "ApimServiceName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the shared apim instance"
-      }
-    },
     "WebsiteHostUrl": {
       "type":"string"
     } 
   },
   "variables": {
-    "ApimProductName": "Content",
-    "BuildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
-    "appServicePlanName": "[concat(parameters('projectPrefix'), '-asp')]",
-    "allFunctions": [
-      {
-        "functionType": "GetContent",
-        "functionName": "[concat(parameters('projectPrefix'), '-api-cont-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-api-cont-ai')]"
-      }
-    ]
+    "appServicePlanName": "[if(greater(length(parameters('sharedAppServicePlanName')), 0), parameters('sharedAppServicePlanName'), concat(variables('resourcePrefix'), '-asp'))]",
+    "appServicePlanResourceGroup": "[if(greater(length(parameters('SharedAppServicePlanResourceGroup')), 0), parameters('SharedAppServicePlanResourceGroup'), resourceGroup().name)]",
+    "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
+    "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
+    "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]",
+    "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-cont-ai'))]"
   },
   "resources": [
     {
@@ -116,7 +122,7 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "[variables('ApimProductName')]"
+                    "value": "[parameters('ApimProductName')]"
                 }
             }
         }
@@ -143,58 +149,104 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "[variables('ApimProductName')]"
+                    "value": "[parameters('ApimProductName')]"
                 }
             }
         }
     },
     {
+      "name": "[variables('VersionSetName')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('ApimResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-versionset.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apimServiceName":  {
+                        "value": "[parameters('ApimServiceName')]"
+                    },
+                    "apiName": {
+                        "value": "[parameters('ApiName')]"
+                    },
+                    "versioningMethod": {
+                        "value": "Header"
+                    },
+                    "versionProperty": {
+                        "value": "version"
+                    }
+                }
+            }
+        },
+      {
       "apiVersion": "2017-05-10",
-      "name": "[variables('allFunctions')[copyIndex()].appInsightsName]",
+      "name": "[variables('appServicePlanName')]",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[not(equals(parameters('sharedAppServicePlanName'), variables('appServicePlanName')))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'application-insights.json')]",
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service-plan.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "appInsightsName": {
-            "value": "[variables('allFunctions')[copyIndex()].appInsightsName]"
+          "appServicePlanName": {
+            "value": "[variables('appServicePlanName')]"
           },
-          "attachedService": {
-            "value": "[variables('allFunctions')[copyIndex()].functionName]"
+          "aspSize": {
+            "value": "[parameters('aspSize')]"
+          },
+          "aspInstances": {
+            "value": "[parameters('aspInstances')]"
+          },
+          "nonASETier": {
+            "value": "[parameters('aspTier')]"
           }
         }
-      },
-      "copy": {
-        "name": "appInsightsCopy",
-        "count": "[length(variables('allFunctions'))]"
       }
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[variables('allFunctions')[copyIndex()].functionName]",
+      "name": "[variables('functionAppInsightsName')]",
       "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "appInsightsCopy",
-        "ServiceTaxonomyAppServicePlan"
-      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'app-service.json')]",
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('functionAppInsightsName')]"
+          },
+          "attachedService": {
+            "value": ""
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[parameters('FunctionAppName')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service-staging.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "appServiceName": {
-            "value": "[variables('allFunctions')[copyIndex()].functionName]"
+            "value": "[parameters('FunctionAppName')]"
           },
           "appServicePlanName": {
             "value": "[variables('appServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[resourcegroup().name]"
+            "value": "[variables('appServicePlanResourceGroup')]"
           },
           "appServiceType": {
             "value": "functionapp"
@@ -208,24 +260,24 @@
           "appServiceAppSettings": {
             "value": [
               {
-                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference(variables('allFunctions')[copyIndex()].appInsightsName).outputs.InstrumentationKey.value]"
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~3"
               },
               {
-                "name": "FUNCTIONS_EXTENSION_VERSION",
-                "value": "~2"
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "dotnet"
+              },
+              {
+                "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+                "value": "1"
               },
               {
                 "name": "WEBSITE_RUN_FROM_PACKAGE",
                 "value": "1"
               },
               {
-                "name": "AzureWebJobsStorage",
-                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
-              },
-              {
-                "name": "Function",
-                "value": "[variables('allFunctions')[copyIndex()].functionType]"
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
               },
               {
                 "name": "Neo4jUrl",
@@ -238,56 +290,16 @@
               {
                 "name": "Neo4jPassword",
                 "value": "[parameters('Neo4jPassword')]"
-              },
-              {
-                "name": "Scheme",
-                "value": "https://"
-              },
-              {
-                "name": "ApplicationName",
-                "value": "content"
-              },
-              {
-                "name": "WebsiteHost",
-                "value": "[parameters('WebsiteHostUrl')]"
               }
             ]
           }
-        }      
-      },
-      "copy": {
-        "name": "functionLoop",
-        "count": "[length(variables('allFunctions'))]"
-      } 
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "ServiceTaxonomyAppServicePlan",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[variables('appServicePlanName')]"
-          },
-          "aspSize": {
-            "value": "[parameters('appServicePlanSize')]"
-          },
-          "aspInstances": {
-            "value": "[parameters('appServicePlanInstances')]"
-          },
-          "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
-          },
-          "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
-          }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('functionAppInsightsName')]"
+      ]
     }
-  ]
+  ],
+  "outputs": {
+  }
 }

@@ -2,26 +2,35 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "projectPrefix": {
-      "value": "dfc-foo-stax"
-    },
     "storageAccountName": {
       "value": "dfcfoostaxsharedstr"
     },
     "storageAccountResourceGroup": {
       "value": "dfc-foo-stax-shared-rg"
     },
-    "appServicePlanSize": {
-      "value": "1"
-    },
-    "appServicePlanInstances": {
-      "value": 1
-    },
     "aseHostingEnvironmentName": {
       "value": ""
     },
     "aseResourceGroup": {
       "value": ""
+    },
+    "appSharedResourceGroup": {
+      "value": "dfc-dev-app-sharedresources-rg"
+    },
+    "environment": {
+      "value": "FOO"
+    },
+    "sharedAppServicePlanName": {
+      "value": "dfc-dev-app-shared-asp"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "value": "dfc-dev-app-sharedresources-rg"
+    },
+    "FunctionAppName": {
+      "value": "dfc-dev-funcapp-v1-fa"
+    },
+    "ApimProductName": {
+      "value": "test-api-product"
     },
     "Neo4jUrl": {
       "value": "http://some-database-instance/"
@@ -37,6 +46,15 @@
     },
     "ApimServiceName": {
       "value": "an-apim-instance"
+    },
+    "ApiName": {
+      "value": "api-name"
+    },
+    "ApiVersionNumber": {
+      "value": "v15"
+    },
+   "ApimLoggerName": {
+      "value": "some-apim-logger"
     },
     "WebsiteHostUrl": {
       "value": "nationalcareers.service.gov.uk"

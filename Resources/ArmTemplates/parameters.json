@@ -2,20 +2,11 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "projectPrefix": {
-      "value": "__projectPrefix__"
-    },
     "storageAccountName": {
       "value": "__StaxSharedStorageAccountName__"
     },
     "storageAccountResourceGroup": {
       "value": "__StaxSharedResourceGroup__"
-    },
-    "appServicePlanSize": {
-      "value": "__appServicePlanSize__"
-    },
-    "appServicePlanInstances": {
-      "value": __aspInstances__
     },
     "aseHostingEnvironmentName": {
       "value": "__AseHostingEnvironmentName__"
@@ -32,8 +23,41 @@
     "Neo4jPassword": {
       "value": "__neo4jPassword__"
     },
-    "ApimResourceGroup": {
+    "appSharedResourceGroup": {
+      "value": "__appSharedResourceGroup__"
+  },
+  "aspTier": {
+      "value": "__aspTier__"
+  },
+  "environment": {
+      "value": "__ReleaseEnvironmentName__",
+      "metadata": {
+          "comment": "Bug in tokenisation task prevents referencing Release.EnvironmentName directly.  https://github.com/TotalALM/VSTS-Tasks/issues/29"
+      }
+  },
+  "sharedAppServicePlanName": {
+  "value": "__sharedAppServicePlanName__"
+  },
+  "sharedAppServicePlanResourceGroup": {
+  "value": "__appSharedResourceGroup__"
+  },
+  "FunctionAppName": {
+  "value": "__FunctionAppName__"
+  },
+  "ApimProductName": {
+      "value": "__ApimProductInstanceName__"
+  },
+  "ApimResourceGroup": {
       "value": "__SharedResourceGroupName__"
+  },
+  "ApiName": {
+      "value": "__ApiName__"
+  },
+  "ApiVersionNumber": {
+      "value": "__ApiVersion__"
+  },
+  "ApimLoggerName": {
+      "value": "__ApimLoggerName__"
     },
     "ApimServiceName": {
       "value": "__ApimServiceName__"
