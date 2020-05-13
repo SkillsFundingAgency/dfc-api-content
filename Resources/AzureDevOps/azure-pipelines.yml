@@ -95,8 +95,6 @@ stages:
       FunctionAppDomain: '$(FunctionAppDomain)'
       EnvironmentName: DEV_CONTENT
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
-      DfcServiceTaxonomyTestsBuildId: $(DfcContentTestsBuildId)
-      TestArtifactBranch: ${{ parameters.DfcContentTestBranch }}
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
       # The top level -`s here defines an array of "something"
       # The inner level -'s defines an array of mappings.
