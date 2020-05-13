@@ -13,38 +13,38 @@
     },
     "appSharedResourceGroup": {
       "value": "__appSharedResourceGroup__"
-  },
-  "aspTier": {
+    },
+    "aspTier": {
       "value": "__aspTier__"
-  },
-  "environment": {
+    },
+    "environment": {
       "value": "__ReleaseEnvironmentName__",
       "metadata": {
-          "comment": "Bug in tokenisation task prevents referencing Release.EnvironmentName directly.  https://github.com/TotalALM/VSTS-Tasks/issues/29"
+        "comment": "Bug in tokenisation task prevents referencing Release.EnvironmentName directly.  https://github.com/TotalALM/VSTS-Tasks/issues/29"
       }
-  },
-  "sharedAppServicePlanName": {
-  "value": "__sharedAppServicePlanName__"
-  },
-  "sharedAppServicePlanResourceGroup": {
-  "value": "__appSharedResourceGroup__"
-  },
-  "FunctionAppName": {
-  "value": "__FunctionAppName__"
-  },
-  "ApimProductName": {
+    },
+    "sharedAppServicePlanName": {
+      "value": "__sharedAppServicePlanName__"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "value": "__appSharedResourceGroup__"
+    },
+    "FunctionAppName": {
+      "value": "__FunctionAppName__"
+    },
+    "ApimProductName": {
       "value": "__ApimProductInstanceName__"
-  },
-  "ApimResourceGroup": {
+    },
+    "ApimResourceGroup": {
       "value": "__SharedResourceGroupName__"
-  },
-  "ApiName": {
+    },
+    "ApiName": {
       "value": "__ApiName__"
-  },
-  "ApiVersionNumber": {
+    },
+    "ApiVersionNumber": {
       "value": "__ApiVersion__"
-  },
-  "ApimLoggerName": {
+    },
+    "ApimLoggerName": {
       "value": "__ApimLoggerName__"
     },
     "ApimServiceName": {
