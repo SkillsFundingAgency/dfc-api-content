@@ -10,12 +10,10 @@
       "defaultValue": 2
     },
     "aspSize": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "aspTier": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "environment": {
       "type": "string"
@@ -24,22 +22,7 @@
       "type": "string"
     },
     "sharedAppServicePlanResourceGroup": {
-      "type": "string",
-      "defaultValue": ""
-    },
-    "storageAccountName": {
       "type": "string"
-    },
-    "storageAccountResourceGroup": {
-      "type": "string"
-    },
-    "aseHostingEnvironmentName": {
-      "type": "string",
-      "defaultValue": ""
-    },
-    "aseResourceGroup": {
-      "type": "string",
-      "defaultValue": ""
     },
      "FunctionAppName": {
       "type": "string"
@@ -70,9 +53,6 @@
     },
     "Neo4jPassword": {
       "type": "securestring"
-    },
-    "WebsiteHostUrl": {
-      "type":"string"
     } 
   },
   "variables": {

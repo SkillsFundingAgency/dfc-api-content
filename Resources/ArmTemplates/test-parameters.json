@@ -2,18 +2,6 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storageAccountName": {
-      "value": "dfcfoostaxsharedstr"
-    },
-    "storageAccountResourceGroup": {
-      "value": "dfc-foo-stax-shared-rg"
-    },
-    "aseHostingEnvironmentName": {
-      "value": ""
-    },
-    "aseResourceGroup": {
-      "value": ""
-    },
     "appSharedResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
     },
@@ -55,9 +43,6 @@
     },
    "ApimLoggerName": {
       "value": "some-apim-logger"
-    },
-    "WebsiteHostUrl": {
-      "value": "nationalcareers.service.gov.uk"
     }
   }
 }
