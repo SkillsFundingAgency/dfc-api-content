@@ -31,13 +31,6 @@ parameters:
   Apis: []
 
 jobs:
-- job: SetupConditions
-  steps:
-  - powershell: |
-      Write-Host "##vso[task.setvariable variable=projectsToDeploy;isOutput=true]$(projects)"
-      Write-Host "Setting projectsToDeploy to '$(projects)'" 
-    name: setupConditionStep
-    
 - deployment: DeployTemplate
   displayName: "Deploy arm templates"
   environment: ${{ parameters.EnvironmentName }}
@@ -67,10 +60,10 @@ jobs:
       environment: ${{ parameters.EnvironmentName }}
       dependsOn: 
       - DeployTemplate
-      - SetupConditions
-      - ${{ if api.dependsOn }}:
-        - Deploy${{ api.dependsOn }}
-      condition: and(succeeded(), or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '${{ api.name }}')))
+     # - SetupConditions
+     # - ${{ if api.dependsOn }}:
+      #  - Deploy${{ api.dependsOn }}
+     # condition: and(succeeded(), or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '${{ api.name }}')))
       strategy:
         runOnce:
           deploy:
