@@ -15,7 +15,7 @@
     "aspTier": {
       "type": "string"
     },
-    "environment": {
+    "FunctionAppInsightName": {
       "type": "string"
     },
     "sharedAppServicePlanName": {
@@ -59,9 +59,8 @@
     "appServicePlanName": "[if(greater(length(parameters('sharedAppServicePlanName')), 0), parameters('sharedAppServicePlanName'), concat(variables('resourcePrefix'), '-asp'))]",
     "appServicePlanResourceGroup": "[if(greater(length(parameters('SharedAppServicePlanResourceGroup')), 0), parameters('SharedAppServicePlanResourceGroup'), resourceGroup().name)]",
     "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
-    "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
-    "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]",
-    "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-cont-ai'))]"
+    "resourcePrefix": "[tolower(concat('dfc-dev-api-content'))]",
+    "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
   },
   "resources": [
     {
@@ -168,7 +167,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[variables('functionAppInsightsName')]",
+      "name": "[parameters('FunctionAppInsightName')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -178,7 +177,7 @@
         },
         "parameters": {
           "appInsightsName": {
-            "value": "[variables('functionAppInsightsName')]"
+            "value": "[parameters('FunctionAppInsightName')]"
           },
           "attachedService": {
             "value": ""
@@ -235,7 +234,7 @@
               },
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
+                "value": "[reference(parameters('FunctionAppInsightName')).outputs.InstrumentationKey.value]"
               },
               {
                 "name": "Neo4jUrl",
@@ -254,7 +253,7 @@
         }
       },
       "dependsOn": [
-        "[variables('functionAppInsightsName')]"
+        "[parameters('FunctionAppInsightName')]"
       ]
     }
   ],

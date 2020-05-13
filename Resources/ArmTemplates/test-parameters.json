@@ -5,9 +5,6 @@
     "appSharedResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
     },
-    "environment": {
-      "value": "FOO"
-    },
     "sharedAppServicePlanName": {
       "value": "dfc-dev-app-shared-asp"
     },
@@ -22,6 +19,9 @@
     },
     "FunctionAppName": {
       "value": "dfc-dev-funcapp-v1-fa"
+    },
+    "FunctionAppInsightName": {
+      "value": "dfc-dev-funcapp-v1-ai"
     },
     "ApimProductInstanceName": {
       "value": "test-api-product"
@@ -47,7 +47,7 @@
     "ApiVersionNumber": {
       "value": "v1"
     },
-   "ApimLoggerName": {
+    "ApimLoggerName": {
       "value": "some-apim-logger"
     }
   }
