@@ -21,38 +21,25 @@
       "type": "string"
     },
     "sharedAppServicePlanName": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "sharedAppServicePlanResourceGroup": {
       "type": "string",
       "defaultValue": ""
     },
     "storageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the project storage account (as it follows a different naming convention)"
-      }
+      "type": "string"
     },
     "storageAccountResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the project storage account's resource group"
-      }
+      "type": "string"
     },
     "aseHostingEnvironmentName": {
       "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional App Service Environment for the app service to exist within. If not supplied creates a stand alone app service plan."
-      }
+      "defaultValue": ""
     },
     "aseResourceGroup": {
       "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Resource group the App Service Environment belongs to - only required if aseHostingEnvironmentName specified"
-      }
+      "defaultValue": ""
     },
      "FunctionAppName": {
       "type": "string"
@@ -76,22 +63,13 @@
       "type": "string"
     },
     "Neo4jUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "The url to the Neo4j database"
-      }
+      "type": "string"
     },
     "Neo4jUser": {
-      "type": "string",
-      "metadata": {
-        "description": "The username to the Neo4j database"
-      }
+      "type": "string"
     },
     "Neo4jPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password to the Neo4j database"
-      }
+      "type": "securestring"
     },
     "WebsiteHostUrl": {
       "type":"string"

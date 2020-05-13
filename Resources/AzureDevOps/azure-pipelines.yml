@@ -68,10 +68,11 @@ stages:
   - template: VariableTemplates/DevEnvironmentVariables.yml
   - group: dfc-shared-all
   - group: dfc-api-content-all
+  - group: dfc-app-integrationtests-all
   - group: dfc-shared-dev
+  - group: dfc-app-shared-all
   - group: dfc-stax-shared-dev
   - group: dfc-app-shared-dev
-  - group: dfc-stax-apifunctions-dev
   - group: 'KeyVault - dfc-dev-shared-kv'
   - name: WebAppPrefix
     value: dfc-dev
