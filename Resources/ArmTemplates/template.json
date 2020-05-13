@@ -39,7 +39,7 @@
     "ApiName": {
       "type": "string"
     },
-    "ApiVersion": {
+    "ApiVersionNumber": {
       "type": "string"
     },
     "ApimLoggerName": {

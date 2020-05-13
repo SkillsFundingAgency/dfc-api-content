@@ -44,7 +44,7 @@
     "ApiName": {
       "value": "api-name"
     },
-    "ApiVersion": {
+    "ApiVersionNumber": {
       "value": "v1"
     },
    "ApimLoggerName": {
