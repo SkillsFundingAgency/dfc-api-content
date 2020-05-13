@@ -23,6 +23,24 @@
         "FunctionAppName": {
         "value": "__FunctionAppName__"
         },
+        "ApimProductInstanceName": {
+            "value": "__ApimProductInstanceName__"
+        },
+        "ApimResourceGroup": {
+            "value": "__SharedResourceGroupName__"
+        },
+        "ApimServiceName":  {
+            "value": "__ApimServiceName__"
+        },
+        "ApiName": {
+            "value": "__ApiName__"
+        },
+        "ApiVersionNumber": {
+            "value": "__ApiVersion__"
+        },
+        "ApimLoggerName": {
+            "value": "__ApimLoggerName__"
+        },
         "Neo4jUrl": {
             "value": "__neo4jUrl__"
         },
