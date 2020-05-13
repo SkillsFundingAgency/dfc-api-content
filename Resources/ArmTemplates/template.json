@@ -101,7 +101,7 @@
   },
   "resources": [
     {
-        "name": "servicetaxonomy-apim-logger",
+        "name": "content-apim-logger",
         "type": "Microsoft.Resources/deployments",
         "resourceGroup": "[parameters('ApimResourceGroup')]",
         "apiVersion": "2017-05-10",
