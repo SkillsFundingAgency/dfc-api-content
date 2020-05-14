@@ -41,6 +41,7 @@ stages:
           BuildConfiguration: 'release'
           PublishWebApp: true
           TestSuffix: 'Tests'
+          DotNetCoreVersion: '3.1.100'
 
       - task: PublishPipelineArtifact@1
         displayName: Publish OpenAPI docs to Pipeline Artifact
