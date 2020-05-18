@@ -10,25 +10,21 @@
       "defaultValue": 2
     },
     "aspSize": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "aspTier": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
-    "environment": {
+    "FunctionAppInsightName": {
       "type": "string"
     },
     "sharedAppServicePlanName": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "sharedAppServicePlanResourceGroup": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
-    "FunctionAppName": {
+     "FunctionAppName": {
       "type": "string"
     },
     "ApimProductInstanceName": {
@@ -50,35 +46,73 @@
       "type": "string"
     },
     "Neo4jUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "The url to the Neo4j database"
-      }
+      "type": "string"
     },
     "Neo4jUser": {
-      "type": "string",
-      "metadata": {
-        "description": "The username to the Neo4j database"
-      }
+      "type": "string"
     },
     "Neo4jPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password to the Neo4j database"
-      }
-    }
+      "type": "securestring"
+    } 
   },
   "variables": {
     "appServicePlanName": "[if(greater(length(parameters('sharedAppServicePlanName')), 0), parameters('sharedAppServicePlanName'), concat(variables('resourcePrefix'), '-asp'))]",
     "appServicePlanResourceGroup": "[if(greater(length(parameters('SharedAppServicePlanResourceGroup')), 0), parameters('SharedAppServicePlanResourceGroup'), resourceGroup().name)]",
     "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
-    "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
-    "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]",
-    "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-cont-ai'))]"
+    "resourcePrefix": "[tolower(concat('dfc-dev-api-content'))]",
+    "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
   },
   "resources": [
-     {
-            "name": "[variables('VersionSetName')]",
+    {
+        "name": "content-apim-logger",
+        "type": "Microsoft.Resources/deployments",
+        "resourceGroup": "[parameters('ApimResourceGroup')]",
+        "apiVersion": "2017-05-10",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-logger.json')]",
+                "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+                "apimServiceName": {
+                    "value": "[parameters('ApimServiceName')]"
+                },
+                "productDisplayName": {
+                    "value": "[parameters('ApimProductInstanceName')]"
+                }
+            }
+        }
+    },
+    {
+        "name": "content-apim-product",
+        "type": "Microsoft.Resources/deployments",
+        "resourceGroup": "[parameters('ApimResourceGroup')]",
+        "apiVersion": "2017-05-10",
+        "dependsOn": [
+          "content-apim-logger"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-product.json')]",
+                "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+                "allowAnonymousAccess": {
+                    "value": false
+                },
+                "apimServiceName": {
+                    "value": "[parameters('ApimServiceName')]"
+                },
+                "productDisplayName": {
+                    "value": "[parameters('ApimProductInstanceName')]"
+                }
+            }
+        }
+    },
+    {
+      "name": "[variables('VersionSetName')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('ApimResourceGroup')]",
             "apiVersion": "2017-05-10",
@@ -133,7 +167,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[variables('functionAppInsightsName')]",
+      "name": "[parameters('FunctionAppInsightName')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -143,7 +177,7 @@
         },
         "parameters": {
           "appInsightsName": {
-            "value": "[variables('functionAppInsightsName')]"
+            "value": "[parameters('FunctionAppInsightName')]"
           },
           "attachedService": {
             "value": ""
@@ -158,7 +192,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service-staging.json')]",
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -173,6 +207,12 @@
           },
           "appServiceType": {
             "value": "functionapp"
+          },
+          "deployStagingSlot": {
+            "value": true
+          },
+          "clientAffinity": {
+            "value": true
           },
           "appServiceAppSettings": {
             "value": [
@@ -194,7 +234,7 @@
               },
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
+                "value": "[reference(parameters('FunctionAppInsightName')).outputs.InstrumentationKey.value]"
               },
               {
                 "name": "Neo4jUrl",
@@ -213,7 +253,7 @@
         }
       },
       "dependsOn": [
-        "[variables('functionAppInsightsName')]"
+        "[parameters('FunctionAppInsightName')]"
       ]
     }
   ],
