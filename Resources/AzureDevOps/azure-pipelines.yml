@@ -85,7 +85,7 @@ stages:
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: 'dfc-dev-api-cont-rg'
-      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DeploymentPackages/DFC.Api.Content/DFC.Api.Content.zip"
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
       ApimProductId: 'content'
       ApimLoggerName: 'content-logger'
