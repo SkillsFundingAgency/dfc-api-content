@@ -93,7 +93,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetAll.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetAll.json");
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
+            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored, A<string>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
 
             var result = await RunFunction("test1", null);
             var okObjectResult = result as OkObjectResult;
@@ -115,7 +115,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored)).Returns(driverRecords);
+            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored, A<string>.Ignored)).Returns(driverRecords);
 
             var result = await RunFunction("test1", Guid.NewGuid());
             var okObjectResult = result as OkObjectResult;
