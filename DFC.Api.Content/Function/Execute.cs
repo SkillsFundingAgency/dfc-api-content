@@ -55,7 +55,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
-                var queryToExecute = this.BuildQuery(queryParameters);
+                var queryToExecute = this.BuildQuery(queryParameters, $"http://{req.Host.Value}{req.Path.Value}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
@@ -99,7 +99,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string host)
         {
             if (!queryParameters.Id.HasValue)
             {
@@ -108,24 +108,20 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             else
             {
-                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value);
+                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, host);
                 return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
 
             }
         }
 
-        private string GenerateUri(string contentType, Guid id)
+        private string GenerateUri(string contentType, Guid id, string host)
         {
 
             _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-
-                #pragma warning disable S1135 // Track uses of "TODO" tags
-                //TODO - Replace with API host
-                return $"http://nationalcareers.service.gov.uk/{contentType}/{id}";
-                #pragma warning restore S1135 // Track uses of "TODO" tags
+                return host;
             }
 
             return string.Format(mappedValue, id);
