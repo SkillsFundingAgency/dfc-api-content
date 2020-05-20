@@ -115,14 +115,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private string GenerateUri(string contentType, Guid id, string host)
+        private string GenerateUri(string contentType, Guid id, string requestPath)
         {
 
             _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-                return host;
+                return requestPath;
             }
 
             return string.Format(mappedValue, id);
