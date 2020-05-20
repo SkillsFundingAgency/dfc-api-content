@@ -55,6 +55,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
+                // Scheme from configuration to allow local debug without HTTPS and certificates
                 var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
