@@ -55,7 +55,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
-                var queryToExecute = this.BuildQuery(queryParameters, $"http://{req.Host.Value}{req.Path.Value}");
+                var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 

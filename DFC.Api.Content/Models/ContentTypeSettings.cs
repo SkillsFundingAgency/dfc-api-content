@@ -29,5 +29,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Models
                 return ContentTypeNameMap.ToDictionary(x => x.Value, x => x.Key);
             }
         }
+
+        public string? Scheme { get; set; }
     }
 }
