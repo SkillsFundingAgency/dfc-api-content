@@ -62,19 +62,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_WhenContentTypeNotPresentInMap_ReturnsBadRequestObjectResult()
-        {
-            var result = await RunFunction("abcdefghi", null);
-
-            var badRequestObjectResult = result as BadRequestObjectResult;
-
-            // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is BadRequestObjectResult);
-            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
-        }
-
-        [Fact]
         public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResult()
         {
             var result = await RunFunction("test1", null);

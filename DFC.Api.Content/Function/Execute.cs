@@ -28,7 +28,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
-        private const string contentGetAllCypher = "MATCH (s:{0}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), relationship:type(r), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), relationship:type(r), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {
@@ -55,7 +55,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 //Could move in to helper class
-                var queryToExecute = this.BuildQuery(queryParameters);
+                // Scheme from configuration to allow local debug without HTTPS and certificates
+                var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
@@ -99,33 +100,29 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath)
         {
             if (!queryParameters.Id.HasValue)
             {
                 //GetAll Query
-                return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType)), RequestType.GetAll);
+                return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType).ToLowerInvariant()), RequestType.GetAll);
             }
             else
             {
-                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value);
+                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, requestPath);
                 return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
 
             }
         }
 
-        private string GenerateUri(string contentType, Guid id)
+        private string GenerateUri(string contentType, Guid id, string requestPath)
         {
 
             _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-
-                #pragma warning disable S1135 // Track uses of "TODO" tags
-                //TODO - Replace with API host
-                return $"http://nationalcareers.service.gov.uk/{contentType}/{id}";
-                #pragma warning restore S1135 // Track uses of "TODO" tags
+                return requestPath;
             }
 
             return string.Format(mappedValue, id);
@@ -137,7 +134,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-                throw ApiFunctionException.BadRequest($"Content Type Name {contentType} is not mapped in AppSettings");
+                return contentType;
             }
 
             return mappedValue;
