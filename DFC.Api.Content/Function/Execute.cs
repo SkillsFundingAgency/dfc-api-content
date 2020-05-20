@@ -100,7 +100,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string host)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath)
         {
             if (!queryParameters.Id.HasValue)
             {
@@ -109,7 +109,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             else
             {
-                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, host);
+                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, requestPath);
                 return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
 
             }
