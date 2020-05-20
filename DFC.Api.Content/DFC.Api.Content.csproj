@@ -5,6 +5,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <ProjectGuid>{3eba975f-8dfb-4a1b-88c5-1a6588c1466c}</ProjectGuid>
+    <AssemblyName>-</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings-template.json" />
@@ -41,5 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>
