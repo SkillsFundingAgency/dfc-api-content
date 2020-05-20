@@ -28,7 +28,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
-        private const string contentGetAllCypher = "MATCH (s:{0}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), relationship:type(r), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), relationship:type(r), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, {{href: destinationUris.href, relationship:destinationUris.relationship }}]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {
@@ -104,7 +104,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (!queryParameters.Id.HasValue)
             {
                 //GetAll Query
-                return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType)), RequestType.GetAll);
+                return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType).ToLowerInvariant()), RequestType.GetAll);
             }
             else
             {
@@ -133,7 +133,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
-                throw ApiFunctionException.BadRequest($"Content Type Name {contentType} is not mapped in AppSettings");
+                return contentType;
             }
 
             return mappedValue;
