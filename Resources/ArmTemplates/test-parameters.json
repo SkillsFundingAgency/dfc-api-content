@@ -27,13 +27,13 @@
       "value": "test-api-product"
     },
     "Neo4jUrl": {
-      "value": "http://some-database-instance/"
+      "value": "__Neo4jUri__"
     },
     "Neo4jUser": {
-      "value": "someUsername"
+      "value": "__Neo4JUser__"
     },
     "Neo4jPassword": {
-      "value": "not-a-real-password"
+      "value": "__Neo4JPassword__"
     },
     "ApimResourceGroup": {
       "value": "dfc-test-template-rg"
