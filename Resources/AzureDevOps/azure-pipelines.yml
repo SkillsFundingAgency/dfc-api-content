@@ -106,3 +106,48 @@ stages:
         -
           - name: GetContent
             azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+
+- stage: DeployToSitContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to SIT_CONTENT
+  variables:
+  - template: VariableTemplates/SitEnvironmentVariables.yml
+  - group: dfc-shared-all
+  - group: dfc-api-content-sit
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-sit
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-sit
+  - group: dfc-app-shared-sit
+  - group: 'KeyVault - dfc-sit-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: 'dfc-sit-api-cont-rg'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
+      ApimProductId: 'content'
+      ApimLoggerName: 'content-logger'
+      APIProductInstanceName: 'content'
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
+      SharedResourceGroup: 'dfc-sit-shared-rg'
+      ApimServiceName: 'dfc-sit-shared-apim'
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: 'dfc-sit-api-content-fa'
+      EnvironmentName: SIT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'

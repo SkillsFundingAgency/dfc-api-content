@@ -24,7 +24,7 @@
     "sharedAppServicePlanResourceGroup": {
       "type": "string"
     },
-     "FunctionAppName": {
+    "FunctionAppName": {
       "type": "string"
     },
     "ApimProductInstanceName": {
@@ -45,6 +45,9 @@
     "ApimLoggerName": {
       "type": "string"
     },
+    "ContentTypeUriMap": {
+      "type": "string"
+    },
     "Neo4jUrl": {
       "type": "string"
     },
@@ -53,7 +56,7 @@
     },
     "Neo4jPassword": {
       "type": "securestring"
-    } 
+    }
   },
   "variables": {
     "appServicePlanName": "[if(greater(length(parameters('sharedAppServicePlanName')), 0), parameters('sharedAppServicePlanName'), concat(variables('resourcePrefix'), '-asp'))]",
@@ -64,81 +67,81 @@
   },
   "resources": [
     {
-        "name": "content-apim-logger",
-        "type": "Microsoft.Resources/deployments",
-        "resourceGroup": "[parameters('ApimResourceGroup')]",
-        "apiVersion": "2017-05-10",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-logger.json')]",
-                "contentVersion": "1.0.0.0"
-            },
-            "parameters": {
-                "apimServiceName": {
-                    "value": "[parameters('ApimServiceName')]"
-                },
-                "productDisplayName": {
-                    "value": "[parameters('ApimProductInstanceName')]"
-                }
-            }
+      "name": "content-apim-logger",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('ApimResourceGroup')]",
+      "apiVersion": "2017-05-10",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-logger.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimServiceName": {
+            "value": "[parameters('ApimServiceName')]"
+          },
+          "productDisplayName": {
+            "value": "[parameters('ApimProductInstanceName')]"
+          }
         }
+      }
     },
     {
-        "name": "content-apim-product",
-        "type": "Microsoft.Resources/deployments",
-        "resourceGroup": "[parameters('ApimResourceGroup')]",
-        "apiVersion": "2017-05-10",
-        "dependsOn": [
-          "content-apim-logger"
-        ],
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-product.json')]",
-                "contentVersion": "1.0.0.0"
-            },
-            "parameters": {
-                "allowAnonymousAccess": {
-                    "value": false
-                },
-                "apimServiceName": {
-                    "value": "[parameters('ApimServiceName')]"
-                },
-                "productDisplayName": {
-                    "value": "[parameters('ApimProductInstanceName')]"
-                }
-            }
+      "name": "content-apim-product",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('ApimResourceGroup')]",
+      "apiVersion": "2017-05-10",
+      "dependsOn": [
+        "content-apim-logger"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-product.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "allowAnonymousAccess": {
+            "value": false
+          },
+          "apimServiceName": {
+            "value": "[parameters('ApimServiceName')]"
+          },
+          "productDisplayName": {
+            "value": "[parameters('ApimProductInstanceName')]"
+          }
         }
+      }
     },
     {
       "name": "[variables('VersionSetName')]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[parameters('ApimResourceGroup')]",
-            "apiVersion": "2017-05-10",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-versionset.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "apimServiceName":  {
-                        "value": "[parameters('ApimServiceName')]"
-                    },
-                    "apiName": {
-                        "value": "[parameters('ApiName')]"
-                    },
-                    "versioningMethod": {
-                        "value": "Header"
-                    },
-                    "versionProperty": {
-                        "value": "version"
-                    }
-                }
-            }
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('ApimResourceGroup')]",
+      "apiVersion": "2017-05-10",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-versionset.json')]",
+          "contentVersion": "1.0.0.0"
         },
-      {
+        "parameters": {
+          "apimServiceName": {
+            "value": "[parameters('ApimServiceName')]"
+          },
+          "apiName": {
+            "value": "[parameters('ApiName')]"
+          },
+          "versioningMethod": {
+            "value": "Header"
+          },
+          "versionProperty": {
+            "value": "version"
+          }
+        }
+      }
+    },
+    {
       "apiVersion": "2017-05-10",
       "name": "[variables('appServicePlanName')]",
       "type": "Microsoft.Resources/deployments",
@@ -235,6 +238,26 @@
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                 "value": "[reference(parameters('FunctionAppInsightName')).outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "ContentType__ContentTypeUriMap__occupation",
+                "value": "[concat(parameters('ContentTypeUriMap'), '/occupation/{0}')]"
+              },
+              {
+                "name": "ContentType__ContentTypeUriMap__skill",
+                "value": "[concat(parameters('ContentTypeUriMap'), '/skill/{0}')]"
+              },
+              {
+                "name": "ContentType__ContentTypeNameMap__occupation",
+                "value": "esco__occupation"
+              },
+              {
+                "name": "ContentType__ContentTypeNameMap__skill",
+                "value": "esco__skill"
+              },
+              {
+                "name": "ContentType__scheme",
+                "value": "https"
               },
               {
                 "name": "Neo4jUrl",

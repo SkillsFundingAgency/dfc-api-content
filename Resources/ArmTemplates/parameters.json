@@ -11,6 +11,9 @@
     "Neo4jPassword": {
       "value": "__neo4jPassword__"
     },
+    "ContentTypeUriMap": {
+      "value": "__ContentTypeUriMap__"
+    },
     "appSharedResourceGroup": {
       "value": "__appSharedResourceGroup__"
     },
