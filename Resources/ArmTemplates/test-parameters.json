@@ -38,12 +38,6 @@
     "ContentTypeUriMap": {
       "value": "http://some-data-uri/"
     },
-    "ContentTypeUriMapoccupation": {
-      "value": "http://some-data-occupation-uri/"
-    },
-    "ContentTypeUriMapskill": {
-      "value": "http://some-data-map-uri/"
-    },
     "ApimResourceGroup": {
       "value": "dfc-test-template-rg"
     },
