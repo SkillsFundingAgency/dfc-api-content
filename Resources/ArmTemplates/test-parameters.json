@@ -36,7 +36,7 @@
       "value": "not-a-real-password"
     },
     "ContentTypeUriMap": {
-      "value": "http://some-data-uri/"
+      "value": "http://some-newdata-uri/"
     },
     "ApimResourceGroup": {
       "value": "dfc-test-template-rg"
