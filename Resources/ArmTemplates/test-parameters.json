@@ -35,6 +35,9 @@
     "Neo4jPassword": {
       "value": "not-a-real-password"
     },
+    "ContentTypeUriMap": {
+      "value": "http://some-newdata-uri/"
+    },
     "ApimResourceGroup": {
       "value": "dfc-test-template-rg"
     },
