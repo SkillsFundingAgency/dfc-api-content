@@ -11,6 +11,9 @@
     "Neo4jPassword": {
       "value": "__neo4jPassword__"
     },
+    "appSharedStorageAccountName": {
+    "value": "__appSharedStorageAccountName__"
+    },
     "ContentTypeUriMap": {
       "value": "__ContentTypeUriMap__"
     },
