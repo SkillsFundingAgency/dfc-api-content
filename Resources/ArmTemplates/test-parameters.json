@@ -36,7 +36,7 @@
       "value": "not-a-real-password"
     },
     "appSharedStorageAccountName": {
-    "value": "dfcdevappsharedstr"
+      "value": "dfcdevappsharedstr"
     },
     "ContentTypeUriMap": {
       "value": "http://some-newdata-uri/"
