@@ -5,7 +5,7 @@
     "Neo4jUrl": {
       "value": "__Neo4jUrl__"
     },
-    "Neo4jUsername": {
+    "Neo4jUser": {
       "value": "__Neo4jUser__"
     },
     "Neo4jPassword": {

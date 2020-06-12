@@ -29,7 +29,7 @@
     "Neo4jUrl": {
       "value": "http://some-database-instance/"
     },
-    "Neo4jUsername": {
+    "Neo4jUser": {
       "value": "someUsername"
     },
     "Neo4jPassword": {
