@@ -29,14 +29,14 @@
     "Neo4jUrl": {
       "value": "http://some-database-instance/"
     },
-    "Neo4jUser": {
+    "Neo4jUsername": {
       "value": "someUsername"
     },
     "Neo4jPassword": {
       "value": "not-a-real-password"
     },
     "appSharedStorageAccountName": {
-    "value": "dfcdevappsharedstr"
+      "value": "dfcdevappsharedstr"
     },
     "ContentTypeUriMap": {
       "value": "http://some-newdata-uri/"
