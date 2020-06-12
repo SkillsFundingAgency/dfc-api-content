@@ -9,7 +9,7 @@ tags:
 - name: Get Content
   description: Returns content by Content Type and Id
 paths:
-  /Execute/{contentType}:
+  /api/Execute/{contentType}:
     get:
       tags:
       - Content
@@ -41,7 +41,7 @@ paths:
         500:
           description: Missing App Settings or Config Files.
           content: {}
-  /Execute/{contentType}/{id}:
+  /api/Execute/{contentType}/{id}:
     get:
       tags:
       - Content
