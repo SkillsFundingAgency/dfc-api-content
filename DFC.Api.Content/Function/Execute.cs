@@ -59,7 +59,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
 
-                var queryToExecute = this.BuildQuery(queryParameters, hasApimHeader ? $"{headerValue}GetContent/Api/Execute/{contentType.ToLower()}/{id}" : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
+                var queryToExecute = this.BuildQuery(queryParameters, hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}" : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
