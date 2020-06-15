@@ -44,6 +44,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
+                foreach(var header in req.Headers)
+                {
+                    log.LogInformation($"Header, key: {header.Key.ToString()}, value: {header.Value.ToString()}");
+                }
+
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
 
@@ -57,8 +62,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 //Could move in to helper class
                 // Scheme from configuration to allow local debug without HTTPS and certificates
                 var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
-
-                log.LogInformation($"Executing Query: {queryToExecute.Query}");
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
