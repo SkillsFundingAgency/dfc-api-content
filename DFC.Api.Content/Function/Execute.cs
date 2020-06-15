@@ -58,6 +58,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 // Scheme from configuration to allow local debug without HTTPS and certificates
                 var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
+                log.LogInformation($"Executing Query: {queryToExecute.Query}");
+
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
                 if (recordsResult == null || !recordsResult.Any())
