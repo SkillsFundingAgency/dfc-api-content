@@ -56,9 +56,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 //Could move in to helper class
                 // Scheme from configuration to allow local debug without HTTPS and certificates
-                var queryToExecute = this.BuildQuery(queryParameters, $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}");
 
-                log.LogInformation($"Executing Query: {queryToExecute.Query}");
+                bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
+
+                var queryToExecute = this.BuildQuery(queryParameters, hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower());
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
@@ -119,7 +120,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string GenerateUri(string contentType, Guid id, string requestPath)
         {
-
             _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
