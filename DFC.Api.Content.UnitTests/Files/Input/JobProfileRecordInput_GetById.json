@@ -97,7 +97,8 @@
     },
     {
       "workinglocation": {
-        "href": "http://nationalcareers.service.gov.uk/workinglocation/8da092cc-1d7d-42f8-abc6-6292081dccb5"
+        "href": "http://nationalcareers.service.gov.uk/workinglocation/8da092cc-1d7d-42f8-abc6-6292081dccb5",
+        "WorkingLocationRelationship_Property": "Test"
       }
     },
     {
