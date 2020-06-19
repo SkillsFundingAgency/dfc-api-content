@@ -30,7 +30,7 @@
     { "skos__Concept": { "href": "http://data.europa.eu/esco/occupation/58ff0ec2-08ba-4b21-b765-babb6d76ca36" } },
     { "DayToDayTask": { "href": "http://nationalcareers.service.gov.uk/daytodaytask/f4f70db5-c3ed-4d43-af11-561220b7932a" } },
     { "WorkingUniform": { "href": "http://nationalcareers.service.gov.uk/workinguniform/f648faf2-2f40-464e-8b16-e90aa3cc5220" } },
-    { "WorkingLocation": { "href": "http://nationalcareers.service.gov.uk/workinglocation/a9c9608a-0544-4eb2-9e0e-3e68cb508159" } },
+    { "WorkingLocation": { "href": "http://nationalcareers.service.gov.uk/workinglocation/a9c9608a-0544-4eb2-9e0e-3e68cb508159", "WorkingLocationRelationship_Property": "test"  } },
     { "Restriction": { "href": "http://nationalcareers.service.gov.uk/restriction/3a521a13-d69f-4e0c-b4de-bfc3e2c4378d" } },
     { "WorkingEnvironment": { "href": "http://nationalcareers.service.gov.uk/workingenvironment/5d8f5b34-2ee7-48cf-8a6c-8206ece57661" } },
     { "DayToDayTask": { "href": "http://nationalcareers.service.gov.uk/daytodaytask/3258ff01-66bb-4762-9c62-fe3561ee5335" } },
