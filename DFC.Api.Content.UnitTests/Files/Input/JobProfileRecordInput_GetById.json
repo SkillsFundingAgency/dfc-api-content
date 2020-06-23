@@ -52,7 +52,8 @@
     },
     {
       "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/141f9adc-491a-4d52-a7ab-f210a1cca8ca"
+        "href": "http://nationalcareers.service.gov.uk/daytodaytask/141f9adc-491a-4d52-a7ab-f210a1cca8ca",
+        "sometestproperty": "test"
       }
     },
     {

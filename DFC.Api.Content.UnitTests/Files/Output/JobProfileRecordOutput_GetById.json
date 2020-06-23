@@ -1,123 +1,112 @@
 ﻿{
-  "HtbCareerTips": "<p>You can do a <a href=\"https://getintoteaching.education.gov.uk/explore-my-options/teacher-training-routes/subject-knowledge-enhancement-ske-courses\">subject knowledge enhancement</a>\ncourse to improve your understanding of the subject you want to teach.</p><p>You can also attend <a href=\"https://getintoteaching.education.gov.uk/teaching-events\">teacher training events</a> before you apply to get advice about the profession, the different training routes and funding. You can attend events in person and online.</p>",
-  "SalaryStarter": "24373",
-  "HtbBodies": "",
-  "skos__prefLabel": "Primary school teacher",
-  "CareerPathAndProgression": "<p>You could teach pupils with special educational needs or move into pastoral care.</p><p>With experience, you could become a <a href=\"https://www.gov.uk/guidance/specialist-leaders-of-education-a-guide-for-potential-applicants\">specialist leader of education</a>, supporting teachers in other schools.</p><p>You could also be a curriculum leader, deputy head and headteacher, or move into private tuition.</p>",
-  "WorkingPatternDetails": "attending events or appointments",
-  "ModifiedDate": "2020-04-20T07:01:30.144122700Z",
-  "HtbFurtherInformation": "<p>You can discover more about how to become a teacher from <a href=\"https://getintoteaching.education.gov.uk/\">Get Into Teaching</a>.</p><p>You can also search for jobs through the <a href=\"https://teaching-vacancies.service.gov.uk/\">Teaching Vacancies</a> service.</p>",
-  "SalaryExperienced": "40490",
-  "WorkingPattern": "evenings",
-  "Description": "<p>Primary school teachers are responsible for the educational, social and emotional development of children from age 5 to 11.</p>",
-  "uri": "http://nationalcareers.service.gov.uk/jobprofile/09889391-60a7-4956-99c0-324051bb96cf",
-  "WorkingHoursDetails": "term time",
-  "jobprofileWebsiteUrl": "primary-school-teacher",
-  "MaximumHours": 40.0,
-  "MinimumHours": 37.0,
-  "CreatedDate": "2020-04-20T06:07:57.115806100Z",
-  "WitDigitalSkillsLevel": "<p>to be able to use a computer and the main software packages competently</p>",
-  "_links": [
-    {
-      "workroute": {
-        "href": "http://nationalcareers.service.gov.uk/workroute/350dbe51-1ced-4c41-9a53-64305f9f28cb"
+  "SalaryExperienced": "variable",
+  "SalaryStarter": "variable",
+  "MinimumHours": 45.0,
+  "HtbCareerTips": "<p>You'll need to get as much practical experience of acting as you can, and create a showreel to demonstrate your acting skills to agents and casting directors.</p>",
+  "skos__prefLabel": "Actor",
+  "Description": "<p>Actors use speech, movement and expression to bring characters to life in theatre, film, television and radio.</p>",
+  "HtbBodies": "<p>You can join <a href=\"https://www.equity.org.uk/getting-involved/\">Equity</a> for professional recognition, training opportunities and to make industry contacts.</p>",
+  "JobProfileWebsiteUrl": "actor",
+  "WitDigitalSkillsLevel": "<p>to be able to carry out basic tasks on a computer or hand-held device</p>",
+  "WorkingPattern": "evenings / weekends / bank holidays",
+  "ModifiedDate": "2020-06-17T19:05:17.217766700Z",
+  "uri": "https://dev.api.nationalcareersservice.org.uk/content/getcontent/execute/jobprofile/fd0d5047-ff43-4fa4-88c4-f343da6a9137",
+  "WorkingHoursDetails": "irregular",
+  "TitleOptions": "as_defined",
+  "MaximumHours": 47.0,
+  "CreatedDate": "2020-06-17T17:34:27.093090100Z",
+  "CareerPathAndProgression": "<p>If you can show an agent you have potential they may put you forward for auditions and castings. Agents usually take a fee of about 10% to 25% from your earnings.</p><p>You could take further training and move into directing, scriptwriting, drama therapy or teaching.</p>",
+  "WorkingPatternDetails": "away from home",
+  "HtbFurtherInformation": "<p>You can find out more about becoming an actor through <a href=\"https://ccskills.org.uk/careers/advice/article/actor\">Creative Choices</a>. You can also get extra support from organisations like <a href=\"https://www.shapearts.org.uk/\">Shape Arts</a>, if you have a disability or special learning need.</p>",
+  "_links": {
+    "self": "http://localhost:7071/api/execute/jobprofile",
+    "curies": [
+      {
+        "name": "cont",
+        "href": "http://localhost:7071/api/execute/jobprofile"
       }
+    ],
+    "cont:hasDayToDayTask": [
+      {
+        "href": "/daytodaytask/cdc8c166-3e89-483d-b74b-f2417ec5daf3",
+        "title": "contacting actors’ agents and finding the next job",
+        "contentType": "DayToDayTask"
+      },
+      {
+        "href": "/daytodaytask/33ea6dcf-7470-4475-af29-fd7bd2db03ae",
+        "title": "learning your lines",
+        "contentType": "DayToDayTask"
+      },
+      {
+        "href": "/daytodaytask/cef2d04e-60fe-4ca1-ad8d-98aa61856faf",
+        "title": "preparing for and going to auditions",
+        "contentType": "DayToDayTask"
+      },
+      {
+        "href": "/daytodaytask/1df5abc6-809e-4055-8df5-0c5052227ecf",
+        "title": "rehearsing",
+        "contentType": "DayToDayTask"
+      },
+      {
+        "href": "/daytodaytask/4805b058-519c-4dc9-84ec-c83d33ddaf52",
+        "title": "attending fittings for costumes",
+        "contentType": "DayToDayTask"
+      },
+      {
+        "href": "/daytodaytask/1d62c3d0-c022-44e9-a2fa-861d4ed41cd7",
+        "title": "researching your role",
+        "contentType": "DayToDayTask"
+      }
+    ],
+    "cont:hasHtbCollegeRoute": {
+      "href": "/collegeroute/726754da-3216-4779-afc2-3b8c678dd18f",
+      "title": "Actor",
+      "contentType": "CollegeRoute"
     },
-    {
-      "workingenvironment": {
-        "href": "http://nationalcareers.service.gov.uk/workingenvironment/605a7a5f-b240-4649-aad8-cc115ed75c84"
-      }
+    "cont:hasWorkingLocation": {
+      "href": "/workinglocation/039c68d8-8888-4ef4-b459-3b9bf002ead4",
+      "title": "at a recording studio, in the community, in a theatre or on a film set",
+      "contentType": "WorkingLocation"
     },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/2907a286-b361-4103-91c9-4ca19452907c"
-      }
+    "cont:hasHtbVolunteeringRoute": {
+      "href": "/volunteeringroute/2181e72d-4bd8-44c2-b0b1-908712be310f",
+      "title": "Actor",
+      "contentType": "VolunteeringRoute"
     },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/6ae2fc17-8377-4767-8eb3-67879cfd9732"
-      }
+    "cont:hasHtbOtherRoute": {
+      "href": "/otherroute/763a04af-b91b-42fa-9da4-a1696c6cf3d7",
+      "title": "Actor",
+      "contentType": "OtherRoute"
     },
-    {
-      "restriction": {
-        "href": "http://nationalcareers.service.gov.uk/restriction/58df6181-9fe6-4b11-9cbb-88293235a722"
-      }
+    "cont:relatedOccupation": {
+      "href": "/occupation/26171f39-e85a-448f-bd28-a73a5a99927f",
+      "title": "actor/actress",
+      "contentType": "occupation"
     },
-    {
-      "universityroute": {
-        "href": "http://nationalcareers.service.gov.uk/universityroute/67241a20-b446-49b2-ad5f-5d4310b22e1e"
-      }
+    "cont:hasHtbDirectRoute": {
+      "href": "/directroute/bf99a6bd-8732-4c5e-9eb9-150d2c0f0dc0",
+      "title": "Actor",
+      "contentType": "DirectRoute"
     },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/141f9adc-491a-4d52-a7ab-f210a1cca8ca"
-      }
+    "cont:hasONetOccupationalCode": {
+      "href": "/onetoccupationalcode/d0b1d4cf-21f6-46ae-8715-e0ed75dbb707",
+      "title": "27-2011.00",
+      "contentType": "ONetOccupationalCode"
     },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/48b64639-faa7-471c-8081-8828067bf29c"
-      }
+    "cont:hasSocCode": {
+      "href": "/soccode/ecaf3bcc-d508-4217-b0b3-eb0f38594d9b",
+      "title": "3413",
+      "contentType": "SOCCode"
     },
-    {
-      "apprenticeshiproute": {
-        "href": "http://nationalcareers.service.gov.uk/apprenticeshiproute/f92a06c7-9fbd-4c10-8094-bc6cf11f0ed4"
-      }
+    "cont:hasHtbUniversityRoute": {
+      "href": "/universityroute/d7995e5d-af0c-40ef-aaa2-f03797889002",
+      "title": "Actor",
+      "contentType": "UniversityRoute"
     },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/ab67df13-0a0c-4271-a50a-9e0f173d5471"
-      }
-    },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/f325057c-f20d-499a-a851-f46516a33ca2"
-      }
-    },
-    {
-      "soccode": {
-        "href": "http://nationalcareers.service.gov.uk/soccode/fcf24064-44f8-4f95-a2f0-c210611bc4a8"
-      }
-    },
-    {
-      "skos__Concept": {
-        "href": "http://data.europa.eu/esco/occupation/03d79393-7b30-4159-945b-01963eddd302"
-      }
-    },
-    {
-      "apprenticeshipstandard": {
-        "href": "http://nationalcareers.service.gov.uk/apprenticeshipstandard/9afd4b76-e41b-4691-af52-d957c789e5cd"
-      }
-    },
-    {
-      "VolunteeringRoute": {
-        "href": "http://nationalcareers.service.gov.uk/volunteeringroute/3060b5b2-a7c9-405b-b1bf-ae7c033d68af"
-      }
-    },
-    {
-      "workinglocation": {
-        "href": "http://nationalcareers.service.gov.uk/workinglocation/8da092cc-1d7d-42f8-abc6-6292081dccb5",
-        "WorkingLocationRelationship_Property": "Test"
-      }
-    },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/82377307-ec93-49a0-b63c-a2d8f9246dba"
-      }
-    },
-    {
-      "registration": {
-        "href": "http://nationalcareers.service.gov.uk/registration/1bed66d0-25f7-499f-8685-b3ef396d3650"
-      }
-    },
-    {
-      "restriction": {
-        "href": "http://nationalcareers.service.gov.uk/restriction/cc1c2650-0cd3-417e-bc7e-3dec12813300"
-      }
-    },
-    {
-      "daytodaytask": {
-        "href": "http://nationalcareers.service.gov.uk/daytodaytask/89feb5c2-bee1-4bfb-8245-f1929b5e9793"
-      }
+    "cont:hasWorkingEnvironment": {
+      "href": "/workingenvironment/039c1d35-e4da-4e67-8b09-d4c2803e4cff",
+      "title": "physically and emotionally demanding and you may spend nights away from home",
+      "contentType": "WorkingEnvironment"
     }
-  ]
+  }
 }
