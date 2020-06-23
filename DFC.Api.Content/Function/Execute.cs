@@ -26,9 +26,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IOptionsMonitor<ContentTypeSettings> _contentTypeSettings;
         private readonly IGraphDatabase _graphDatabase;
         private readonly IJsonFormatHelper _jsonFormatHelper;
-        private const string contentByIdCypher ="MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, apoc.map.merge({{href: destinationUris.href, relationship:destinationUris.relationship }}, destinationUris.RelProperties)]) as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
-        private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), relationship:type(r), rel:labels(d), RelProperties:properties(r)}} as destinationUris with s, apoc.map.fromValues([destinationUris.dynamicKey, apoc.map.merge({{href: destinationUris.href, relationship:destinationUris.relationship }}, destinationUris.RelProperties)]) as map with s, collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
         {
@@ -58,8 +58,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 // Scheme from configuration to allow local debug without HTTPS and certificates
 
                 bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
+                var apiHost = hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
 
-                var queryToExecute = this.BuildQuery(queryParameters, hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower());
+                var queryToExecute = this.BuildQuery(queryParameters, apiHost);
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
@@ -69,7 +70,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogInformation("request has successfully been completed with results");
 
                 SetContentTypeHeader(req);
-                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType));
+                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost));
             }
             catch (ApiFunctionException e)
             {
