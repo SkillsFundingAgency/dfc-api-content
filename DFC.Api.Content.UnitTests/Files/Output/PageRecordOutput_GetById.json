@@ -1,0 +1,41 @@
+﻿{
+  "sitemap_ChangeFrequency": "Daily",
+  "skos__prefLabel": "Test",
+  "sitemap_OverrideSitemapConfig": false,
+  "sitemap_Priority": 5,
+  "taxonomy_terms": [
+    "contact-us"
+  ],
+  "CreatedDate": "2020-06-23T16:20:32.405142700Z",
+  "alias_alias": "test",
+  "sitemap_Exclude": false,
+  "ModifiedDate": "2020-06-23T16:20:32.405142700Z",
+  "uri": "https://dev.api.nationalcareersservice.org.uk/content/getcontent/api/execute/page/5da877bc-0659-44b7-8179-cb342be87838",
+  "_links": {
+    "self": "https://dev.api.nationalcareersservice.org.uk/content/getcontent/api/execute/page/5da877bc-0659-44b7-8179-cb342be87838",
+    "curies": [
+      {
+        "name": "cont",
+        "href": "://"
+      }
+    ],
+    "cont:hasPageLocationsTaxonomy": {
+      "href": "/taxonomy/86f13260-5824-430f-8a3c-1d5db9294baf",
+      "title": "Page Locations",
+      "contentType": "Taxonomy"
+    },
+    "cont:hasPageLocation": {
+      "href": "/pagelocation/8802b77c-3611-4c58-9667-38e9517bd8a7",
+      "title": "contact-us",
+      "contentType": "PageLocation"
+    },
+    "cont:hasHTMLShared": {
+      "href": "/htmlshared/87319ba0-e802-4b97-83c7-b0deec65d36c",
+      "title": null,
+      "contentType": "HTMLShared",
+      "Alignment": "Justify",
+      "Ordinal": 0,
+      "Size": 100
+    }
+  }
+}
