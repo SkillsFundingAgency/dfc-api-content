@@ -25,12 +25,12 @@ namespace DFC.Api.Content.Helpers
             switch (type)
             {
                 case RequestType.GetAll:
-                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost));
+                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost, false));
                 case RequestType.GetById:
                     var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
                     if (recordValues != null)
                     {
-                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost);
+                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true);
                     }
 
                     throw ApiFunctionException.InternalServerError($"Request Type: {type} records contain unformattable response");
@@ -40,13 +40,16 @@ namespace DFC.Api.Content.Helpers
             }
         }
 
-        private object CreateSingleRootObject(object input, string apiHost)
+        private object CreateSingleRootObject(object input, string apiHost, bool includeLinks)
         {
             var objToReturn = new JObject();
 
             JObject neoJsonObj = JObject.Parse(input.ToString() ?? string.Empty);
 
-            ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
+            if (includeLinks)
+            {
+                ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
+            }
 
             foreach (var child in neoJsonObj["data"]!.Children())
             {
