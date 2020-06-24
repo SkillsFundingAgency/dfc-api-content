@@ -44,16 +44,16 @@ namespace DFC.Api.Content.Helpers
         {
             var objToReturn = new JObject();
 
+            foreach (var child in neoJsonObj["data"]!.Children())
+            {
+                objToReturn.Add(child);
+            }
+
             JObject neoJsonObj = JObject.Parse(input.ToString() ?? string.Empty);
 
             if (includeLinks)
             {
                 ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
-            }
-
-            foreach (var child in neoJsonObj["data"]!.Children())
-            {
-                objToReturn.Add(child);
             }
 
             return objToReturn;
