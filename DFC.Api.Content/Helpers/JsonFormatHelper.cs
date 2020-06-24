@@ -46,66 +46,81 @@ namespace DFC.Api.Content.Helpers
 
             JObject neoJsonObj = JObject.Parse(input.ToString() ?? string.Empty);
 
-            JArray existingLinksAsJsonObj = (JArray)neoJsonObj["_links"];
-
-            var linksJObject = new JObject();
-
-            linksJObject.Add("self", apiHost);
-
-            var curiesJArray = new JArray();
-
-            var curiesJObject = new JObject();
-            curiesJObject.Add("name", "cont");
-            curiesJObject.Add("href", apiHost);
-
-            curiesJArray.Add(curiesJObject);
-
-            linksJObject.Add(new JProperty("curies", curiesJArray));
-
-            Dictionary<string, List<JObject>> relationshipGroupings = new Dictionary<string, List<JObject>>();
-
-            foreach (var child in existingLinksAsJsonObj)
-            {
-                var childKey = child["relationship"].ToString();
-                var uri = new Uri(child["href"].ToString());
-
-                var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{uri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
-
-                foreach (var prop in child["props"])
-                {
-                    jObjectToAdd.Add(prop);
-                }
-
-                if (relationshipGroupings.ContainsKey(childKey))
-                {
-                    relationshipGroupings[childKey].Add(jObjectToAdd);
-                }
-                else
-                {
-                    relationshipGroupings.Add(childKey, new List<JObject>() { jObjectToAdd });
-                }
-            }
-
-            foreach (var group in relationshipGroupings)
-            {
-                if (group.Value.Count > 1)
-                {
-                    linksJObject.Add(new JProperty($"cont:{group.Key}", new JArray { group.Value }));
-                }
-                else
-                {
-                    linksJObject.Add(new JProperty($"cont:{group.Key}", group.Value.FirstOrDefault()));
-                }
-            }
+            ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
 
             foreach (var child in neoJsonObj["data"]!.Children())
             {
                 objToReturn.Add(child);
             }
 
-            objToReturn.Add(new JProperty("_links", linksJObject));
-
             return objToReturn;
+        }
+
+        /// <summary>
+        /// Converts the Links collection into a HAL format
+        /// </summary>
+        /// <param name="apiHost"></param>
+        /// <param name="objToReturn"></param>
+        /// <param name="neoJsonObj"></param>
+        private static void ConvertLinksToHAL(string apiHost, JObject objToReturn, JObject neoJsonObj)
+        {
+            JArray existingLinksAsJsonObj = (JArray)neoJsonObj["_links"];
+
+            var linksJObject = new JObject();
+
+            if (!existingLinksAsJsonObj.All(x => string.IsNullOrWhiteSpace(x["href"].ToString())))
+            {
+                linksJObject.Add("self", apiHost);
+
+                var curiesJArray = new JArray();
+
+                var curiesJObject = new JObject();
+                curiesJObject.Add("name", "cont");
+                curiesJObject.Add("href", apiHost);
+
+                curiesJArray.Add(curiesJObject);
+
+                linksJObject.Add(new JProperty("curies", curiesJArray));
+
+                Dictionary<string, List<JObject>> relationshipGroupings = new Dictionary<string, List<JObject>>();
+
+                foreach (var child in existingLinksAsJsonObj)
+                {
+                    var childKey = child["relationship"].ToString();
+
+                    var uri = new Uri(child["href"].ToString());
+
+                    var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{uri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
+
+                    foreach (var prop in child["props"])
+                    {
+                        jObjectToAdd.Add(prop);
+                    }
+
+                    if (relationshipGroupings.ContainsKey(childKey))
+                    {
+                        relationshipGroupings[childKey].Add(jObjectToAdd);
+                    }
+                    else
+                    {
+                        relationshipGroupings.Add(childKey, new List<JObject>() { jObjectToAdd });
+                    }
+                }
+
+                foreach (var group in relationshipGroupings)
+                {
+                    if (group.Value.Count > 1)
+                    {
+                        linksJObject.Add(new JProperty($"cont:{group.Key}", new JArray { group.Value }));
+                    }
+                    else
+                    {
+                        linksJObject.Add(new JProperty($"cont:{group.Key}", group.Value.FirstOrDefault()));
+                    }
+                }
+            }
+
+            objToReturn.Add(new JProperty("_links", linksJObject));
         }
 
         private object ReplaceNamespaces(object input)

@@ -1,113 +1,42 @@
 ﻿[
   {
-    "SalaryExperienced": "variable",
-    "SalaryStarter": "variable",
-    "MinimumHours": 45.0,
-    "HtbCareerTips": "<p>You'll need to get as much practical experience of acting as you can, and create a showreel to demonstrate your acting skills to agents and casting directors.</p>",
-    "skos__prefLabel": "Actor",
-    "Description": "<p>Actors use speech, movement and expression to bring characters to life in theatre, film, television and radio.</p>",
-    "HtbBodies": "<p>You can join <a href=\"https://www.equity.org.uk/getting-involved/\">Equity</a> for professional recognition, training opportunities and to make industry contacts.</p>",
-    "JobProfileWebsiteUrl": "actor",
-    "WitDigitalSkillsLevel": "<p>to be able to carry out basic tasks on a computer or hand-held device</p>",
-    "WorkingPattern": "evenings / weekends / bank holidays",
-    "ModifiedDate": "2020-06-17T19:05:17.217766700Z",
-    "uri": "https://dev.api.nationalcareersservice.org.uk/content/getcontent/execute/jobprofile/fd0d5047-ff43-4fa4-88c4-f343da6a9137",
-    "WorkingHoursDetails": "irregular",
-    "TitleOptions": "as_defined",
-    "MaximumHours": 47.0,
-    "CreatedDate": "2020-06-17T17:34:27.093090100Z",
-    "CareerPathAndProgression": "<p>If you can show an agent you have potential they may put you forward for auditions and castings. Agents usually take a fee of about 10% to 25% from your earnings.</p><p>You could take further training and move into directing, scriptwriting, drama therapy or teaching.</p>",
-    "WorkingPatternDetails": "away from home",
-    "HtbFurtherInformation": "<p>You can find out more about becoming an actor through <a href=\"https://ccskills.org.uk/careers/advice/article/actor\">Creative Choices</a>. You can also get extra support from organisations like <a href=\"https://www.shapearts.org.uk/\">Shape Arts</a>, if you have a disability or special learning need.</p>",
+    "sitemap_ChangeFrequency": "Daily",
+    "skos__prefLabel": "Test",
+    "sitemap_OverrideSitemapConfig": false,
+    "sitemap_Priority": 5,
+    "taxonomy_terms": [
+      "contact-us"
+    ],
+    "CreatedDate": "2020-06-23T16:20:32.405142700Z",
+    "alias_alias": "test",
+    "sitemap_Exclude": false,
+    "ModifiedDate": "2020-06-23T16:20:32.405142700Z",
+    "uri": "https://dev.api.nationalcareersservice.org.uk/content/getcontent/api/execute/page/5da877bc-0659-44b7-8179-cb342be87838",
     "_links": {
-      "self": "http://localhost:7071/api/execute/jobprofile",
+      "self": "://",
       "curies": [
         {
           "name": "cont",
-          "href": "http://localhost:7071/api/execute/jobprofile"
+          "href": "://"
         }
       ],
-      "cont:hasDayToDayTask": [
-        {
-          "href": "/daytodaytask/cdc8c166-3e89-483d-b74b-f2417ec5daf3",
-          "title": "contacting actors’ agents and finding the next job",
-          "contentType": "DayToDayTask"
-        },
-        {
-          "href": "/daytodaytask/33ea6dcf-7470-4475-af29-fd7bd2db03ae",
-          "title": "learning your lines",
-          "contentType": "DayToDayTask"
-        },
-        {
-          "href": "/daytodaytask/cef2d04e-60fe-4ca1-ad8d-98aa61856faf",
-          "title": "preparing for and going to auditions",
-          "contentType": "DayToDayTask"
-        },
-        {
-          "href": "/daytodaytask/1df5abc6-809e-4055-8df5-0c5052227ecf",
-          "title": "rehearsing",
-          "contentType": "DayToDayTask"
-        },
-        {
-          "href": "/daytodaytask/4805b058-519c-4dc9-84ec-c83d33ddaf52",
-          "title": "attending fittings for costumes",
-          "contentType": "DayToDayTask"
-        },
-        {
-          "href": "/daytodaytask/1d62c3d0-c022-44e9-a2fa-861d4ed41cd7",
-          "title": "researching your role",
-          "contentType": "DayToDayTask"
-        }
-      ],
-      "cont:hasHtbCollegeRoute": {
-        "href": "/collegeroute/726754da-3216-4779-afc2-3b8c678dd18f",
-        "title": "Actor",
-        "contentType": "CollegeRoute"
+      "cont:hasPageLocationsTaxonomy": {
+        "href": "/taxonomy/86f13260-5824-430f-8a3c-1d5db9294baf",
+        "title": "Page Locations",
+        "contentType": "Taxonomy"
       },
-      "cont:hasWorkingLocation": {
-        "href": "/workinglocation/039c68d8-8888-4ef4-b459-3b9bf002ead4",
-        "title": "at a recording studio, in the community, in a theatre or on a film set",
-        "contentType": "WorkingLocation"
+      "cont:hasPageLocation": {
+        "href": "/pagelocation/8802b77c-3611-4c58-9667-38e9517bd8a7",
+        "title": "contact-us",
+        "contentType": "PageLocation"
       },
-      "cont:hasHtbVolunteeringRoute": {
-        "href": "/volunteeringroute/2181e72d-4bd8-44c2-b0b1-908712be310f",
-        "title": "Actor",
-        "contentType": "VolunteeringRoute"
-      },
-      "cont:hasHtbOtherRoute": {
-        "href": "/otherroute/763a04af-b91b-42fa-9da4-a1696c6cf3d7",
-        "title": "Actor",
-        "contentType": "OtherRoute"
-      },
-      "cont:relatedOccupation": {
-        "href": "/occupation/26171f39-e85a-448f-bd28-a73a5a99927f",
-        "title": "actor/actress",
-        "contentType": "occupation"
-      },
-      "cont:hasHtbDirectRoute": {
-        "href": "/directroute/bf99a6bd-8732-4c5e-9eb9-150d2c0f0dc0",
-        "title": "Actor",
-        "contentType": "DirectRoute"
-      },
-      "cont:hasONetOccupationalCode": {
-        "href": "/onetoccupationalcode/d0b1d4cf-21f6-46ae-8715-e0ed75dbb707",
-        "title": "27-2011.00",
-        "contentType": "ONetOccupationalCode"
-      },
-      "cont:hasSocCode": {
-        "href": "/soccode/ecaf3bcc-d508-4217-b0b3-eb0f38594d9b",
-        "title": "3413",
-        "contentType": "SOCCode"
-      },
-      "cont:hasHtbUniversityRoute": {
-        "href": "/universityroute/d7995e5d-af0c-40ef-aaa2-f03797889002",
-        "title": "Actor",
-        "contentType": "UniversityRoute"
-      },
-      "cont:hasWorkingEnvironment": {
-        "href": "/workingenvironment/039c1d35-e4da-4e67-8b09-d4c2803e4cff",
-        "title": "physically and emotionally demanding and you may spend nights away from home",
-        "contentType": "WorkingEnvironment"
+      "cont:hasHTMLShared": {
+        "href": "/htmlshared/87319ba0-e802-4b97-83c7-b0deec65d36c",
+        "title": null,
+        "contentType": "HTMLShared",
+        "Alignment": "Justify",
+        "Ordinal": 0,
+        "Size": 100
       }
     }
   }
