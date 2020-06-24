@@ -73,7 +73,7 @@ namespace DFC.Api.Content.Helpers
 
             if (!existingLinksAsJsonObj.All(x => string.IsNullOrWhiteSpace(x["href"].ToString())))
             {
-                linksJObject.Add("self", neoJsonObj["uri"]);
+                linksJObject.Add("self", neoJsonObj["data"]["uri"]);
 
                 var curiesJArray = new JArray();
 
