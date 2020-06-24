@@ -54,9 +54,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
-                //Could move in to helper class
-                // Scheme from configuration to allow local debug without HTTPS and certificates
-
                 bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
                 var apiHost = hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
 

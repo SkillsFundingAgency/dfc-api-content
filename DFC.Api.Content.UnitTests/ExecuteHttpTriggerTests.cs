@@ -75,10 +75,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_GetAllJobProfiles_ReturnsCorrectJsonResponse()
+        public async Task Execute_GetAllPages_ReturnsCorrectJsonResponse()
         {
-            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetAll.json");
-            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetAll.json");
+            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetAll.json");
+            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetAll.json");
 
             A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored, A<string>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
 
@@ -95,10 +95,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_GetJobProfile_ReturnsCorrectJsonResponse()
+        public async Task Execute_GetPage_ReturnsCorrectJsonResponse()
         {
-            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/JobProfileRecordInput_GetById.json");
-            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/JobProfileRecordOutput_GetById.json");
+            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetById.json");
+            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetById.json");
 
             var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
 
