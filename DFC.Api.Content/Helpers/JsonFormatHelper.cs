@@ -82,7 +82,7 @@ namespace DFC.Api.Content.Helpers
 
                 var curiesJObject = new JObject();
                 curiesJObject.Add("name", "cont");
-                curiesJObject.Add("href", apiHost);
+                curiesJObject.Add("href", apiHost.ToLower());
 
                 curiesJArray.Add(curiesJObject);
 
