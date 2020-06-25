@@ -18,6 +18,7 @@ using System.Linq;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Enums;
 using DFC.Api.Content.Models;
+using Newtonsoft.Json;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
@@ -94,6 +95,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
+                log.LogInformation($"Drivers JSON:{JsonConvert.SerializeObject(_graphDatabase.Drivers)}");
                 return await _graphDatabase.Run(new GenericCypherQuery(query));
             }
             catch (Exception ex)
