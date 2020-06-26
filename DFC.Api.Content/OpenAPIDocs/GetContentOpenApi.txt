@@ -35,6 +35,9 @@ paths:
         400:
           description: Missing data from body or parameters have not been supplied for query.
           content: {}
+        404:
+          description: Resource not found
+          content: {}
         422:
           description: Unprocessable Entity - Unable to read/deserialize data.
           content: {}
@@ -71,6 +74,9 @@ paths:
           content: {}
         400:
           description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        404:
+          description: Resource not found
           content: {}
         422:
           description: Unprocessable Entity - Unable to read/deserialize data.
