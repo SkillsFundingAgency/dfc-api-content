@@ -63,7 +63,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
                 if (recordsResult == null || !recordsResult.Any())
-                    return new NotFoundObjectResult(null);
+                    return new NotFoundObjectResult("Resource not found");
 
                 log.LogInformation("request has successfully been completed with results");
 
