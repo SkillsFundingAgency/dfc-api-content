@@ -18,6 +18,7 @@ using System.Linq;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Enums;
 using DFC.Api.Content.Models;
+using Newtonsoft.Json;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
@@ -98,6 +99,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (Exception ex)
             {
+                log.LogInformation($"Drivers:{JsonConvert.SerializeObject(_graphDatabase.Drivers)}");
                 throw ApiFunctionException.InternalServerError("Unable To run query", ex);
             }
         }
