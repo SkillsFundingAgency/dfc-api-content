@@ -106,6 +106,8 @@ stages:
         -
           - name: GetContent
             azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+          - name: GetDraftContent
+            azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
 
 - stage: DeployToSitContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
