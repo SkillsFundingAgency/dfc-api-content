@@ -67,12 +67,6 @@
     },
     "ApiName": {
       "value": "api-name"
-    },
-    "ApiVersionNumber": {
-      "value": "v1"
-    },
-    "ApimLoggerName": {
-      "value": "some-apim-logger"
     }
   }
 }

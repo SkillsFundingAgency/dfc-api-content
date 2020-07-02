@@ -65,12 +65,6 @@
     "ApiName": {
       "value": "__ApiName__"
     },
-    "ApiVersionNumber": {
-      "value": "__ApiVersion__"
-    },
-    "ApimLoggerName": {
-      "value": "__ApimLoggerName__"
-    },
     "ApimServiceName": {
       "value": "__ApimServiceName__"
     }
