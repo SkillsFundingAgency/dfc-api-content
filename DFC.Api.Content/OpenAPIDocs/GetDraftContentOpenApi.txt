@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: DFC Content API
+  title: DFC Draft Content API
   description: 'Retrieves content by Content Type / Id'
   version: 1.0.0
 servers:
