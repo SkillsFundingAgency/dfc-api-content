@@ -1,0 +1,90 @@
+openapi: 3.0.1
+info:
+  title: DFC Content API
+  description: 'Retrieves content by Content Type / Id'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Content
+  description: Returns content by Content Type and Id
+paths:
+  /api/Execute/{contentType}:
+    get:
+      tags:
+      - Content
+      summary: Get all of a particular content type.
+      parameters:
+        - in: path
+          name: contentType
+          schema:
+            type: string
+          required: true
+      description: Returns all of a particular content type.
+      operationId: GetAllByContentType
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/DynamicResponse'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        404:
+          description: Resource not found
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+  /api/Execute/{contentType}/{id}:
+    get:
+      tags:
+      - Content
+      summary: Get Content by Content Type and Id.
+      parameters:
+        - in: path
+          name: contentType
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      description: Returns a specific instance of a content type.
+      operationId: GetByContentTypeAndId
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/DynamicResponse'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        404:
+          description: Resource not found
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    DynamicResponse: 
+      type: "object"
