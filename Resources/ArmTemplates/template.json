@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "Environment": {
+      "type": "string"
+    },
     "appSharedResourceGroup": {
       "type": "string"
     },
@@ -21,6 +24,9 @@
     "FunctionAppInsightName": {
       "type": "string"
     },
+    "FunctionAppInsightNameDraft": {
+      "type": "string"
+    },
     "sharedAppServicePlanName": {
       "type": "string"
     },
@@ -28,6 +34,9 @@
       "type": "string"
     },
     "FunctionAppName": {
+      "type": "string"
+    },
+    "FunctionAppNameDraft": {
       "type": "string"
     },
     "ApimProductInstanceName": {
@@ -42,12 +51,6 @@
     "ApiName": {
       "type": "string"
     },
-    "ApiVersionNumber": {
-      "type": "string"
-    },
-    "ApimLoggerName": {
-      "type": "string"
-    },
     "ContentTypeUriMap": {
       "type": "string"
     },
@@ -59,13 +62,22 @@
     },
     "Neo4jPassword": {
       "type": "securestring"
+    },
+    "Neo4jUrlDraft": {
+      "type": "string"
+    },
+    "Neo4jUserDraft": {
+      "type": "string"
+    },
+    "Neo4jPasswordDraft": {
+      "type": "securestring"
     }
   },
   "variables": {
     "appServicePlanName": "[if(greater(length(parameters('sharedAppServicePlanName')), 0), parameters('sharedAppServicePlanName'), concat(variables('resourcePrefix'), '-asp'))]",
     "appServicePlanResourceGroup": "[if(greater(length(parameters('SharedAppServicePlanResourceGroup')), 0), parameters('SharedAppServicePlanResourceGroup'), resourceGroup().name)]",
     "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
-    "resourcePrefix": "[tolower(concat('dfc-dev-api-content'))]",
+    "ResourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
     "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
   },
   "resources": [
@@ -193,6 +205,26 @@
     },
     {
       "apiVersion": "2017-05-10",
+      "name": "[parameters('FunctionAppInsightNameDraft')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[parameters('FunctionAppInsightNameDraft')]"
+          },
+          "attachedService": {
+            "value": ""
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
       "name": "[parameters('FunctionAppName')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -288,6 +320,105 @@
       },
       "dependsOn": [
         "[parameters('FunctionAppInsightName')]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[parameters('FunctionAppNameDraft')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServiceName": {
+            "value": "[parameters('FunctionAppNameDraft')]"
+          },
+          "appServicePlanName": {
+            "value": "[variables('appServicePlanName')]"
+          },
+          "appServicePlanResourceGroup": {
+            "value": "[variables('appServicePlanResourceGroup')]"
+          },
+          "appServiceType": {
+            "value": "functionapp"
+          },
+          "deployStagingSlot": {
+            "value": true
+          },
+          "clientAffinity": {
+            "value": true
+          },
+          "appServiceAppSettings": {
+            "value": [
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~3"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "dotnet"
+              },
+              {
+                "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+                "value": "1"
+              },
+              {
+                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                "value": "1"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('appSharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('appSharedResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('appSharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(parameters('FunctionAppInsightNameDraft')).outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "ContentType__ContentTypeUriMap__occupation",
+                "value": "[concat(parameters('ContentTypeUriMap'), '/occupation/{0}')]"
+              },
+              {
+                "name": "ContentType__ContentTypeUriMap__skill",
+                "value": "[concat(parameters('ContentTypeUriMap'), '/skill/{0}')]"
+              },
+              {
+                "name": "ContentType__ContentTypeNameMap__occupation",
+                "value": "esco__occupation"
+              },
+              {
+                "name": "ContentType__ContentTypeNameMap__skill",
+                "value": "esco__skill"
+              },
+              {
+                "name": "ContentType__scheme",
+                "value": "https"
+              },
+              {
+                "name": "Neo4j__Endpoints__0__Enabled",
+                "value": "true"
+              },
+              {
+                "name": "Neo4j__Endpoints__0__Uri",
+                "value": "[parameters('Neo4jUrlDraft')]"
+              },
+              {
+                "name": "Neo4j__Endpoints__0__Username",
+                "value": "[parameters('Neo4jUserDraft')]"
+              },
+              {
+                "name": "Neo4j__Endpoints__0__Password",
+                "value": "[parameters('Neo4jPasswordDraft')]"
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('FunctionAppInsightNameDraft')]"
       ]
     }
   ],
