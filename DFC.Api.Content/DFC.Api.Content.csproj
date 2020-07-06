@@ -12,7 +12,7 @@
     <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="0.1.175" />
+    <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="0.1.233" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.6" />
     <PackageReference Include="Neo4j.Driver" Version="4.0.1" />
