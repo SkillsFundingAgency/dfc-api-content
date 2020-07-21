@@ -25,7 +25,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0-preview.6.20305.6" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
