@@ -12,10 +12,11 @@
     <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="0.1.233" />
+    <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="0.1.242" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.6" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.6" />
-    <PackageReference Include="Neo4j.Driver" Version="4.0.1" />
+    <PackageReference Include="Neo4j.Driver" Version="4.1.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.6.0.16497">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,6 +25,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0-preview.6.20305.6" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

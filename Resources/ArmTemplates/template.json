@@ -313,7 +313,11 @@
               {
                 "name": "Neo4j__Endpoints__0__Password",
                 "value": "[parameters('Neo4jPassword')]"
-              }
+              },
+			  {
+				"name": "Neo4j__ReplicaSets__0__GraphInstances__0__Enabled",
+				"value": "true"
+			  }
             ]
           }
         }

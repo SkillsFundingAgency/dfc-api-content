@@ -11,30 +11,31 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using DFC.ServiceTaxonomy.Neo4j.Services;
 using DFC.Api.Content.Models.Cypher;
 using Neo4j.Driver;
 using System.Linq;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Enums;
 using DFC.Api.Content.Models;
-using Newtonsoft.Json;
+using DFC.ServiceTaxonomy.Neo4j.Services.Interfaces;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
         private readonly IOptionsMonitor<ContentTypeSettings> _contentTypeSettings;
-        private readonly IGraphDatabase _graphDatabase;
+        private readonly IOptionsMonitor<Neo4JClusterOptions> _clusterOptions;
+        private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
 
         private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') return {{data:{{skos__prefLabel:s.skos__prefLabel, ModifiedDate:s.ModifiedDate, CreatedDate:s.CreatedDate, Uri:s.uri}}}}";
 
-        public Execute(IOptionsMonitor<ContentTypeSettings> ContentTypeNameMapSettings, IGraphDatabase graphDatabase, IJsonFormatHelper jsonFormatHelper)
+        public Execute(IOptionsMonitor<ContentTypeSettings> contentTypeNameMapSettings, IOptionsMonitor<Neo4JClusterOptions> clusterOptions, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
         {
-            _contentTypeSettings = ContentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(ContentTypeNameMapSettings));
-            _graphDatabase = graphDatabase ?? throw new ArgumentNullException(nameof(graphDatabase));
+            _contentTypeSettings = contentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(contentTypeNameMapSettings));
+            _clusterOptions = clusterOptions ?? throw new ArgumentNullException(nameof(clusterOptions));
+            _graphCluster = graphClusterBuilder.Build() ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
@@ -95,11 +96,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                return await _graphDatabase.Run(new GenericCypherQuery(query));
+                return await _graphCluster.Run(_clusterOptions.CurrentValue.GraphCluster ?? throw new ArgumentException(nameof(_clusterOptions.CurrentValue.GraphCluster)), new GenericCypherQuery(query));
             }
             catch (Exception ex)
             {
-                log.LogInformation($"Drivers:{JsonConvert.SerializeObject(_graphDatabase.Drivers)}");
                 throw ApiFunctionException.InternalServerError("Unable To run query", ex);
             }
         }
