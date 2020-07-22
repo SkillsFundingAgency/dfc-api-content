@@ -67,14 +67,14 @@ namespace DFC.Api.Content.Helpers
         /// <param name="neoJsonObj"></param>
         private static void ConvertLinksToHAL(string apiHost, JObject objToReturn, JObject neoJsonObj)
         {
-            var uri = new Uri(neoJsonObj["data"]["uri"].ToString());
+            var uri = new Uri(neoJsonObj["data"]!["uri"]!.ToString());
             objToReturn.Add(new JProperty("id", uri.Segments.LastOrDefault().TrimEnd('/')));
 
-            JArray existingLinksAsJsonObj = (JArray)neoJsonObj["_links"];
+            JArray existingLinksAsJsonObj = (JArray)neoJsonObj["_links"]!;
 
             var linksJObject = new JObject();
 
-            if (!existingLinksAsJsonObj.All(x => string.IsNullOrWhiteSpace(x["href"].ToString())))
+            if (!existingLinksAsJsonObj.All(x => string.IsNullOrWhiteSpace(x["href"]!.ToString())))
             {
                 linksJObject.Add("self", uri.ToString());
 
@@ -92,13 +92,13 @@ namespace DFC.Api.Content.Helpers
 
                 foreach (var child in existingLinksAsJsonObj)
                 {
-                    var childKey = child["relationship"].ToString();
+                    var childKey = child["relationship"]!.ToString();
 
-                    var itemUri = new Uri(child["href"].ToString());
+                    var itemUri = new Uri(child["href"]!.ToString());
 
                     var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{itemUri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
 
-                    foreach (var prop in child["props"])
+                    foreach (var prop in child["props"]!)
                     {
                         jObjectToAdd.Add(prop);
                     }

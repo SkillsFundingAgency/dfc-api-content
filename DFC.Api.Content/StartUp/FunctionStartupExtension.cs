@@ -4,6 +4,7 @@ using DFC.ServiceTaxonomy.ApiFunction.StartUp;
 using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Log;
 using DFC.ServiceTaxonomy.Neo4j.Services;
+using DFC.ServiceTaxonomy.Neo4j.Services.Interfaces;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,12 +33,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
             builder.Services.AddOptions<ContentTypeSettings>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentType").Bind(settings); });
 
-            builder.Services.AddOptions<Neo4jConfiguration>()
+            builder.Services.AddOptions<Neo4jOptions>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("Neo4j").Bind(settings); });
 
+            builder.Services.AddSingleton<IGraphClusterBuilder, GraphClusterBuilder>();
             builder.Services.AddTransient<ILogger, NeoLogger>();
-            builder.Services.AddSingleton<INeoDriverBuilder, NeoDriverBuilder>();
-            builder.Services.AddSingleton<IGraphDatabase, NeoGraphDatabase>();
+
+            builder.Services.AddTransient<ILogger, NeoLogger>();
             builder.Services.AddSingleton<IJsonFormatHelper, JsonFormatHelper>();
 
         }

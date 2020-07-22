@@ -4,10 +4,13 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using DFC.Api.Content.Helpers;
+using DFC.Api.Content.Models;
 using DFC.Api.Content.Models.Cypher;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
+using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Services;
+using DFC.ServiceTaxonomy.Neo4j.Services.Interfaces;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +29,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly ILogger _log;
         private readonly HttpRequest _request;
         private readonly IOptionsMonitor<ContentTypeSettings> _ContentTypeNameMapConfig;
-        private readonly IGraphDatabase _graphDatabase;
+        private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonHelper;
 
         public ExecuteHttpTriggerTests()
@@ -38,14 +41,17 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentTypeSettings
             {
                 ContentTypeNameMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
-            }); ;
+            }); 
+
+            _graphCluster = A.Fake<IGraphCluster>();
+            var fakeGraphClusterBuilder = A.Fake<IGraphClusterBuilder>();
+            A.CallTo(() => fakeGraphClusterBuilder.Build(null)).Returns(_graphCluster);
 
             _log = A.Fake<ILogger>();
-            _graphDatabase = A.Fake<IGraphDatabase>();
             _jsonHelper = A.Fake<IJsonFormatHelper>();
 
             _jsonHelper = new JsonFormatHelper(_ContentTypeNameMapConfig);
-            _executeFunction = new Execute(_ContentTypeNameMapConfig, _graphDatabase, _jsonHelper);
+            _executeFunction = new Execute(_ContentTypeNameMapConfig, fakeGraphClusterBuilder, _jsonHelper);
         }
 
         [Fact]
@@ -80,7 +86,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetAll.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetAll.json");
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored, A<string>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
+            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
 
             var result = await RunFunction("test1", null);
             var okObjectResult = result as OkObjectResult;
@@ -102,7 +108,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
 
-            A.CallTo(() => _graphDatabase.Run(A<GenericCypherQuery>.Ignored, A<string>.Ignored)).Returns(driverRecords);
+            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericCypherQuery>.Ignored)).Returns(driverRecords);
 
             var result = await RunFunction("test1", Guid.NewGuid());
             var okObjectResult = result as OkObjectResult;
