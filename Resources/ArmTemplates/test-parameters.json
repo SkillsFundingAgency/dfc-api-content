@@ -8,6 +8,9 @@
     "appSharedResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
     },
+    "sharedResourceGroup": {
+      "value": "dfc-dev-shared-rg"
+    },
     "sharedAppServicePlanName": {
       "value": "dfc-dev-app-shared-asp"
     },
@@ -55,6 +58,9 @@
     },
     "appSharedStorageAccountName": {
       "value": "dfcdevappsharedstr"
+    },
+    "sharedDfcStorageAccountName": {
+      "value": "dfcdevsharedstr"
     },
     "ContentTypeUriMap": {
       "value": "http://some-newdata-uri/"

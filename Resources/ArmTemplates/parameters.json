@@ -26,11 +26,17 @@
     "appSharedStorageAccountName": {
       "value": "__appSharedStorageAccountName__"
     },
+    "sharedDfcStorageAccountName": {
+      "value": "__sharedDfcStorageAccountName__"
+    },
     "ContentTypeUriMap": {
       "value": "__ContentTypeUriMap__"
     },
     "appSharedResourceGroup": {
       "value": "__appSharedResourceGroup__"
+    },
+    "sharedResourceGroup": {
+      "value": "__sharedResourceGroup__"
     },
     "aspTier": {
       "value": "__aspTier__"
