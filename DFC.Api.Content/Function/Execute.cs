@@ -35,7 +35,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             _contentTypeSettings = contentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(contentTypeNameMapSettings));
             _clusterOptions = clusterOptions ?? throw new ArgumentNullException(nameof(clusterOptions));
-            _graphCluster = graphClusterBuilder.Build() ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
+            _graphCluster = graphClusterBuilder.Build(null) ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
