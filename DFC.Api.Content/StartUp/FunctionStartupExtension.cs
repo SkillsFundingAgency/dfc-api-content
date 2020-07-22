@@ -68,7 +68,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
                 }
             }
 
-            return path ?? string.Empty;
+            return path ?? throw new ServiceUnavailableException("Path for settings could not be determined");
         }
     }
 }
