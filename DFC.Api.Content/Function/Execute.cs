@@ -23,15 +23,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
-        private readonly IOptionsMonitor<ContentTypeSettings> _contentTypeSettings;
+        private readonly IOptionsMonitor<ContentApiOptions> _contentApiOptions;
         private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
         private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') return {{data:{{skos__prefLabel:s.skos__prefLabel, ModifiedDate:s.ModifiedDate, CreatedDate:s.CreatedDate, Uri:s.uri}}}}";
 
-        public Execute(IOptionsMonitor<ContentTypeSettings> contentTypeNameMapSettings, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
+        public Execute(IOptionsMonitor<ContentApiOptions> contentApiOptions, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
         {
-            _contentTypeSettings = contentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(contentTypeNameMapSettings));
+            _contentApiOptions = contentApiOptions ?? throw new ArgumentNullException(nameof(contentApiOptions));
             _graphCluster = graphClusterBuilder.Build() ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
@@ -54,8 +54,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
 
                 bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
-                var itemUri = hasApimHeader ? $"{headerValue}GetContent/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
-                var apiHost = hasApimHeader ? $"{headerValue}GetContent/api/Execute" : $"{_contentTypeSettings.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
+                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
+                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute" : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
 
                 var queryToExecute = this.BuildQuery(queryParameters, itemUri);
 
@@ -118,7 +118,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string GenerateUri(string contentType, Guid id, string requestPath)
         {
-            _contentTypeSettings.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
+            _contentApiOptions.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
@@ -130,7 +130,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string MapContentTypeToNamespace(string contentType)
         {
-            _contentTypeSettings.CurrentValue.ContentTypeNameMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
+            _contentApiOptions.CurrentValue.ContentTypeNameMap.TryGetValue(contentType.ToLower(), out string? mappedValue);
 
             if (string.IsNullOrWhiteSpace(mappedValue))
             {
