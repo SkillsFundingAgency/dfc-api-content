@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Models
 {
-    public class ContentTypeSettings
+    public class ContentApiOptions
     {
-        public ContentTypeSettings()
+        public ContentApiOptions()
         {
             ContentTypeUriMap = new Dictionary<string, string>();
             ContentTypeNameMap = new Dictionary<string, string>();
@@ -31,5 +31,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Models
         }
 
         public string? Scheme { get; set; }
+
+        public string? Action { get; set; }
     }
 }

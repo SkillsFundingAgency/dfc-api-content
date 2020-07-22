@@ -30,8 +30,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
 
             builder.Services.AddSingleton<IConfiguration>(config);
 
-            builder.Services.AddOptions<ContentTypeSettings>()
-                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentType").Bind(settings); });
+            builder.Services.AddOptions<ContentApiOptions>()
+                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentApiOptions").Bind(settings); });
 
             builder.Services.AddOptions<Neo4jOptions>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("Neo4j").Bind(settings); });
