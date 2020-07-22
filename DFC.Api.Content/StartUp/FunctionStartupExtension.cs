@@ -28,8 +28,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
                 .AddEnvironmentVariables()
                 .Build();
 
-            builder.Services.AddLogging();
-
             builder.Services.AddSingleton<IConfiguration>(config);
 
             builder.Services.AddOptions<ContentTypeSettings>()
