@@ -28,7 +28,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly IOptionsMonitor<ContentTypeSettings> _ContentTypeNameMapConfig;
+        private readonly IOptionsMonitor<ContentApiOptions> _ContentTypeNameMapConfig;
         private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonHelper;
 
@@ -37,8 +37,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var context = new DefaultHttpContext();
             _request = context.Request;
 
-            _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentTypeSettings>>();
-            A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentTypeSettings
+            _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentApiOptions>>();
+            A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentApiOptions
             {
                 ContentTypeNameMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
             }); 

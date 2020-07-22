@@ -13,9 +13,9 @@ namespace DFC.Api.Content.Helpers
 {
     public class JsonFormatHelper : IJsonFormatHelper
     {
-        private readonly IOptionsMonitor<ContentTypeSettings> _settings;
+        private readonly IOptionsMonitor<ContentApiOptions> _settings;
 
-        public JsonFormatHelper(IOptionsMonitor<ContentTypeSettings> settings)
+        public JsonFormatHelper(IOptionsMonitor<ContentApiOptions> settings)
         {
             _settings = settings;
         }
