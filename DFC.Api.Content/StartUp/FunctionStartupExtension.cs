@@ -1,5 +1,4 @@
 ﻿using DFC.Api.Content.Helpers;
-using DFC.Api.Content.Models;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.ApiFunction.StartUp;
 using DFC.ServiceTaxonomy.Neo4j.Configuration;
@@ -35,9 +34,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
 
             builder.Services.AddOptions<ContentTypeSettings>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentType").Bind(settings); });
-
-            builder.Services.AddOptions<Neo4JClusterOptions>()
-                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("Neo4j").Bind(settings); });
 
             builder.Services.AddOptions<Neo4jOptions>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("Neo4j").Bind(settings); });

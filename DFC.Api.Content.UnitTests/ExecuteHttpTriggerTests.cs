@@ -29,7 +29,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly ILogger _log;
         private readonly HttpRequest _request;
         private readonly IOptionsMonitor<ContentTypeSettings> _ContentTypeNameMapConfig;
-        private readonly IOptionsMonitor<Neo4JClusterOptions> _Neo4JClusterOptions;
         private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonHelper;
 
@@ -42,10 +41,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentTypeSettings
             {
                 ContentTypeNameMap = new Dictionary<string, string>() { { "test1", "Test2" }, { "test2", "Test3" } }
-            }); ;
-
-            _Neo4JClusterOptions = A.Fake<IOptionsMonitor<Neo4JClusterOptions>>();
-            A.CallTo(() => _Neo4JClusterOptions.CurrentValue).Returns(new Neo4JClusterOptions { GraphCluster = "Test" });
+            }); 
 
             _graphCluster = A.Fake<IGraphCluster>();
             var fakeGraphClusterBuilder = A.Fake<IGraphClusterBuilder>();
@@ -55,7 +51,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _jsonHelper = A.Fake<IJsonFormatHelper>();
 
             _jsonHelper = new JsonFormatHelper(_ContentTypeNameMapConfig);
-            _executeFunction = new Execute(_ContentTypeNameMapConfig, _Neo4JClusterOptions, fakeGraphClusterBuilder, _jsonHelper);
+            _executeFunction = new Execute(_ContentTypeNameMapConfig, fakeGraphClusterBuilder, _jsonHelper);
         }
 
         [Fact]

@@ -24,18 +24,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
     public class Execute
     {
         private readonly IOptionsMonitor<ContentTypeSettings> _contentTypeSettings;
-        private readonly IOptionsMonitor<Neo4JClusterOptions> _clusterOptions;
         private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
-
         private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') return {{data:{{skos__prefLabel:s.skos__prefLabel, ModifiedDate:s.ModifiedDate, CreatedDate:s.CreatedDate, Uri:s.uri}}}}";
 
-        public Execute(IOptionsMonitor<ContentTypeSettings> contentTypeNameMapSettings, IOptionsMonitor<Neo4JClusterOptions> clusterOptions, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
+        public Execute(IOptionsMonitor<ContentTypeSettings> contentTypeNameMapSettings, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
         {
             _contentTypeSettings = contentTypeNameMapSettings ?? throw new ArgumentNullException(nameof(contentTypeNameMapSettings));
-            _clusterOptions = clusterOptions ?? throw new ArgumentNullException(nameof(clusterOptions));
-            _graphCluster = graphClusterBuilder.Build(null) ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
+            _graphCluster = graphClusterBuilder.Build() ?? throw new ArgumentNullException(nameof(graphClusterBuilder));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
@@ -96,7 +93,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                return await _graphCluster.Run(_clusterOptions.CurrentValue.GraphCluster ?? throw new ArgumentException(nameof(_clusterOptions.CurrentValue.GraphCluster)), new GenericCypherQuery(query));
+                return await _graphCluster.Run("target", new GenericCypherQuery(query));
             }
             catch (Exception ex)
             {
