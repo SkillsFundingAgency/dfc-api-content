@@ -396,23 +396,23 @@
                 "value": "[reference(parameters('FunctionAppInsightNameDraft')).outputs.InstrumentationKey.value]"
               },
               {
-                "name": "ContentType__ContentTypeUriMap__occupation",
+                "name": "ContentApiOptions__ContentTypeUriMap__occupation",
                 "value": "[concat(parameters('ContentTypeUriMap'), '/occupation/{0}')]"
               },
               {
-                "name": "ContentType__ContentTypeUriMap__skill",
+                "name": "ContentApiOptions__ContentTypeUriMap__skill",
                 "value": "[concat(parameters('ContentTypeUriMap'), '/skill/{0}')]"
               },
               {
-                "name": "ContentType__ContentTypeNameMap__occupation",
+                "name": "ContentApiOptions__ContentTypeNameMap__occupation",
                 "value": "esco__occupation"
               },
               {
-                "name": "ContentType__ContentTypeNameMap__skill",
+                "name": "ContentApiOptions__ContentTypeNameMap__skill",
                 "value": "esco__skill"
               },
               {
-                "name": "ContentType__scheme",
+                "name": "ContentApiOptions__scheme",
                 "value": "https"
               },
               {
@@ -430,6 +430,14 @@
               {
                 "name": "Neo4j__Endpoints__0__Password",
                 "value": "[parameters('Neo4jPasswordDraft')]"
+              },
+              {
+                "name": "Neo4j__ReplicaSets__0__GraphInstances__0__Enabled",
+                "value": "true"
+              },
+              {
+                "name": "Neo4j__ReplicaSets__0__GraphInstances__1__Enabled",
+                "value": "false"
               },
               {
                 "name": "ContentApiOptions__Action",
