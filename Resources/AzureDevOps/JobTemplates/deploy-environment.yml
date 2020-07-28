@@ -89,4 +89,4 @@ jobs:
                 DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
                 Environment: ${{ parameters.Environment }}
                 TestArtifactBranch: ${{ parameters.TestArtifactBranch }}
-                TestTag: Content
+                TestTag:  ${{ api.name }}
