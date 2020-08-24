@@ -29,7 +29,7 @@
     "ContentTypeUriMap": {
       "value": "http://some-newdata-uri/"
     },
-    "Environment": {
+    "environment": {
       "value": "dev"
     },
     "sharedResourceGroup": {

@@ -40,7 +40,7 @@
     "ContentTypeUriMap": {
       "type": "string"
     },
-    "Environment": {
+    "environment": {
       "type": "string"
     },
     "Neo4jUrl": {

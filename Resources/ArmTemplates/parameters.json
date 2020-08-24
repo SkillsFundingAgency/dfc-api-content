@@ -38,7 +38,7 @@
     "ContentTypeUriMap": {
       "value": "__ContentTypeUriMap__"
     },
-    "Environment": {
+    "environment": {
       "value": "__ReleaseEnvironmentName__"
     },
     "Neo4jUrl": {
