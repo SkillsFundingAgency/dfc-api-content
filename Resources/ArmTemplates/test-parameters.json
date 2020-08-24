@@ -53,15 +53,6 @@
     "Neo4jPassword": {
       "value": "not-a-real-password"
     },
-    "Neo4jUrlDraft": {
-      "value": "http://some-database-instance/"
-    },
-    "Neo4jUserDraft": {
-      "value": "someUsername"
-    },
-    "Neo4jPasswordDraft": {
-      "value": "not-a-real-password"
-    },
     "sharedDfcStorageAccountName": {
       "value": "dfcdevsharedstr"
     }
