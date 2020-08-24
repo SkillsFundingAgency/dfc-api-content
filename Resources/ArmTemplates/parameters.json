@@ -2,6 +2,42 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "appSharedResourceGroup": {
+      "value": "__appSharedResourceGroup__"
+    },
+    "appSharedStorageAccountName": {
+      "value": "__appSharedStorageAccountName__"
+    },
+    "aseHostingEnvironmentName": {
+      "value": "__aseHostingEnvironmentName__"
+    },
+    "aseResourceGroup": {
+      "value": "__aseResourceGroup__"
+    },
+    "aspInstances": {
+      "value": __aspInstances__
+    },
+    "aspTier": {
+      "value": "__aspTier__"
+    },
+    "aspSize": {
+      "value": "__aspSize__"
+    },
+    "ApimProductInstanceName": {
+      "value": "__ApimProductInstanceName__"
+    },
+    "ApimResourceGroup": {
+      "value": "__SharedResourceGroupName__"
+    },
+    "ApiName": {
+      "value": "__ApiName__"
+    },
+    "ApimServiceName": {
+      "value": "__ApimServiceName__"
+    },
+    "ContentTypeUriMap": {
+      "value": "__ContentTypeUriMap__"
+    },
     "Environment": {
       "value": "__ReleaseEnvironmentName__"
     },
@@ -23,56 +59,17 @@
     "Neo4jPasswordDraft": {
       "value": "__Neo4jPasswordDraft__"
     },
-    "appSharedStorageAccountName": {
-      "value": "__appSharedStorageAccountName__"
-    },
-    "sharedDfcStorageAccountName": {
-      "value": "__sharedDfcStorageAccountName__"
-    },
-    "ContentTypeUriMap": {
-      "value": "__ContentTypeUriMap__"
-    },
-    "appSharedResourceGroup": {
-      "value": "__appSharedResourceGroup__"
-    },
     "sharedResourceGroup": {
       "value": "__sharedResourceGroup__"
     },
-    "aspTier": {
-      "value": "__aspTier__"
-    },
-    "FunctionAppInsightName": {
-      "value": "__FunctionAppInsightName__"
-    },
-    "FunctionAppInsightNameDraft": {
-      "value": "__FunctionAppInsightNameDraft__"
-    },
-    "aspSize": {
-      "value": "__aspSize__"
+    "sharedDfcStorageAccountName": {
+      "value": "__sharedDfcStorageAccountName__"
     },
     "sharedAppServicePlanName": {
       "value": "__sharedAppServicePlanName__"
     },
     "sharedAppServicePlanResourceGroup": {
       "value": "__appSharedResourceGroup__"
-    },
-    "FunctionAppName": {
-      "value": "__FunctionAppName__"
-    },
-    "FunctionAppNameDraft": {
-      "value": "__FunctionAppNameDraft__"
-    },
-    "ApimProductInstanceName": {
-      "value": "__ApimProductInstanceName__"
-    },
-    "ApimResourceGroup": {
-      "value": "__SharedResourceGroupName__"
-    },
-    "ApiName": {
-      "value": "__ApiName__"
-    },
-    "ApimServiceName": {
-      "value": "__ApimServiceName__"
     }
   }
 }

@@ -1,8 +1,8 @@
 variables:
 - name: ReleaseEnvironmentName
-  value: sit
+  value: pp-draft
 - name: ResourceGroup
-  value: dfc-sit-api-cont-rg
+  value: dfc-pp-draft-api-cont-rg
 - name: ResourcePrefix
   value: dfc-$(ReleaseEnvironmentName)-api-content
 - name: FunctionAppName
@@ -12,6 +12,6 @@ variables:
 - name: aspTier
   value: Standard
 - name: aspInstances
-  value: 2
+  value: 3
 - name: aspSize
-  value: 2
+  value: 1

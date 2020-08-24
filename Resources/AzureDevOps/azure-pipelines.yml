@@ -4,7 +4,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.11.1
+    ref: refs/tags/v1.11.2
     endpoint: 'GitHub (ESFA)'
 
 pool:
@@ -17,11 +17,13 @@ trigger:
   branches:
     include: 
     - dev
+    - master
 
 pr:
   branches:
     include: 
     - dev
+    - master
 
 stages:
 - stage: Build
@@ -84,7 +86,7 @@ stages:
       EnvironmentTag: '$(EnvironmentTag)'
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: 'dfc-dev-api-cont-rg'
+      ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
       ApimProductId: 'content'
@@ -93,10 +95,10 @@ stages:
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: 'dfc-dev-shared-rg'
-      ApimServiceName: 'dfc-dev-shared-apim'
+      SharedResourceGroup: '(SharedResourceGroup)'
+      ApimServiceName: '$(AppServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
-      FunctionAppName: 'dfc-dev-api-content-fa'
+      FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: DEV_CONTENT
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
@@ -106,8 +108,51 @@ stages:
         -
           - name: GetContent
             azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
-          - name: GetDraftContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
+
+- stage: DeployToDevDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to DEV-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/DevDraftEnvironmentVariables.yml
+  - group: dfc-shared-all
+  - group: dfc-api-content-dev
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-dev
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-dev
+  - group: dfc-app-shared-dev
+  - group: 'KeyVault - dfc-dev-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-dev-draft
+  jobs:
+    - template: JobTemplates/deploy-environment.yml
+      parameters:
+        AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+        EnvironmentTag: '$(EnvironmentTag)'
+        ParentBusiness: '$(ParentBusiness)'
+        ServiceOffering: '$(ServiceOffering)'
+        ResourceGroup: '$(ResourceGroup)'
+        PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+        ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
+        ApimProductId: 'content'
+        ApimLoggerName: 'content-logger'
+        APIProductInstanceName: 'content'
+        ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+        ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+        SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
+        SharedResourceGroup: '$(SharedResourceGroup)'
+        ApimServiceName: '$(AppServiceName)'
+        FunctionAppDomain: '$(FunctionAppDomain)'
+        FunctionAppName: '$(FunctionAppName)'
+        EnvironmentName: DEV-DRAFT_CONTENT
+        DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+        # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+        # The top level -`s here defines an array of "something"
+        # The inner level -'s defines an array of mappings.
+        Apis: 
+          -
+            - name: GetDraftContent
+              azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
 
 - stage: DeployToSitContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -131,7 +176,7 @@ stages:
       EnvironmentTag: '$(EnvironmentTag)'
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: 'dfc-sit-api-cont-rg'
+      ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
       ApimProductId: 'content'
@@ -140,10 +185,10 @@ stages:
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: 'dfc-sit-shared-rg'
-      ApimServiceName: 'dfc-sit-shared-apim'
+      SharedResourceGroup: '(SharedResourceGroup)'
+      ApimServiceName: '$(AppServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
-      FunctionAppName: 'dfc-sit-api-content-fa'
+      FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: SIT_CONTENT
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
@@ -153,5 +198,136 @@ stages:
         -
           - name: GetContent
             azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+
+- stage: DeployToSitDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to SIT-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/SitDraftEnvironmentVariables.yml
+  - group: dfc-shared-all
+  - group: dfc-api-content-sit
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-sit
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-sit
+  - group: dfc-app-shared-sit
+  - group: 'KeyVault - dfc-sit-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
+      ApimProductId: 'content'
+      ApimLoggerName: 'content-logger'
+      APIProductInstanceName: 'content'
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
+      SharedResourceGroup: '(SharedResourceGroup)'
+      ApimServiceName: '$(AppServiceName)'
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: SIT-DRAFT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetDraftContent
+            azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
+
+- stage: DeployToPPContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PP_CONTENT
+  variables:
+  - template: VariableTemplates/PPEnvironmentVariables.yml
+  - group: dfc-shared-all
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-pp
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-pp
+  - group: dfc-app-shared-pp
+  - group: 'KeyVault - dfc-pp-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
+      ApimProductId: 'content'
+      ApimLoggerName: 'content-logger'
+      APIProductInstanceName: 'content'
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
+      SharedResourceGroup: '(SharedResourceGroup)'
+      ApimServiceName: '$(AppServiceName)'
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PP_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+
+- stage: DeployToPPDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PP-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/PPDraftEnvironmentVariables.yml
+  - group: dfc-shared-all
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-pp
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-pp
+  - group: dfc-app-shared-pp
+  - group: 'KeyVault - dfc-pp-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
+      ApimProductId: 'content'
+      ApimLoggerName: 'content-logger'
+      APIProductInstanceName: 'content'
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
+      SharedResourceGroup: '(SharedResourceGroup)'
+      ApimServiceName: '$(AppServiceName)'
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PP-DRAFT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
           - name: GetDraftContent
             azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
