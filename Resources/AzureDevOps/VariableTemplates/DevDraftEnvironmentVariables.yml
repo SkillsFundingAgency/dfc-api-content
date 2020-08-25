@@ -14,6 +14,6 @@ variables:
 - name: ReleaseEnvironmentName
   value: dev-draft
 - name: ResourceGroup
-  value: dfc-dev-draft-api-cont-rg
+  value: $(ResourcePrefix)-rg
 - name: ResourcePrefix
   value: dfc-$(ReleaseEnvironmentName)-api-cont

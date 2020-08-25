@@ -1,17 +1,19 @@
 variables:
-- name: ReleaseEnvironmentName
-  value: pp-draft
-- name: ResourceGroup
-  value: dfc-pp-draft-api-cont-rg
-- name: ResourcePrefix
-  value: dfc-$(ReleaseEnvironmentName)-api-cont
-- name: FunctionAppName
-  value: $(ResourcePrefix)-fa
-- name: FunctionalTestsSqlDatabaseConnStr
-  value: 'Server=tcp:$(sharedSqlServerName).database.windows.net,1433;Initial Catalog=$(SqlDatabaseName);Persist Security Info=False;User ID=$(FunctionalTestsUser);Password=$(FunctionalTestsUserPassword);MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 - name: aspTier
   value: Standard
 - name: aspInstances
   value: 3
 - name: aspSize
   value: 1
+- name: FunctionAppName
+  value: $(ResourcePrefix)-fa
+- name: FunctionalTestsSqlDatabaseConnStr
+  value: 'Server=tcp:$(sharedSqlServerName).database.windows.net,1433;Initial Catalog=$(SqlDatabaseName);Persist Security Info=False;User ID=$(FunctionalTestsUser);Password=$(FunctionalTestsUserPassword);MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+- name: ReleaseNeo4jUrl
+  value: $(Neo4jUrlDraft)
+- name: ReleaseEnvironmentName
+  value: pp-draft
+- name: ResourceGroup
+  value: $(ResourcePrefix)-rg
+- name: ResourcePrefix
+  value: dfc-$(ReleaseEnvironmentName)-api-cont
