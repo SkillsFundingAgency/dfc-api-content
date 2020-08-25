@@ -294,7 +294,6 @@ stages:
   displayName: Deploy to PP-DRAFT_CONTENT
   variables:
   - template: VariableTemplates/PPDraftEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-pp
   - group: dfc-app-shared-all
