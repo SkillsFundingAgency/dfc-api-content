@@ -137,7 +137,6 @@ stages:
         APIProductInstanceName: 'content'
         ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
         ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-        Neo4jUrl: $(Neo4jUrlDraft)
         SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
         SharedResourceGroup: '$(SharedResourceGroup)'
         ApimServiceName: '$(ApimServiceName)'

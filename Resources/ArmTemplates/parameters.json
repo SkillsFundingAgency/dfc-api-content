@@ -42,7 +42,7 @@
       "value": "__ReleaseEnvironmentName__"
     },
     "Neo4jUrl": {
-      "value": "__Neo4jUrl__"
+      "value": "__ReleaseNeo4jUrl__"
     },
     "Neo4jUser": {
       "value": "__Neo4jUser__"
