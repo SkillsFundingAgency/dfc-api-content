@@ -87,9 +87,11 @@ stages:
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: 'content'
-      ApimLoggerName: 'content-logger'
-      APIProductInstanceName: 'content'
+      ApimProductId: '$(ApimProductId)'
+      ApimLoggerName: '$(ApimLoggerName)'
+      ApimProductInstanceName: '$(ApimProductInstanceName)'
+      ApiName: '$(ApiName)'
+      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
@@ -130,9 +132,11 @@ stages:
         ResourceGroup: '$(ResourceGroup)'
         PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
         ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-        ApimProductId: 'content'
-        ApimLoggerName: 'content-logger'
-        APIProductInstanceName: 'content'
+        ApimProductId: '$(ApimProductId)'
+        ApimLoggerName: '$(ApimLoggerName)'
+        ApimProductInstanceName: '$(ApimProductInstanceName)'
+        ApiName: '$(ApiName)'
+        ApiVersionNumber: '$(ApiVersionNumber)'
         ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
         ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
         SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
@@ -173,9 +177,11 @@ stages:
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: 'content'
-      ApimLoggerName: 'content-logger'
-      APIProductInstanceName: 'content'
+      ApimProductId: '$(ApimProductId)'
+      ApimLoggerName: '$(ApimLoggerName)'
+      ApimProductInstanceName: '$(ApimProductInstanceName)'
+      ApiName: '$(ApiName)'
+      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
@@ -216,9 +222,11 @@ stages:
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: 'content'
-      ApimLoggerName: 'content-logger'
-      APIProductInstanceName: 'content'
+      ApimProductId: '$(ApimProductId)'
+      ApimLoggerName: '$(ApimLoggerName)'
+      ApimProductInstanceName: '$(ApimProductInstanceName)'
+      ApiName: '$(ApiName)'
+      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
@@ -259,9 +267,11 @@ stages:
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: 'content'
-      ApimLoggerName: 'content-logger'
-      APIProductInstanceName: 'content'
+      ApimProductId: '$(ApimProductId)'
+      ApimLoggerName: '$(ApimLoggerName)'
+      ApimProductInstanceName: '$(ApimProductInstanceName)'
+      ApiName: '$(ApiName)'
+      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
@@ -303,9 +313,11 @@ stages:
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: 'content'
-      ApimLoggerName: 'content-logger'
-      APIProductInstanceName: 'content'
+      ApimProductId: '$(ApimProductId)'
+      ApimLoggerName: '$(ApimLoggerName)'
+      ApimProductInstanceName: '$(ApimProductInstanceName)'
+      ApiName: '$(ApiName)'
+      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
