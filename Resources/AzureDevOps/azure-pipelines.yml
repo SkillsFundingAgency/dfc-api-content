@@ -140,7 +140,7 @@ stages:
         ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
         SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
         SharedResourceGroup: '$(SharedResourceGroup)'
-        ApimServiceName: '$(AppServiceName)'
+        ApimServiceName: '$(ApimServiceName)'
         FunctionAppDomain: '$(FunctionAppDomain)'
         FunctionAppName: '$(FunctionAppName)'
         EnvironmentName: DEV-DRAFT_CONTENT
