@@ -10,11 +10,11 @@ variables:
 - name: FunctionalTestsSqlDatabaseConnStr
   value: 'Server=tcp:$(sharedSqlServerName).database.windows.net,1433;Initial Catalog=$(SqlDatabaseName);Persist Security Info=False;User ID=$(FunctionalTestsUser);Password=$(FunctionalTestsUserPassword);MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 - name: ReleaseNeo4jUrl
-  value: $(Neo4jUrl)
+  value: $(Neo4jUrlDraft)
 - name: ReleaseEnvironmentName
-  value: sit
+  value: dev-draft
 - name: ReleaseContentApiOptionsAction
-  value: getcontent
+  value: getdraftcontent
 - name: ResourceGroup
   value: $(ResourcePrefix)-rg
 - name: ResourcePrefix

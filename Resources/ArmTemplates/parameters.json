@@ -2,65 +2,26 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "Environment": {
-      "value": "__ReleaseEnvironmentName__"
-    },
-    "Neo4jUrl": {
-      "value": "__Neo4jUrl__"
-    },
-    "Neo4jUser": {
-      "value": "__Neo4jUser__"
-    },
-    "Neo4jPassword": {
-      "value": "__Neo4jPassword__"
-    },
-    "Neo4jUrlDraft": {
-      "value": "__Neo4jUrlDraft__"
-    },
-    "Neo4jUserDraft": {
-      "value": "__Neo4jUserDraft__"
-    },
-    "Neo4jPasswordDraft": {
-      "value": "__Neo4jPasswordDraft__"
+    "appSharedResourceGroup": {
+      "value": "__appSharedResourceGroup__"
     },
     "appSharedStorageAccountName": {
       "value": "__appSharedStorageAccountName__"
     },
-    "sharedDfcStorageAccountName": {
-      "value": "__sharedDfcStorageAccountName__"
+    "aseHostingEnvironmentName": {
+      "value": "__aseHostingEnvironmentName__"
     },
-    "ContentTypeUriMap": {
-      "value": "__ContentTypeUriMap__"
+    "aseResourceGroup": {
+      "value": "__aseResourceGroup__"
     },
-    "appSharedResourceGroup": {
-      "value": "__appSharedResourceGroup__"
-    },
-    "sharedResourceGroup": {
-      "value": "__sharedResourceGroup__"
+    "aspInstances": {
+      "value": __aspInstances__
     },
     "aspTier": {
       "value": "__aspTier__"
     },
-    "FunctionAppInsightName": {
-      "value": "__FunctionAppInsightName__"
-    },
-    "FunctionAppInsightNameDraft": {
-      "value": "__FunctionAppInsightNameDraft__"
-    },
     "aspSize": {
       "value": "__aspSize__"
-    },
-    "sharedAppServicePlanName": {
-      "value": "__sharedAppServicePlanName__"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "value": "__appSharedResourceGroup__"
-    },
-    "FunctionAppName": {
-      "value": "__FunctionAppName__"
-    },
-    "FunctionAppNameDraft": {
-      "value": "__FunctionAppNameDraft__"
     },
     "ApimProductInstanceName": {
       "value": "__ApimProductInstanceName__"
@@ -73,6 +34,36 @@
     },
     "ApimServiceName": {
       "value": "__ApimServiceName__"
+    },
+    "ContentTypeUriMap": {
+      "value": "__ContentTypeUriMap__"
+    },
+    "ContentApiOptionsAction": {
+      "value": "__ReleaseContentApiOptionsAction__"
+    },
+    "environment": {
+      "value": "__ReleaseEnvironmentName__"
+    },
+    "Neo4jUrl": {
+      "value": "__ReleaseNeo4jUrl__"
+    },
+    "Neo4jUser": {
+      "value": "__Neo4jUser__"
+    },
+    "Neo4jPassword": {
+      "value": "__Neo4jPassword__"
+    },
+    "sharedResourceGroup": {
+      "value": "__sharedResourceGroup__"
+    },
+    "sharedDfcStorageAccountName": {
+      "value": "__sharedDfcStorageAccountName__"
+    },
+    "sharedAppServicePlanName": {
+      "value": "__sharedAppServicePlanName__"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "value": "__appSharedResourceGroup__"
     }
   }
 }
