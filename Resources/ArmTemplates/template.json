@@ -69,7 +69,7 @@
     "appServicePlanName": "[concat(variables('resourcePrefix'), '-asp')]",
     "appServicePlanResourceGroup": "[concat(variables('resourcePrefix'),'-rg')]",
     "buildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
-    "ResourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-content'))]",
+    "ResourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-cont'))]",
     "FunctionAppName": "[concat(variables('ResourcePrefix'), '-fa')]",
     "FunctionAppInsightName": "[concat(variables('resourcePrefix'), '-ai')]",
     "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
