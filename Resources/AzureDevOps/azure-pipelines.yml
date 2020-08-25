@@ -114,7 +114,6 @@ stages:
   displayName: Deploy to DEV-DRAFT_CONTENT
   variables:
   - template: VariableTemplates/DevDraftEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-api-content-dev
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-dev
