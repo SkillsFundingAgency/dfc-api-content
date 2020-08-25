@@ -13,6 +13,8 @@ variables:
   value: $(Neo4jUrlDraft)
 - name: ReleaseEnvironmentName
   value: dev-draft
+- name: ReleaseContentApiOptionsAction
+  value: getdraftcontent
 - name: ResourceGroup
   value: $(ResourcePrefix)-rg
 - name: ResourcePrefix

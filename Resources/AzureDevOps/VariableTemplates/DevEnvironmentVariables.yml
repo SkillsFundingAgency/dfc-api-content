@@ -13,6 +13,8 @@ variables:
   value: $(Neo4jUrl)
 - name: ReleaseEnvironmentName
   value: dev
+- name: ReleaseContentApiOptionsAction
+  value: getcontent
 - name: ResourceGroup
   value: $(ResourcePrefix)-rg
 - name: ResourcePrefix

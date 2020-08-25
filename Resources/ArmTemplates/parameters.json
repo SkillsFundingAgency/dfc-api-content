@@ -38,6 +38,9 @@
     "ContentTypeUriMap": {
       "value": "__ContentTypeUriMap__"
     },
+    "ContentApiOptionsAction": {
+      "value": "__ReleaseContentApiOptionsAction__"
+    },
     "environment": {
       "value": "__ReleaseEnvironmentName__"
     },

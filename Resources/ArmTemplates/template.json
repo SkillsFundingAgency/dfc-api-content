@@ -40,6 +40,9 @@
     "ContentTypeUriMap": {
       "type": "string"
     },
+    "ContentApiOptionsAction": {
+      "type": "string"
+    },
     "environment": {
       "type": "string"
     },
@@ -303,7 +306,7 @@
               },
               {
                 "name": "ContentApiOptions__Action",
-                "value": "getcontent"
+                "value": "[parameters('ContentApiOptionsAction')]"
               }
             ]
           }

@@ -29,6 +29,9 @@
     "ContentTypeUriMap": {
       "value": "http://some-newdata-uri/"
     },
+    "ContentApiOptionsAction": {
+      "value": "getcontent"
+    },
     "environment": {
       "value": "dev"
     },
