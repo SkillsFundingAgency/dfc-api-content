@@ -69,7 +69,6 @@ stages:
   displayName: Deploy to DEV_CONTENT
   variables:
   - template: VariableTemplates/DevEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-api-content-dev
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-dev
@@ -96,7 +95,7 @@ stages:
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
       SharedResourceGroup: '(SharedResourceGroup)'
-      ApimServiceName: '$(AppServiceName)'
+      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: DEV_CONTENT
@@ -107,7 +106,7 @@ stages:
       Apis: 
         -
           - name: GetContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+            azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToDevDraftContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -158,7 +157,6 @@ stages:
   displayName: Deploy to SIT_CONTENT
   variables:
   - template: VariableTemplates/SitEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-api-content-sit
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-sit
@@ -185,7 +183,7 @@ stages:
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
       SharedResourceGroup: '(SharedResourceGroup)'
-      ApimServiceName: '$(AppServiceName)'
+      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: SIT_CONTENT
@@ -196,14 +194,13 @@ stages:
       Apis: 
         -
           - name: GetContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+            azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToSitDraftContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT-DRAFT_CONTENT
   variables:
   - template: VariableTemplates/SitDraftEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-api-content-sit
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-sit
@@ -230,7 +227,7 @@ stages:
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
       SharedResourceGroup: '(SharedResourceGroup)'
-      ApimServiceName: '$(AppServiceName)'
+      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: SIT-DRAFT_CONTENT
@@ -241,14 +238,13 @@ stages:
       Apis: 
         -
           - name: GetDraftContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
+            azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to PP_CONTENT
   variables:
   - template: VariableTemplates/PPEnvironmentVariables.yml
-  - group: dfc-shared-all
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-pp
   - group: dfc-app-shared-all
@@ -256,7 +252,7 @@ stages:
   - group: dfc-app-shared-pp
   - group: 'KeyVault - dfc-pp-shared-kv'
   - name: WebAppPrefix
-    value: dfc-sit-draft
+    value: dfc-pp
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -274,7 +270,7 @@ stages:
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
       SharedResourceGroup: '(SharedResourceGroup)'
-      ApimServiceName: '$(AppServiceName)'
+      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: PP_CONTENT
@@ -285,7 +281,7 @@ stages:
       Apis: 
         -
           - name: GetContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-cont-fa'
+            azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPDraftContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -300,7 +296,7 @@ stages:
   - group: dfc-app-shared-pp
   - group: 'KeyVault - dfc-pp-shared-kv'
   - name: WebAppPrefix
-    value: dfc-sit-draft
+    value: dfc-pp-draft
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -318,7 +314,7 @@ stages:
       ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
       SharedResourceGroup: '(SharedResourceGroup)'
-      ApimServiceName: '$(AppServiceName)'
+      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: PP-DRAFT_CONTENT
@@ -329,4 +325,4 @@ stages:
       Apis: 
         -
           - name: GetDraftContent
-            azureFunctionName: '${{ variables.WebAppPrefix }}-api-draftcont-fa'
+            azureFunctionName: '$(FunctionAppName)'
