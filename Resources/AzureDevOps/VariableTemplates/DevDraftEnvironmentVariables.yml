@@ -1,4 +1,16 @@
 variables:
+- name: ApimLoggerName
+  value: content-logger
+- name: ApimProductId
+  value: content
+- name: ApimProductInstanceName
+  value: $(ApimProductId)
+- name: ApiName
+  value: $(ApimProductId)
+- name: ApiVersionNumber
+  value: v1
+- name: DfcContentTestsBuildId
+  value: 1
 - name: aspTier
   value: Standard
 - name: aspInstances
