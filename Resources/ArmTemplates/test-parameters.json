@@ -8,15 +8,6 @@
     "appSharedStorageAccountName": {
       "value": "dfcdevappsharedstr"
     },
-    "ApimResourceGroup": {
-      "value": "dfc-test-template-rg"
-    },
-    "ApimServiceName": {
-      "value": "an-apim-instance"
-    },
-    "ApiName": {
-      "value": "api-name"
-    },
     "aspTier": {
       "value": "Standard"
     },
@@ -43,9 +34,6 @@
     },
     "sharedAppServicePlanResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
-    },
-    "ApimProductInstanceName": {
-      "value": "test-api-product"
     },
     "Neo4jUrl": {
       "value": "http://some-database-instance/"

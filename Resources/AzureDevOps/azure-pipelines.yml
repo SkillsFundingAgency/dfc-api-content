@@ -45,25 +45,6 @@ stages:
           TestSuffix: 'Tests'
           DotNetCoreVersion: '3.1.100'
 
-      - task: PublishPipelineArtifact@1
-        displayName: Publish OpenAPI docs to Pipeline Artifact
-        inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/DFC.Api.Content/OpenAPIDocs"
-          artifactName: DFC.Api.Content.Resources.OpenAPIDocs
-
-      - task: PublishPipelineArtifact@1
-        displayName: Publish API import script to Pipeline Artifact
-        inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/Resources/Scripts"
-          artifactName: DFC.Api.Content.Resources.Scripts
-
-      - task: PublishPipelineArtifact@1
-        displayName: Publish apim policies
-        inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/Resources/ApimPolicy"
-          artifactName: DFC.Api.Content.Resources.ApimPolicies
-
-
 - stage: DeployToDevContent
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to DEV_CONTENT
@@ -86,17 +67,7 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: '$(ApimProductId)'
-      ApimLoggerName: '$(ApimLoggerName)'
-      ApimProductInstanceName: '$(ApimProductInstanceName)'
-      ApiName: '$(ApiName)'
-      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: '$(SharedResourceGroup)'
-      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: DEV_CONTENT
@@ -131,17 +102,7 @@ stages:
         ServiceOffering: '$(ServiceOffering)'
         ResourceGroup: '$(ResourceGroup)'
         PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-        ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-        ApimProductId: '$(ApimProductId)'
-        ApimLoggerName: '$(ApimLoggerName)'
-        ApimProductInstanceName: '$(ApimProductInstanceName)'
-        ApiName: '$(ApiName)'
-        ApiVersionNumber: '$(ApiVersionNumber)'
         ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-        ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-        SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-        SharedResourceGroup: '$(SharedResourceGroup)'
-        ApimServiceName: '$(ApimServiceName)'
         FunctionAppDomain: '$(FunctionAppDomain)'
         FunctionAppName: '$(FunctionAppName)'
         EnvironmentName: DEV-DRAFT_CONTENT
@@ -176,17 +137,7 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: '$(ApimProductId)'
-      ApimLoggerName: '$(ApimLoggerName)'
-      ApimProductInstanceName: '$(ApimProductInstanceName)'
-      ApiName: '$(ApiName)'
-      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: '$(SharedResourceGroup)'
-      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: SIT_CONTENT
@@ -221,17 +172,7 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: '$(ApimProductId)'
-      ApimLoggerName: '$(ApimLoggerName)'
-      ApimProductInstanceName: '$(ApimProductInstanceName)'
-      ApiName: '$(ApiName)'
-      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: '$(SharedResourceGroup)'
-      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: SIT-DRAFT_CONTENT
@@ -266,17 +207,7 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: '$(ApimProductId)'
-      ApimLoggerName: '$(ApimLoggerName)'
-      ApimProductInstanceName: '$(ApimProductInstanceName)'
-      ApiName: '$(ApiName)'
-      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: '$(SharedResourceGroup)'
-      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: PP_CONTENT
@@ -311,17 +242,7 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: '$(ResourceGroup)'
       PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
-      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ApimPolicies"
-      ApimProductId: '$(ApimProductId)'
-      ApimLoggerName: '$(ApimLoggerName)'
-      ApimProductInstanceName: '$(ApimProductInstanceName)'
-      ApiName: '$(ApiName)'
-      ApiVersionNumber: '$(ApiVersionNumber)'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
-      ApimImportScript: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.OpenApiDocs"
-      SharedResourceGroup: '$(SharedResourceGroup)'
-      ApimServiceName: '$(ApimServiceName)'
       FunctionAppDomain: '$(FunctionAppDomain)'
       FunctionAppName: '$(FunctionAppName)'
       EnvironmentName: PP-DRAFT_CONTENT
