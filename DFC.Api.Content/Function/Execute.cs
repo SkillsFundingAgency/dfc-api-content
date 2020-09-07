@@ -55,13 +55,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
                 var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
-                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute" : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
+                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute" : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
 
                 var queryToExecute = this.BuildQuery(queryParameters, itemUri);
 
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
-                if (recordsResult == null || !recordsResult.Any())
+               if (recordsResult == null || !recordsResult.Any())
                     return new NotFoundObjectResult("Resource not found");
 
                 log.LogInformation("request has successfully been completed with results");
