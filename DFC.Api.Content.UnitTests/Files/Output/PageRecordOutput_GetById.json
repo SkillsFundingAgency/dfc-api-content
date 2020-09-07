@@ -17,7 +17,7 @@
     "curies": [
       {
         "name": "cont",
-        "href": "://"
+        "href": ":///api/execute"
       }
     ],
     "cont:hasPageLocationsTaxonomy": {
