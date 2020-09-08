@@ -1,31 +1,256 @@
-variables:
-    SolutionBaseName: 'DFC.Api.Content'
-    BuildPlatform: 'any cpu'
-    BuildConfiguration: 'release'
-
 resources:
   repositories:
   - repository: self
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.11.1
+    ref: refs/tags/v1.11.2
     endpoint: 'GitHub (ESFA)'
+
+pool:
+  name: NCS - CI and CD
+  demands:
+  - msbuild
+  - visualstudio
+
+trigger: 
+  branches:
+    include: 
+    - dev
+    - master
+
+pr:
+  branches:
+    include: 
+    - dev
+    - master
 
 stages:
 - stage: Build
-  displayName: Build, Test and Analyze
   jobs:
-  - job: BuildTestAndAnalyze
-    pool:
-      name: NCS - CI and CD
-      demands:
-      - msbuild
-      - visualstudio
-    steps:
-    - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcore-build-sonar.yml@dfc-devops
+    - job:
+      displayName: "Build and test application and templates"
+      steps:
+      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
+        parameters:
+          ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
+          SolutionBaseName: 'DFC.Api.Content'
+
+      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
+        parameters:
+          SolutionBaseName: 'DFC.Api.Content'
+          BuildPlatform: 'any cpu'
+          BuildConfiguration: 'release'
+          PublishWebApp: true
+          TestSuffix: 'Tests'
+          DotNetCoreVersion: '3.1.100'
+
+- stage: DeployToDevContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to DEV_CONTENT
+  variables:
+  - template: VariableTemplates/DevEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-dev
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-dev
+  - group: dfc-app-shared-dev
+  - group: 'KeyVault - dfc-dev-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-dev
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: DEV_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToDevDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to DEV-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/DevDraftEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-dev
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-dev
+  - group: dfc-app-shared-dev
+  - group: 'KeyVault - dfc-dev-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-dev-draft
+  jobs:
+    - template: JobTemplates/deploy-environment.yml
       parameters:
-        SolutionBaseName: $(SolutionBaseName)
-        BuildPlatform: 'any cpu'
-        BuildConfiguration: 'release'
-        DotNetCoreVersion: '3.1.100'
+        AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+        EnvironmentTag: '$(EnvironmentTag)'
+        ParentBusiness: '$(ParentBusiness)'
+        ServiceOffering: '$(ServiceOffering)'
+        ResourceGroup: '$(ResourceGroup)'
+        PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+        ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+        FunctionAppDomain: '$(FunctionAppDomain)'
+        FunctionAppName: '$(FunctionAppName)'
+        EnvironmentName: DEV-DRAFT_CONTENT
+        DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+        # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+        # The top level -`s here defines an array of "something"
+        # The inner level -'s defines an array of mappings.
+        Apis: 
+          -
+            - name: GetDraftContent
+              azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToSitContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to SIT_CONTENT
+  variables:
+  - template: VariableTemplates/SitEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-sit
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-sit
+  - group: dfc-app-shared-sit
+  - group: 'KeyVault - dfc-sit-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: SIT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToSitDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to SIT-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/SitDraftEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-sit
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-sit
+  - group: dfc-app-shared-sit
+  - group: 'KeyVault - dfc-sit-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-sit-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: SIT-DRAFT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetDraftContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToPPContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PP_CONTENT
+  variables:
+  - template: VariableTemplates/PPEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-pp
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-pp
+  - group: dfc-app-shared-pp
+  - group: 'KeyVault - dfc-pp-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-pp
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PP_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToPPDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PP-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/PPDraftEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-pp
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-pp
+  - group: dfc-app-shared-pp
+  - group: 'KeyVault - dfc-pp-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-pp-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PP-DRAFT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetDraftContent
+            azureFunctionName: '$(FunctionAppName)'

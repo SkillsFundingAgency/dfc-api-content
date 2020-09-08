@@ -1,0 +1,51 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appSharedResourceGroup": {
+      "value": "dfc-dev-app-sharedresources-rg"
+    },
+    "appSharedStorageAccountName": {
+      "value": "dfcdevappsharedstr"
+    },
+    "aspTier": {
+      "value": "Standard"
+    },
+    "aspSize": {
+      "value": "1"
+    },
+    "aspInstances": {
+      "value": 2
+    },
+    "ContentTypeUriMap": {
+      "value": "http://some-newdata-uri/"
+    },
+    "ContentApiOptionsAction": {
+      "value": "getcontent"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "sharedResourceGroup": {
+      "value": "dfc-dev-shared-rg"
+    },
+    "sharedAppServicePlanName": {
+      "value": "dfc-dev-app-shared-asp"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "value": "dfc-dev-app-sharedresources-rg"
+    },
+    "Neo4jUrl": {
+      "value": "http://some-database-instance/"
+    },
+    "Neo4jUser": {
+      "value": "someUsername"
+    },
+    "Neo4jPassword": {
+      "value": "not-a-real-password"
+    },
+    "sharedDfcStorageAccountName": {
+      "value": "dfcdevsharedstr"
+    }
+  }
+}
