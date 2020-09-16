@@ -254,3 +254,73 @@ stages:
         -
           - name: GetDraftContent
             azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToPRDContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PRD_CONTENT
+  variables:
+  - template: VariableTemplates/PrdEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-prd
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-prd
+  - group: dfc-app-shared-prd
+  - group: 'KeyVault - dfc-prd-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-prd
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-Prod (6c93f7dc-6c36-4ea6-8de3-3f4574f88027)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PRD_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToPRDDraftContent
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to PRD-DRAFT_CONTENT
+  variables:
+  - template: VariableTemplates/PrdDraftEnvironmentVariables.yml
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-prd
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-prd
+  - group: dfc-app-shared-prd
+  - group: 'KeyVault - dfc-prd-shared-kv'
+  - name: WebAppPrefix
+    value: dfc-prd-draft
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-DIG-Prod (6c93f7dc-6c36-4ea6-8de3-3f4574f88027)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: PRD-DRAFT_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetDraftContent
+            azureFunctionName: '$(FunctionAppName)'
