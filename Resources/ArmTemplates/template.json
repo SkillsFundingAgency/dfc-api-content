@@ -182,11 +182,11 @@
               },
               {
                 "name": "ContentApiOptions__ContentTypeNameMap__occupation",
-                "value": "esco__occupation"
+                "value": "esco__Occupation"
               },
               {
                 "name": "ContentApiOptions__ContentTypeNameMap__skill",
-                "value": "esco__skill"
+                "value": "esco__Skill"
               },
               {
                 "name": "ContentApiOptions__scheme",
