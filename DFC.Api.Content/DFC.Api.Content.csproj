@@ -8,8 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings-template.json" />
-    <None Remove="appsettings.development.json" />
-    <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DFC.ServiceTaxonomy.Neo4j" Version="0.1.244" />
