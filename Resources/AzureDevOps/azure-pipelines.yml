@@ -46,7 +46,7 @@ stages:
           DotNetCoreVersion: '3.1.100'
 
 - stage: DeployToDevContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   displayName: Deploy to DEV_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -81,7 +81,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToDevDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to DEV-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -116,7 +116,7 @@ stages:
               azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToSitContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to SIT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -151,7 +151,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToSitDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to SIT-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -186,7 +186,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PP_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -221,7 +221,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPPContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PP-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -256,7 +256,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPPDraftContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PRD_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -291,7 +291,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPRDContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PRD-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
