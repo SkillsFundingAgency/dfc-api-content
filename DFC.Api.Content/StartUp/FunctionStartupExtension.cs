@@ -25,7 +25,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(GetCustomSettingsPath())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
