@@ -94,7 +94,19 @@ namespace DFC.Api.Content.Helpers
                 {
                     var childKey = child["relationship"]!.ToString();
 
-                    var itemUri = new Uri(child["href"]!.ToString());
+                    Uri itemUri;
+
+                    try
+                    {
+                        itemUri = new Uri(child["href"]!.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+#pragma warning disable S112
+                        throw new Exception(
+                            $"Error occurred trying to create itemUri from - {child["href"]!}. childKey was {childKey}", ex);
+#pragma warning restore S112
+                    }
 
                     var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{itemUri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
 
