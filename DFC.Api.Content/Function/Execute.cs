@@ -57,10 +57,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 }
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
+                var reqPath = req.Path.Value.ToLower().Replace("/false", string.Empty).Replace("/true", string.Empty);
 
                 var hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
-                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
-                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute" : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
+                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower()
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{reqPath}".ToLower();
+                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
 
                 var queryToExecute = BuildQuery(queryParameters, itemUri, multiDirectional ?? false);
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
