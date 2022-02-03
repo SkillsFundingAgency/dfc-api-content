@@ -122,7 +122,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
         private async Task<IActionResult> RunFunction(string contentType, Guid? id)
         {
-            return await _executeFunction.Run(_request, contentType, id, _log).ConfigureAwait(false);
+            return await _executeFunction.Run(_request, contentType, id, null, _log).ConfigureAwait(false);
         }
     }
 }
