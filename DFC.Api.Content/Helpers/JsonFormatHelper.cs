@@ -20,17 +20,17 @@ namespace DFC.Api.Content.Helpers
             _settings = settings;
         }
 
-        public object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost)
+        public object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost, bool multiDirectional)
         {
             switch (type)
             {
                 case RequestType.GetAll:
-                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost, false));
+                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost, false, multiDirectional));
                 case RequestType.GetById:
                     var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
                     if (recordValues != null)
                     {
-                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true);
+                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true, multiDirectional);
                     }
 
                     throw ApiFunctionException.InternalServerError($"Request Type: {type} records contain unformattable response");
@@ -40,7 +40,7 @@ namespace DFC.Api.Content.Helpers
             }
         }
 
-        private object CreateSingleRootObject(object input, string apiHost, bool includeLinks)
+        private object CreateSingleRootObject(object input, string apiHost, bool includeLinks, bool multiDirectional)
         {
             var objToReturn = new JObject();
 
@@ -53,7 +53,7 @@ namespace DFC.Api.Content.Helpers
 
             if (includeLinks)
             {
-                ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
+                ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj, multiDirectional);
             }
 
             return objToReturn;
@@ -65,7 +65,8 @@ namespace DFC.Api.Content.Helpers
         /// <param name="apiHost"></param>
         /// <param name="objToReturn"></param>
         /// <param name="neoJsonObj"></param>
-        private static void ConvertLinksToHAL(string apiHost, JObject objToReturn, JObject neoJsonObj)
+        /// <param name="multiDirectional"></param>
+        private static void ConvertLinksToHAL(string apiHost, JObject objToReturn, JObject neoJsonObj, bool multiDirectional)
         {
             var uri = new Uri(neoJsonObj["data"]!["uri"]!.ToString());
             objToReturn.Add(new JProperty("id", uri.Segments.LastOrDefault().TrimEnd('/')));
@@ -108,7 +109,15 @@ namespace DFC.Api.Content.Helpers
 #pragma warning restore S112
                     }
 
-                    var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{itemUri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
+                    var href = 
+                        $"/{child["contentType"]}/{itemUri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant();
+
+                    if (multiDirectional)
+                    {
+                        href += "/true";
+                    }
+                    
+                    var jObjectToAdd = new JObject(new JProperty("href", href), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
 
                     foreach (var prop in child["props"]!)
                     {
