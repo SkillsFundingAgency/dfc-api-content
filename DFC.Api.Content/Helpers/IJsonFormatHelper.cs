@@ -6,6 +6,6 @@ namespace DFC.Api.Content.Helpers
 {
     public interface IJsonFormatHelper
     {
-        object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost);
+        object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost, bool multiDirectional);
     }
 }

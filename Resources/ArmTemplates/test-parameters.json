@@ -18,7 +18,7 @@
       "value": 2
     },
     "ContentTypeUriMap": {
-      "value": "http://some-newdata-uri/"
+      "value": ""
     },
     "ContentApiOptionsAction": {
       "value": "getcontent"

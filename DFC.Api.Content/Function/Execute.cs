@@ -27,6 +27,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly IGraphCluster _graphCluster;
         private readonly IJsonFormatHelper _jsonFormatHelper;
         private const string contentByIdCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]->(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
+        private const string contentByIdMultiDirectionalCypher = "MATCH (s {{uri:'{0}'}}) optional match(s)-[r]-(d) with s, {{href:d.uri, type:'GET', title:d.skos__prefLabel, relationship:type(r), RelProperties:properties(r), dynamicKey:reduce(lab = '', n IN labels(d) | case n WHEN 'Resource' THEN lab + '' WHEN 'skos__Concept' THEN lab +  '' WHEN 'esco__MemberConcept' THEN lab + '' ELSE lab +  n END), rel:labels(d)}} as destinationUris with s, {{contentType:destinationUris.dynamicKey, href: destinationUris.href, relationship:destinationUris.relationship, props: destinationUris.RelProperties, title:destinationUris.title}} as map with s,collect(map) as links with s,links,{{ data: properties(s)}} as sourceNodeWithOutgoingRelationships return {{data:sourceNodeWithOutgoingRelationships.data, _links:links}}";
         private const string contentGetAllCypher = "MATCH (s) where ANY(l in labels(s) where toLower(l) =~ '{0}') return {{data:{{skos__prefLabel:s.skos__prefLabel, ModifiedDate:s.ModifiedDate, CreatedDate:s.CreatedDate, Uri:s.uri}}}}";
 
         public Execute(IOptionsMonitor<ContentApiOptions> contentApiOptions, IGraphClusterBuilder graphClusterBuilder, IJsonFormatHelper jsonFormatHelper)
@@ -38,7 +39,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}")] HttpRequest req, string contentType, Guid? id,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}/{multiDirectional:bool?}")]
+            HttpRequest req,
+            string contentType,
+            Guid? id,
+            bool? multiDirectional,
             ILogger log)
         {
             try
@@ -52,13 +57,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 }
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
+                var reqPath = req.Path.Value.ToLower().Replace("/false", string.Empty).Replace("/true", string.Empty);
 
-                bool hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
-                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower() : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{req.Path.Value}".ToLower();
-                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute" : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
+                var hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
+                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower()
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{reqPath}".ToLower();
+                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
 
-                var queryToExecute = this.BuildQuery(queryParameters, itemUri);
-
+                var queryToExecute = BuildQuery(queryParameters, itemUri, multiDirectional ?? false);
                 var recordsResult = await ExecuteCypherQuery(queryToExecute.Query, log);
 
                if (recordsResult == null || !recordsResult.Any())
@@ -67,7 +74,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogInformation("request has successfully been completed with results");
 
                 SetContentTypeHeader(req);
-                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost));
+                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost, multiDirectional ?? false));
             }
             catch (ApiFunctionException e)
             {
@@ -101,19 +108,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath, bool multiDirectional)
         {
             if (!queryParameters.Id.HasValue)
             {
                 //GetAll Query
                 return new ExecuteQuery(string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType).ToLowerInvariant()), RequestType.GetAll);
             }
-            else
-            {
-                var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, requestPath);
-                return new ExecuteQuery(string.Format(contentByIdCypher, uri), RequestType.GetById);
+            
+            var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, requestPath);
 
-            }
+            var baseQuery = multiDirectional ? contentByIdMultiDirectionalCypher : contentByIdCypher;
+            return new ExecuteQuery(string.Format(baseQuery, uri), RequestType.GetById);
         }
 
         private string GenerateUri(string contentType, Guid id, string requestPath)

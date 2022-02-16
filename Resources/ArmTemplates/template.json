@@ -173,22 +173,6 @@
                 "value": "[reference(variables('FunctionAppInsightName')).outputs.InstrumentationKey.value]"
               },
               {
-                "name": "ContentApiOptions__ContentTypeUriMap__occupation",
-                "value": "[concat(parameters('ContentTypeUriMap'), '/occupation/{0}')]"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeUriMap__skill",
-                "value": "[concat(parameters('ContentTypeUriMap'), '/skill/{0}')]"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeNameMap__occupation",
-                "value": "esco__Occupation"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeNameMap__skill",
-                "value": "esco__Skill"
-              },
-              {
                 "name": "ContentApiOptions__scheme",
                 "value": "https"
               },
