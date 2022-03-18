@@ -1,5 +1,4 @@
 ﻿using DFC.Api.Content.Helpers;
-using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.ApiFunction.StartUp;
 using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Log;
@@ -13,6 +12,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using DFC.Api.Content.Models;
 
 [assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
 

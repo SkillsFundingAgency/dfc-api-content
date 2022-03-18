@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DFC.ServiceTaxonomy.ApiFunction.Models
+namespace DFC.Api.Content.Models
 {
     public class QueryParameters
     {

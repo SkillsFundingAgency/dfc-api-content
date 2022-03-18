@@ -1,11 +1,11 @@
 ﻿using DFC.Api.Content.Enums;
-using Neo4j.Driver;
 using System.Collections.Generic;
+using IRecord = DFC.Api.Content.Interfaces.IRecord;
 
 namespace DFC.Api.Content.Helpers
 {
     public interface IJsonFormatHelper
     {
-        object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost, bool multiDirectional);
+        object FormatResponse(IList<IRecord> recordsResult, RequestType type, string apiHost, bool multiDirectional);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DFC.ServiceTaxonomy.ApiFunction.Models
+namespace DFC.Api.Content.Models
 {
     public class ContentApiOptions
     {
@@ -13,15 +13,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Models
 
         public Dictionary<string, string> ContentTypeUriMap { get; set; }
         public Dictionary<string, string> ContentTypeNameMap { get; set; }
-
-        public Dictionary<string, string> ReversedContentTypeUriMap
-        {
-            get
-            {
-                return ContentTypeUriMap.ToDictionary(x => x.Value, x => x.Key);
-            }
-        }
-
+        
         public Dictionary<string, string> ReversedContentTypeNameMap
         {
             get

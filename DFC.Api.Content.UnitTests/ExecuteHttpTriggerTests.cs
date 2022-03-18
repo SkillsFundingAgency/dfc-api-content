@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using DFC.Api.Content.Function;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Models;
 using DFC.Api.Content.Models.Cypher;
-using DFC.ServiceTaxonomy.ApiFunction.Function;
-using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.Neo4j.Configuration;
 using DFC.ServiceTaxonomy.Neo4j.Services;
 using DFC.ServiceTaxonomy.Neo4j.Services.Interfaces;
@@ -86,7 +85,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetAll.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetAll.json");
 
-            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericCypherQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
+            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericQuery>.Ignored)).Returns(new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "data.properties" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) });
 
             var result = await RunFunction("test1", null);
             var okObjectResult = result as OkObjectResult;
@@ -108,7 +107,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var driverRecords = new List<IRecord>() { new Api.Content.UnitTests.Models.Record(new string[] { "values" }, new object[] { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput.ToString()) }) };
 
-            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericCypherQuery>.Ignored)).Returns(driverRecords);
+            A.CallTo(() => _graphCluster.Run(A<string>.Ignored, A<GenericQuery>.Ignored)).Returns(driverRecords);
 
             var result = await RunFunction("test1", Guid.NewGuid());
             var okObjectResult = result as OkObjectResult;

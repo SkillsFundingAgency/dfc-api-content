@@ -1,13 +1,13 @@
 ﻿using DFC.Api.Content.Enums;
-using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
-using DFC.ServiceTaxonomy.ApiFunction.Models;
 using Microsoft.Extensions.Options;
-using Neo4j.Driver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DFC.Api.Content.Exceptions;
+using DFC.Api.Content.Models;
+using IRecord = DFC.Api.Content.Interfaces.IRecord;
 
 namespace DFC.Api.Content.Helpers
 {
@@ -20,17 +20,23 @@ namespace DFC.Api.Content.Helpers
             _settings = settings;
         }
 
-        public object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost, bool multiDirectional)
+        public object FormatResponse(IList<IRecord> recordsResult, RequestType type, string apiHost,
+            bool multiDirectional)
         {
             switch (type)
             {
                 case RequestType.GetAll:
                     return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost, false, multiDirectional));
                 case RequestType.GetById:
-                    var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
+                    var recordValues = recordsResult
+                        .Select(z => z.Values)
+                        .FirstOrDefault()?
+                        .Values
+                        .FirstOrDefault();
+
                     if (recordValues != null)
                     {
-                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true, multiDirectional);
+                        return CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true, multiDirectional);
                     }
 
                     throw ApiFunctionException.InternalServerError($"Request Type: {type} records contain unformattable response");

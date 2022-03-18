@@ -1,16 +1,15 @@
-﻿using DFC.ServiceTaxonomy.Neo4j.Queries.Interfaces;
-using Neo4j.Driver;
-using System.Collections.Generic;
-using DFC.ServiceTaxonomy.Neo4j.Queries;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DFC.Api.Content.Interfaces;
+using IRecord = DFC.Api.Content.Interfaces.IRecord;
 
-namespace DFC.Api.Content.Models.Cypher
+namespace DFC.Api.Content.Models
 {
     [ExcludeFromCodeCoverage]
-    public class GenericCypherQuery : IQuery<IRecord>
+    public class GenericQuery : IQuery<IRecord>
     {
-        public string QueryToRun { get; set; }
-        public GenericCypherQuery(string query) => QueryToRun = query;
+        private string QueryToRun { get; }
+        public GenericQuery(string query) => QueryToRun = query;
 
         public List<string> ValidationErrors()
         {
@@ -28,7 +27,7 @@ namespace DFC.Api.Content.Models.Cypher
         {
             get
             {
-                this.CheckIsValid();
+                CheckIsValid();
                 return new Query(QueryToRun);
             }
         }
@@ -36,6 +35,11 @@ namespace DFC.Api.Content.Models.Cypher
         public IRecord ProcessRecord(IRecord record)
         {
             return record;
+        }
+
+        public bool CheckIsValid()
+        {
+            return true;
         }
     }
 }
