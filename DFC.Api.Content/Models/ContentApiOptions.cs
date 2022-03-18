@@ -22,8 +22,8 @@ namespace DFC.Api.Content.Models
             }
         }
 
-        public string? Scheme { get; set; }
+        public string? Scheme { get; }
 
-        public string? Action { get; set; }
+        public string? Action { get; }
     }
 }

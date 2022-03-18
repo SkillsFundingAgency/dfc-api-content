@@ -1,7 +1,7 @@
 # Digital First Careers – Content API
 
 ## Introduction
-This is a function app that serves content from Neo4j via Orchard Core. The main consumer of which are Composite UI applications.
+This is a function app that serves content from a data source (Cosmos Db) via Orchard Core. The main consumer of which are Composite UI applications.
 
 ## Getting Started
 
@@ -11,9 +11,9 @@ Clone the project and open the solution in Visual Studio 2019.
 
 ## List of dependencies
 
-|Item	|Purpose|
-|-------|-------|
-|Neo4j | Populated data source for the API to serve |
+| Item	    |Purpose|
+|----------|-------|
+| CosmosDb | Populated data source for the API to serve |
 
 ## Local Config Files
 
@@ -21,7 +21,7 @@ Clone the project and open the solution in Visual Studio 2019.
 
 The project contains a number of "appsettings-template.json" files which contain sample appsettings for the web app and the test projects. To use these files, rename them to "appsettings.json" and edit and replace the configuration item values with values suitable for your environment.
 
-You will need to have a locally configured Neo4J instance populated with data from Orchard Core to use the API. Please see the references section for setting up Service Taxonomy.
+You will need to have a locally configured Cosmos Db instance populated with data from Orchard Core to use the API. Please see the references section for setting up Service Taxonomy.
 
 ## Running locally
 
@@ -38,7 +38,7 @@ This API is deployed via an Azure DevOps release pipeline.
 
 ## References
 
-Please refer to https://github.com/SkillsFundingAgency/dfc-servicetaxonomy-editor for information on setting up Neo4J and Orchard for for Service Taxonomy.
+Please refer to https://github.com/SkillsFundingAgency/dfc-servicetaxonomy-editor for information on setting up Cosmos Db and Orchard for for Service Taxonomy.
 
 ## Exmaple Json Returned
 

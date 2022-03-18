@@ -24,8 +24,8 @@ namespace DFC.Api.Content.Function
         private readonly IDataSourceProvider _dataSource;
         private readonly IJsonFormatHelper _jsonFormatHelper;
         
-        private const string contentByIdCosmosSql = "select * from c where id ='{0}'";
-        private const string contentByIdMultiDirectionalCosmosSql = "select * from c where id ='{0}'";
+        private const string contentByIdCosmosSql = "select * from c where c.id ='{0}'";
+        private const string contentByIdMultiDirectionalCosmosSql = "select * from c where c.id ='{0}'";
         private const string contentGetAllCosmosSql = "select * from c";
         
         public Execute(IOptionsMonitor<ContentApiOptions> contentApiOptions, IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
@@ -57,18 +57,8 @@ namespace DFC.Api.Content.Function
                 }
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
-                var reqPath = req.Path.Value.ToLower()
-                    .Replace("/false", string.Empty)
-                    .Replace("/true", string.Empty);
-
-                var itemUri = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute/{contentType.ToLower()}/{id}".ToLower()
-                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}{reqPath}".ToLower();
-
-                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
-                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
-
-                var queryToExecute = BuildQuery(queryParameters, itemUri, multiDirectional ?? false);
-                var recordsResult = await ExecuteQuery(queryToExecute.Query, log);
+                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false);
+                var recordsResult = await ExecuteQuery(queryToExecute, log);
 
                 if (!recordsResult.Any())
                 {
@@ -78,7 +68,12 @@ namespace DFC.Api.Content.Function
                 log.LogInformation("Request has successfully been completed with results");
 
                 SetContentTypeHeader(req);
-                return new OkObjectResult(_jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost, multiDirectional ?? false));
+                
+                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
+                
+                return new OkObjectResult(
+                    _jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost, multiDirectional ?? false));
             }
             catch (ApiFunctionException e)
             {
@@ -102,39 +97,31 @@ namespace DFC.Api.Content.Function
             headers.Add("content-type", "application/hal+json");
         }
 
-        private async Task<IList<IRecord>> ExecuteQuery(string query, ILogger log)
+        private async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQuery query, ILogger log)
         {
-            log.LogInformation("Attempting to query data source with the following query: {Query}", query);
+            log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
+                query.QueryText,
+                query.ContentType);
 
             try
             {
-                return (await _dataSource.Run("target", new GenericQuery(query))).ToList();
+                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType))).ToList();
             }
             catch (Exception ex)
             {
-                throw ApiFunctionException.InternalServerError("Unable To run query", ex);
+                throw ApiFunctionException.InternalServerError("Unable to run query", ex);
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, string requestPath, bool multiDirectional)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional)
         {
             if (!queryParameters.Id.HasValue)
             {
-                //GetAll Query
-                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll);
+                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType);
             }
             
-            var uri = GenerateUri(queryParameters.ContentType, queryParameters.Id.Value, requestPath);
-
             var baseQuery = multiDirectional ? contentByIdMultiDirectionalCosmosSql : contentByIdCosmosSql;
-            return new ExecuteQuery(string.Format(baseQuery, uri), RequestType.GetById);
-        }
-
-        private string GenerateUri(string contentType, Guid id, string requestPath)
-        {
-            _contentApiOptions.CurrentValue.ContentTypeUriMap.TryGetValue(contentType.ToLower(), out var mappedValue);
-            
-            return string.IsNullOrWhiteSpace(mappedValue) ? requestPath : string.Format(mappedValue, id);
+            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType);
         }
     }
 }

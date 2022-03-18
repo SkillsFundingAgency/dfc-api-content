@@ -56,7 +56,7 @@ namespace DFC.Api.Content.Exceptions
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             // MUST call through to the base class to let it save its own state

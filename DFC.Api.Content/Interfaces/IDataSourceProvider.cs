@@ -6,6 +6,6 @@ namespace DFC.Api.Content.Interfaces
 {
     public interface IDataSourceProvider
     {
-        public Task<IEnumerable<IRecord>> Run(string something, GenericQuery query);
+        public Task<List<Dictionary<string, object>>> Run(GenericQuery query);
     }
 }
