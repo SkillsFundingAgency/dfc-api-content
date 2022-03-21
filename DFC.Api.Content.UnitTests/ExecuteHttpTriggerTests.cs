@@ -79,10 +79,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetAll.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetAll.json");
 
+            var recordJson = ((JObject)JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput)["data"])
+                .ToObject<Dictionary<string, object>>();
+            
             A.CallTo(() => _dataSource.Run(A<GenericQuery>.Ignored))
                 .Returns(new List<Dictionary<string, object>>
                 {
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput)
+                    recordJson
                 });
 
             var result = await RunFunction("test1", null);
@@ -103,17 +106,24 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetById.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetById.json");
 
-            var driverRecords = new List<Dictionary<string, object>> { JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput) };
+            var recordJson = ((JObject)JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput)["data"])
+                .ToObject<Dictionary<string, object>>();
 
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.Ignored)).Returns(driverRecords);
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.Ignored))
+                .Returns(new List<Dictionary<string, object>>
+                {
+                    recordJson
+                });
 
             var result = await RunFunction("test1", Guid.NewGuid());
             var okObjectResult = result as OkObjectResult;
 
             // Assert
             Assert.True(result is OkObjectResult);
+            
+            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
 
-            var equal = JToken.DeepEquals(JToken.Parse(okObjectResult.Value.ToString()), JToken.Parse(expectedJsonOutput));
+            var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
             Assert.True(equal);
         }
 

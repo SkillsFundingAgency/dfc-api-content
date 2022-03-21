@@ -9,16 +9,35 @@ namespace DFC.Api.Content.Services
 {
     public class CosmosDbService : IDataSourceProvider
     {
-        private CosmosClient CosmosClient { get; }
-
-        public CosmosDbService(string connectionString)
+        private CosmosClient PreviewCosmosClient { get; }
+        private string PreviewDatabaseName { get; }
+        private string PreviewContainerName { get; }
+        
+        private CosmosClient PublishedCosmosClient { get; }
+        private string PublishedDatabaseName { get; }
+        private string PublishedContainerName { get; }
+        
+        public CosmosDbService(
+            string previewConnectionString,
+            string previewDatabaseName,
+            string previewContainerName,
+            string publishedConnectionString,
+            string publishedDatabaseName,
+            string publishedContainerName
+            )
         {
-            CosmosClient = new CosmosClient(connectionString);
+            PreviewCosmosClient = new CosmosClient(previewConnectionString);
+            PreviewDatabaseName = previewDatabaseName;
+            PreviewContainerName = previewContainerName;
+            
+            PublishedCosmosClient = new CosmosClient(publishedConnectionString);
+            PublishedDatabaseName = publishedDatabaseName;
+            PublishedContainerName = publishedContainerName;
         }
         
         public async Task<List<Dictionary<string, object>>> Run(GenericQuery query)
         {
-            var container = GetContainer("published");
+            var container = GetContainer(query.State);
             return await GetItemFromDatabase(container, query.QueryText, query.ContentType);
         }
         
@@ -32,10 +51,11 @@ namespace DFC.Api.Content.Services
             return result.Resource.ToList();
         }
         
-        private Container GetContainer(string databaseName)
+        private Container GetContainer(string state)
         {
-            var database = CosmosClient.GetDatabase("dev");
-            return database.GetContainer(databaseName);
+            return state == "preview" ?
+                PreviewCosmosClient.GetDatabase(PreviewDatabaseName).GetContainer(PreviewContainerName)
+                : PublishedCosmosClient.GetDatabase(PublishedDatabaseName).GetContainer(PublishedContainerName);
         }
     }
 }

@@ -37,10 +37,11 @@ namespace DFC.Api.Content.Function
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}/{multiDirectional:bool?}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}/{state:string?}/{multiDirectional:bool?}")]
             HttpRequest req,
             string contentType,
             Guid? id,
+            string? state,
             bool? multiDirectional,
             ILogger log)
         {
@@ -57,7 +58,7 @@ namespace DFC.Api.Content.Function
                 }
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
-                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false);
+                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false, state ?? "published");
                 var recordsResult = await ExecuteQuery(queryToExecute, log);
 
                 if (!recordsResult.Any())
@@ -105,7 +106,7 @@ namespace DFC.Api.Content.Function
 
             try
             {
-                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType))).ToList();
+                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.State))).ToList();
             }
             catch (Exception ex)
             {
@@ -113,15 +114,15 @@ namespace DFC.Api.Content.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional)
+        private ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional, string state)
         {
             if (!queryParameters.Id.HasValue)
             {
-                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType);
+                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType, state);
             }
             
             var baseQuery = multiDirectional ? contentByIdMultiDirectionalCosmosSql : contentByIdCosmosSql;
-            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType);
+            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType, state);
         }
     }
 }

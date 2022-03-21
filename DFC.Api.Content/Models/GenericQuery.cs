@@ -10,10 +10,13 @@ namespace DFC.Api.Content.Models
         public string QueryText { get; }
         public string ContentType { get; }
         
-        public GenericQuery(string queryText, string contentType)
+        public string State { get; }
+        
+        public GenericQuery(string queryText, string contentType, string state)
         {
             QueryText = queryText;
             ContentType = contentType;
+            State = state;
         }
     }
 }

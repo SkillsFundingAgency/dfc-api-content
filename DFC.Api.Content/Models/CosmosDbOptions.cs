@@ -4,6 +4,6 @@ namespace DFC.Api.Content.Models
 {
     public class CosmosDbOptions
     {
-        public List<string>? Endpoints { get; } = new List<string>();
+        public Dictionary<string, Dictionary<string, string>>? Endpoints { get; } = new Dictionary<string, Dictionary<string, string>>();
     }
 }

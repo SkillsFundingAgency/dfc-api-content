@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using DFC.Api.Content;
 using DFC.Api.Content.Helpers;
@@ -41,7 +40,16 @@ namespace DFC.Api.Content
             builder.Services.AddSingleton<IDataSourceProvider, CosmosDbService>(services =>
             {
                 var options = services.GetRequiredService<IOptions<CosmosDbOptions>>();
-                return new CosmosDbService(options.Value.Endpoints!.First());
+                var preview = options.Value.Endpoints!["preview"];
+                var published = options.Value.Endpoints!["published"];
+                
+                return new CosmosDbService(
+                    preview["ConnectionString"],
+                    preview["DatabaseName"], 
+                    preview["ContainerName"],
+                    published["ConnectionString"],
+                    published["DatabaseName"], 
+                    published["ContainerName"]);
             });
             
             builder.Services.AddTransient<ILogger, BasicLogger>();
