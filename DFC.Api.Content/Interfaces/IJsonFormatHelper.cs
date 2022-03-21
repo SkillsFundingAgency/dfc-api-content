@@ -1,7 +1,7 @@
-﻿using DFC.Api.Content.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DFC.Api.Content.Enums;
 
-namespace DFC.Api.Content.Helpers
+namespace DFC.Api.Content.Interfaces
 {
     public interface IJsonFormatHelper
     {

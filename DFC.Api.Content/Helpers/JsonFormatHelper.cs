@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DFC.Api.Content.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace DFC.Api.Content.Helpers

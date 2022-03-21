@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.Api.Content.Enums;
 using DFC.Api.Content.Exceptions;
-using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Interfaces;
 using DFC.Api.Content.Models;
 using Microsoft.AspNetCore.Http;
@@ -37,15 +36,21 @@ namespace DFC.Api.Content.Function
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Execute/{contentType}/{id:guid?}/{state:string?}/{multiDirectional:bool?}")]
-            HttpRequest req,
+            [HttpTrigger(
+                AuthorizationLevel.Anonymous,
+                "get",
+                Route = "Execute/{contentType}/{id:guid?}/{publishState?}/{multiDirectional:bool?}")]
+            HttpRequest request,
             string contentType,
             Guid? id,
-            string? state,
+            ILogger log,
             bool? multiDirectional,
-            ILogger log)
+            string publishState = "")
         {
-            var hasApimHeader = req.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
+            MaintainBackwardsCompatibilityWithPath(ref publishState, ref multiDirectional);
+            SetDefaultStateIfEmpty(ref publishState, request);
+            
+            var hasApimHeader = request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
             
             try
             {
@@ -58,7 +63,7 @@ namespace DFC.Api.Content.Function
                 }
 
                 var queryParameters = new QueryParameters(contentType.ToLower(), id);
-                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false, state ?? "published");
+                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false, publishState);
                 var recordsResult = await ExecuteQuery(queryToExecute, log);
 
                 if (!recordsResult.Any())
@@ -68,10 +73,10 @@ namespace DFC.Api.Content.Function
 
                 log.LogInformation("Request has successfully been completed with results");
 
-                SetContentTypeHeader(req);
+                SetContentTypeHeader(request);
                 
                 var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
-                    : $"{_contentApiOptions.CurrentValue.Scheme}://{req.Host.Value}/api/execute".ToLower();
+                    : $"{_contentApiOptions.CurrentValue.Scheme}://{request.Host.Value}/api/execute".ToLower();
                 
                 return new OkObjectResult(
                     _jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost, multiDirectional ?? false));
@@ -88,6 +93,36 @@ namespace DFC.Api.Content.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+        
+        private static void MaintainBackwardsCompatibilityWithPath(ref string publishState, ref bool? multiDirectional)
+        {
+            if (!bool.TryParse(publishState, out var multiDirectionalOutput)) return;
+
+            multiDirectional = multiDirectionalOutput;
+            publishState = string.Empty;
+        }
+        
+        private static void SetDefaultStateIfEmpty(ref string publishState, HttpRequest request)
+        {
+            if (!string.IsNullOrEmpty(publishState)) return;
+            
+            publishState = GetDefaultPublishState(request.Host.Host);
+        }
+        
+        private static string GetDefaultPublishState(string host)
+        {
+            const string previewPublishState = "preview";
+            const string previewPublishStateAlt = "draft";
+            const string publishedPublishState = "publish";
+            
+            if (host.Contains(previewPublishState, StringComparison.InvariantCultureIgnoreCase) ||
+                host.Contains(previewPublishStateAlt, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return previewPublishState;
+            }
+            
+            return publishedPublishState;
         }
 
         private static void SetContentTypeHeader(HttpRequest req)
@@ -106,7 +141,7 @@ namespace DFC.Api.Content.Function
 
             try
             {
-                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.State))).ToList();
+                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.PublishState))).ToList();
             }
             catch (Exception ex)
             {
@@ -114,15 +149,15 @@ namespace DFC.Api.Content.Function
             }
         }
 
-        private ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional, string state)
+        private static ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional, string publishState)
         {
             if (!queryParameters.Id.HasValue)
             {
-                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType, state);
+                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType, publishState);
             }
             
             var baseQuery = multiDirectional ? contentByIdMultiDirectionalCosmosSql : contentByIdCosmosSql;
-            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType, state);
+            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType, publishState);
         }
     }
 }

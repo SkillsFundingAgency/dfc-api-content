@@ -10,7 +10,6 @@ using DFC.Api.Content.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 [assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
@@ -44,15 +43,14 @@ namespace DFC.Api.Content
                 var published = options.Value.Endpoints!["published"];
                 
                 return new CosmosDbService(
-                    preview["ConnectionString"],
-                    preview["DatabaseName"], 
-                    preview["ContainerName"],
-                    published["ConnectionString"],
-                    published["DatabaseName"], 
-                    published["ContainerName"]);
+                    preview.ConnectionString,
+                    preview.DatabaseName,
+                    preview.ContainerName,
+                    published.ConnectionString,
+                    published.DatabaseName,
+                    published.ContainerName);
             });
             
-            builder.Services.AddTransient<ILogger, BasicLogger>();
             builder.Services.AddSingleton<IJsonFormatHelper, JsonFormatHelper>();
         }
 

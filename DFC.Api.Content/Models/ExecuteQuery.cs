@@ -4,12 +4,12 @@ namespace DFC.Api.Content.Models
 {
     public class ExecuteQuery
     {
-        public ExecuteQuery(string queryText, RequestType requestType, string contentType, string state)
+        public ExecuteQuery(string queryText, RequestType requestType, string contentType, string publishState)
         {
             QueryText = queryText;
             RequestType = requestType;
             ContentType = contentType;
-            State = state;
+            PublishState = publishState;
         }
 
         public string QueryText { get; }
@@ -18,6 +18,6 @@ namespace DFC.Api.Content.Models
 
         public RequestType RequestType { get; }
         
-        public string State { get; }
+        public string PublishState { get; }
     }
 }
