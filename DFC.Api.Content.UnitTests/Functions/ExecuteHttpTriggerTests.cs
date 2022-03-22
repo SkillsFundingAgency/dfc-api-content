@@ -86,8 +86,7 @@ namespace DFC.Api.Content.UnitTests.Functions
             var okObjectResult = result as OkObjectResult;
             var resultJson = JsonConvert.SerializeObject(okObjectResult!.Value);
 
-            var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
-            Assert.True(equal);
+            Assert.Equal(JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), resultJson);
         }
 
         [Fact]
@@ -113,8 +112,7 @@ namespace DFC.Api.Content.UnitTests.Functions
             var okObjectResult = result as OkObjectResult;
             var resultJson = JsonConvert.SerializeObject(okObjectResult!.Value);
 
-            var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
-            Assert.True(equal);
+            Assert.Equal(JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), resultJson);
         }
 
         private async Task<IActionResult> RunFunction(string contentType, Guid? id)
