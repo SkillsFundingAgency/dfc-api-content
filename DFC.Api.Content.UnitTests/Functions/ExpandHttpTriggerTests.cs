@@ -102,15 +102,16 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
             
             var result = await RunFunction("page", Guid.Parse("f60c7388-7b89-40d6-9911-52f5ae6b4a41"));
-            var okObjectResult = result as OkObjectResult;
-
+            
             // Assert
-            Assert.True(result is OkObjectResult);
+            Assert.IsType<OkObjectResult>(result);
 
-            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
-            var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
+            var okObjectResult = result as OkObjectResult;
+            var actualJsonOutput = JsonConvert.SerializeObject(okObjectResult!.Value);
 
-            Assert.True(equal);
+            Assert.Equal(
+                JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), 
+                actualJsonOutput);
         }
 
         private async Task<IActionResult> RunFunction(string contentType, Guid id)
