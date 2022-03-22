@@ -38,27 +38,27 @@ namespace DFC.Api.Content.UnitTests.Functions
         [Fact]
         public async Task Expand_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
         {
-            var result = await RunFunction(String.Empty, Guid.NewGuid());
-
-            var badRequestObjectResult = result as BadRequestObjectResult;
+            var result = await RunFunction(string.Empty, Guid.NewGuid());
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is BadRequestObjectResult);
-            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
+            Assert.IsType<BadRequestObjectResult>(result);
+
+            var badRequestObjectResult = result as BadRequestObjectResult;
+            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult!.StatusCode);
         }
 
         [Fact]
         public async Task Expand_WhenNoData_ReturnsNotFoundObjectResult()
         {
-            var result = await RunFunction("test1", Guid.NewGuid());
-
-            var notFoundObjectResult = result as NotFoundObjectResult;
+            var result = await RunFunction("test1", Guid.NewGuid()); ;
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is NotFoundObjectResult);
-            Assert.Equal((int?)HttpStatusCode.NotFound, notFoundObjectResult.StatusCode);
+            Assert.IsType<NotFoundObjectResult>(result);
+
+            var notFoundObjectResult = result as NotFoundObjectResult;
+            Assert.Equal((int?)HttpStatusCode.NotFound, notFoundObjectResult!.StatusCode);
         }
 
         [Fact]

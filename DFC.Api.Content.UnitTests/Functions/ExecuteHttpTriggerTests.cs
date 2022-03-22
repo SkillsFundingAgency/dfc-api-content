@@ -42,12 +42,12 @@ namespace DFC.Api.Content.UnitTests.Functions
         {
             var result = await RunFunction(string.Empty, null);
 
-            var badRequestObjectResult = result as BadRequestObjectResult;
-
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is BadRequestObjectResult);
-            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
+            Assert.IsType<BadRequestObjectResult>(result);
+
+            var badRequestObjectResult = result as BadRequestObjectResult;
+            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult!.StatusCode);
         }
 
         [Fact]
@@ -55,12 +55,12 @@ namespace DFC.Api.Content.UnitTests.Functions
         {
             var result = await RunFunction("test1", null);
 
-            var notFoundObjectResult = result as NotFoundObjectResult;
-
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is NotFoundObjectResult);
-            Assert.Equal((int?)HttpStatusCode.NotFound, notFoundObjectResult.StatusCode);
+            Assert.IsType<NotFoundObjectResult>(result);
+
+            var notFoundObjectResult = result as NotFoundObjectResult;
+            Assert.Equal((int?)HttpStatusCode.NotFound, notFoundObjectResult!.StatusCode);
         }
 
         [Fact]
@@ -79,12 +79,12 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
 
             var result = await RunFunction("test1", null);
-            var okObjectResult = result as OkObjectResult;
 
             // Assert
-            Assert.True(result is OkObjectResult);
+            Assert.IsType<OkObjectResult>(result);
 
-            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
+            var okObjectResult = result as OkObjectResult;
+            var resultJson = JsonConvert.SerializeObject(okObjectResult!.Value);
 
             var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
             Assert.True(equal);
@@ -106,12 +106,12 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
 
             var result = await RunFunction("test1", Guid.NewGuid());
-            var okObjectResult = result as OkObjectResult;
-
-            // Assert
-            Assert.True(result is OkObjectResult);
             
-            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+            
+            var okObjectResult = result as OkObjectResult;
+            var resultJson = JsonConvert.SerializeObject(okObjectResult!.Value);
 
             var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
             Assert.True(equal);
