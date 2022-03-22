@@ -53,7 +53,7 @@ namespace DFC.Api.Content
         private static string GetCustomSettingsPath()
         {
             var home = Environment.GetEnvironmentVariable("HOME") ?? string.Empty;
-            var path = Path.Combine(home, "site", "wwwroot");
+            string? path = Path.Combine(home, "site", "wwwroot");
 
             if (Directory.Exists(path))
             {
@@ -68,7 +68,7 @@ namespace DFC.Api.Content
             }
 
             path = Path.GetDirectoryName(path);
-            var parentDir = Directory.GetParent(path);
+            DirectoryInfo? parentDir = Directory.GetParent(path);
             path = parentDir.FullName;
 
             return path ?? throw new Exception("Path for settings could not be determined");

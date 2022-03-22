@@ -35,6 +35,12 @@ namespace DFC.Api.Content.Helpers
         {
             // Expand the incoming links into their own section
             var recordLinks = SafeCastToDictionary(record["_links"]);
+
+            if (recordLinks == null)
+            {
+                throw new MissingFieldException("Links property missing");
+            }
+            
             var curies = (recordLinks?["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
 
             var incomingPosition = curies!.FindIndex(curie =>
@@ -67,7 +73,7 @@ namespace DFC.Api.Content.Helpers
                 });
             }
                 
-            record["_links"] = recordLinks;
+            record["_links"] = recordLinks!;
             return record;
         }
         
