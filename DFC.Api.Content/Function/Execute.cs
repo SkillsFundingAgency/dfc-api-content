@@ -22,11 +22,7 @@ namespace DFC.Api.Content.Function
         private readonly IOptionsMonitor<ContentApiOptions> _contentApiOptions;
         private readonly IDataSourceProvider _dataSource;
         private readonly IJsonFormatHelper _jsonFormatHelper;
-        
-        private const string contentByIdCosmosSql = "select * from c where c.id ='{0}'";
-        private const string contentByIdMultiDirectionalCosmosSql = "select * from c where c.id ='{0}'";
-        private const string contentGetAllCosmosSql = "select * from c";
-        
+
         public Execute(IOptionsMonitor<ContentApiOptions> contentApiOptions, IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
         {
             _contentApiOptions = contentApiOptions ?? throw new ArgumentNullException(nameof(contentApiOptions));
@@ -62,8 +58,14 @@ namespace DFC.Api.Content.Function
                     throw ApiFunctionException.BadRequest("Required parameter contentType not found in path.");
                 }
 
-                var queryParameters = new QueryParameters(contentType.ToLower(), id);
-                var queryToExecute = BuildQuery(queryParameters, multiDirectional ?? false, publishState);
+                var ids = new List<Guid?>();
+                if (id != null)
+                {
+                    ids.Add(id);
+                }
+
+                var queryParameters = new QueryParameters(contentType.ToLower(), ids);
+                var queryToExecute = BuildQuery(queryParameters, publishState);
                 var recordsResult = await ExecuteQuery(queryToExecute, log);
 
                 if (!recordsResult.Any())
@@ -149,15 +151,21 @@ namespace DFC.Api.Content.Function
             }
         }
 
-        private static ExecuteQuery BuildQuery(QueryParameters queryParameters, bool multiDirectional, string publishState)
-        {
-            if (!queryParameters.Id.HasValue)
+        private static ExecuteQuery BuildQuery(QueryParameters queryParameters, string publishState)
+        {   
+            const string contentByIdCosmosSql = "select * from c where c.id ='{0}'";
+            const string contentGetAllCosmosSql = "select * from c";
+            
+            if (!queryParameters.Ids.Any())
             {
                 return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType, publishState);
             }
             
-            var baseQuery = multiDirectional ? contentByIdMultiDirectionalCosmosSql : contentByIdCosmosSql;
-            return new ExecuteQuery(string.Format(baseQuery, queryParameters.Id.Value), RequestType.GetById, queryParameters.ContentType, publishState);
+            return new ExecuteQuery(
+                string.Format(contentByIdCosmosSql, queryParameters.Ids.First()!.Value),
+                RequestType.GetById,
+                queryParameters.ContentType,
+                publishState);
         }
     }
 }

@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace DFC.ServiceTaxonomy.ApiFunction.Tests
+namespace DFC.Api.Content.UnitTests
 {
     public class ExecuteHttpTriggerTests
     {

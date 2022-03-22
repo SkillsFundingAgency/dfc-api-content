@@ -13,8 +13,8 @@ namespace DFC.Api.Content.Models
         public Dictionary<string, string> ContentTypeUriMap { get; set; }
         public Dictionary<string, string> ContentTypeNameMap { get; set; }
         
-        public string? Scheme { get; }
+        public string? Scheme { get; set; }
 
-        public string? Action { get; }
+        public string? Action { get; set; }
     }
 }
