@@ -60,7 +60,7 @@ namespace DFC.Api.Content
                 return path;
             }
             
-            path = new Uri(Assembly.GetExecutingAssembly().CodeBase!).LocalPath;
+            path = new Uri(Assembly.GetExecutingAssembly()?.CodeBase!)?.LocalPath;
 
             if (string.IsNullOrEmpty(path))
             {
