@@ -61,7 +61,7 @@ namespace DFC.Api.Content.Helpers
                 var id = (string)incomingItem["id"];
                 var key = $"cont:has{FirstCharToUpper(contentType)}";
 
-                if (recordLinks.ContainsKey(key))
+                if (recordLinks?.ContainsKey(key) != false)
                 {
                     continue;
                 }
