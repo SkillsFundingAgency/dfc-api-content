@@ -19,10 +19,10 @@ namespace DFC.Api.Content.Function
         
         protected static (string ContentType, Guid Id) GetContentTypeAndId(string uri)
         {
-            var path = uri.StartsWith("http") ? new Uri(uri, UriKind.Absolute).AbsolutePath : uri;
-            path = path.ToLower().Replace("/api/execute", string.Empty);
+            var pathOnly = uri.StartsWith("http") ? new Uri(uri, UriKind.Absolute).AbsolutePath : uri;
+            pathOnly = pathOnly.ToLower().Replace("/api/execute", string.Empty);
             
-            var uriParts = path.Trim('/').Split('/');
+            var uriParts = pathOnly.Trim('/').Split('/');
             var contentType = uriParts[0].ToLower();
             var id = Guid.Parse(uriParts[1]);
             
