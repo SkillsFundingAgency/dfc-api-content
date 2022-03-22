@@ -12,17 +12,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace DFC.Api.Content.Function
 {
-    public class Expand
+    public class Expand : BaseFunction
     {
-        private readonly IDataSourceProvider _dataSource;
-        
-        public Expand(IDataSourceProvider dataSource)
+        public Expand(IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
         {
             _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+            _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
         [FunctionName("Expand")]
@@ -30,15 +28,13 @@ namespace DFC.Api.Content.Function
             [HttpTrigger(
                 AuthorizationLevel.Anonymous,
                 "get",
-                Route = "Expand/{contentType}/{id:guid}/{publishState?}/{multiDirectional:bool?}")]
+                Route = "Expand/{contentType}/{id:guid}/{publishState?}")]
             HttpRequest request,
             string contentType,
             Guid id,
             ILogger log,
-            bool? multiDirectional,
             string publishState = "")
         {
-            MaintainBackwardsCompatibilityWithPath(ref publishState, ref multiDirectional);
             SetDefaultStateIfEmpty(ref publishState, request);
 
             try
@@ -59,20 +55,23 @@ namespace DFC.Api.Content.Function
                 {
                     return new NotFoundObjectResult("Resource not found");
                 }
+
+                var record = recordsResult[0];
+                record = _jsonFormatHelper.BuildSingleResponse(record, true);
                 
                 const int level = 0;
                 await GetChildItems(
-                    recordsResult.First(),
+                    record,
                     publishState,
                     log, 
-                    new Dictionary<int, List<string>> { { level, new List<string> { contentType + id } } },
+                    new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
                     level,
-                    multiDirectional ?? false);
+                    true);
                 
                 log.LogInformation("Request has successfully been completed with results");
                 SetContentTypeHeader(request);
 
-                return new OkObjectResult(recordsResult);
+                return new OkObjectResult(record);
             }
             catch (ApiFunctionException e)
             {
@@ -96,19 +95,18 @@ namespace DFC.Api.Content.Function
             int level,
             bool multiDirectional)
         {
-            var recordLinks = (record["_links"] as JObject)!.ToObject<Dictionary<string, object>>();
-
-            if (multiDirectional)
+            if (!record.ContainsKey("_links"))
             {
-                record = ExpandIncomingLinksToContItems(record);
+                return;
             }
             
+            var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
+
             var children = new List<Dictionary<string, object>>();
             var childIds = recordLinks!
                 .Where(previousItemLink =>
                     previousItemLink.Key != "self" && previousItemLink.Key != "curies")
-                .Select(previousItemLink =>
-                    ((JObject) previousItemLink.Value).ToObject<Dictionary<string, object>>())
+                .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value))
                 .Select(dict => (string) dict!["href"])
                 .Where(uri => !string.IsNullOrEmpty(uri))
                 .Select(GetContentTypeAndId)
@@ -140,12 +138,20 @@ namespace DFC.Api.Content.Function
                 {
                     retrievedCompositeKeys[level].Add(childIdGroup.Key + id);
                 }
-                
-                foreach (var childResult in childResults)
+
+                for (var index = 0; index < childResults.Count; index++)
                 {
-                    await GetChildItems(childResult, publishState, log, retrievedCompositeKeys, level + 1, multiDirectional);
+                    childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResults[index], multiDirectional);
+
+                    await GetChildItems(
+                        childResults[index],
+                        publishState,
+                        log,
+                        retrievedCompositeKeys,
+                        level + 1,
+                        multiDirectional);
                 }
-                
+
                 children.AddRange(childResults);
             }
 
@@ -178,118 +184,22 @@ namespace DFC.Api.Content.Function
             return false;
         }
         
-        private static (string ContentType, Guid Id) GetContentTypeAndId(string uri)
-        {
-            var id = Guid.Parse(uri.Split('/')[uri.Split('/').Length - 1]);
-            var contentType = uri.Split('/')[uri.Split('/').Length - 2].ToLower();
-
-            return (contentType, id);
-        }
-        
-        private static void MaintainBackwardsCompatibilityWithPath(ref string publishState, ref bool? multiDirectional)
-        {
-            if (!bool.TryParse(publishState, out var multiDirectionalOutput)) return;
-
-            multiDirectional = multiDirectionalOutput;
-            publishState = string.Empty;
-        }
-        
-        private static void SetDefaultStateIfEmpty(ref string publishState, HttpRequest request)
-        {
-            if (!string.IsNullOrEmpty(publishState)) return;
-            
-            publishState = GetDefaultPublishState(request.Host.Host);
-        }
-        
-        private static string GetDefaultPublishState(string host)
-        {
-            const string previewPublishState = "preview";
-            const string previewPublishStateAlt = "draft";
-            const string publishedPublishState = "publish";
-            
-            if (host.Contains(previewPublishState, StringComparison.InvariantCultureIgnoreCase) ||
-                host.Contains(previewPublishStateAlt, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return previewPublishState;
-            }
-            
-            return publishedPublishState;
-        }
-        
-        private async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQuery query, ILogger log)
-        {
-            log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
-                query.QueryText,
-                query.ContentType);
-
-            try
-            {
-                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.PublishState))).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw ApiFunctionException.InternalServerError("Unable to run query", ex);
-            }
-        }
-        
         private static ExecuteQuery BuildQuery(QueryParameters queryParameters, string publishState)
         {
-            const string contentByIdCosmosSql = "select * from c where c.id in ({0})";
+            const string contentByIdMultipleCosmosSql = "select * from c where c.id in ({0})";
+            var sqlQuery = string.Format(contentByIdMultipleCosmosSql, string.Join(',', queryParameters.Ids.Select(id => $"'{id}'").ToArray()));
+            
+            if (queryParameters.Ids.Count == 1)
+            {
+                const string contentByIdSingleCosmosSql = "select * from c where c.id = '{0}'";
+                sqlQuery = string.Format(contentByIdSingleCosmosSql, queryParameters.Ids.Single());
+            }
             
             return new ExecuteQuery(
-                string.Format(contentByIdCosmosSql, string.Join(',', queryParameters.Ids.Select(id => $"'{id}'").ToArray())),
+                sqlQuery,
                 RequestType.GetById,
                 queryParameters.ContentType,
                 publishState);
         }
-        
-        private static void SetContentTypeHeader(HttpRequest req)
-        {
-            var headers = req.HttpContext.Response.Headers;
-            
-            headers.Remove("content-type");
-            headers.Add("content-type", "application/hal+json");
-        }
-        
-        private static Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record)
-        {
-            // Expand the incoming links into their own section
-            var recordLinks = (record["_links"] as JObject)!.ToObject<Dictionary<string, object>>();
-            var curies = (recordLinks?["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
-
-            var incomingPosition = curies!.FindIndex(curie =>
-                (string)curie["name"] == "incoming");
-                
-            var incomingObject = curies.Count > incomingPosition ? curies[incomingPosition] : null;
-
-            if (incomingObject == null)
-            {
-                throw new MissingFieldException("Incoming property missing");
-            }
-                
-            var incomingList = (incomingObject["items"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
-                
-            foreach (var incomingItem in incomingList!)
-            {
-                var contentType = (string)incomingItem["contentType"];
-                var id = (string)incomingItem["id"];
-
-                recordLinks.Add($"cont:has{FirstCharToUpper(contentType)}", new Dictionary<string, object>
-                {
-                    { "href", $"/{contentType}/{id}" }
-                });
-            }
-                
-            record["_links"] = recordLinks;
-            return record;
-        }
-        
-        private static string FirstCharToUpper(string input) =>
-            input switch
-            {
-                null => throw new ArgumentNullException(nameof(input)),
-                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
-                _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
-            };
     }
 }

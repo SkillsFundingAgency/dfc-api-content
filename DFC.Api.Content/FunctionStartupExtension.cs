@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 [assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
-
 namespace DFC.Api.Content
 {
     [ExcludeFromCodeCoverage]
@@ -29,9 +28,6 @@ namespace DFC.Api.Content
                 .Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
-
-            builder.Services.AddOptions<ContentApiOptions>()
-                .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("ContentApiOptions").Bind(settings); });
 
             builder.Services.AddOptions<CosmosDbOptions>()
                 .Configure<IConfiguration>((settings, configuration) => { configuration.GetSection("CosmosDb").Bind(settings); });

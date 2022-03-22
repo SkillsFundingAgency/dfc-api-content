@@ -12,20 +12,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.Api.Content.Function
 {
-    public class Execute
+    public class Execute : BaseFunction
     {
-        private readonly IOptionsMonitor<ContentApiOptions> _contentApiOptions;
-        private readonly IDataSourceProvider _dataSource;
-        private readonly IJsonFormatHelper _jsonFormatHelper;
-
-        public Execute(IOptionsMonitor<ContentApiOptions> contentApiOptions, IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
+        public Execute(IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
         {
-            _contentApiOptions = contentApiOptions ?? throw new ArgumentNullException(nameof(contentApiOptions));
             _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
@@ -45,8 +39,6 @@ namespace DFC.Api.Content.Function
         {
             MaintainBackwardsCompatibilityWithPath(ref publishState, ref multiDirectional);
             SetDefaultStateIfEmpty(ref publishState, request);
-            
-            var hasApimHeader = request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var headerValue);
             
             try
             {
@@ -77,11 +69,8 @@ namespace DFC.Api.Content.Function
 
                 SetContentTypeHeader(request);
                 
-                var apiHost = hasApimHeader ? $"{headerValue}{_contentApiOptions.CurrentValue.Action}/api/Execute"
-                    : $"{_contentApiOptions.CurrentValue.Scheme}://{request.Host.Value}/api/execute".ToLower();
-                
                 return new OkObjectResult(
-                    _jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, apiHost, multiDirectional ?? false));
+                    _jsonFormatHelper.FormatResponse(recordsResult, queryToExecute.RequestType, multiDirectional ?? false));
             }
             catch (ApiFunctionException e)
             {
@@ -97,60 +86,6 @@ namespace DFC.Api.Content.Function
             }
         }
         
-        private static void MaintainBackwardsCompatibilityWithPath(ref string publishState, ref bool? multiDirectional)
-        {
-            if (!bool.TryParse(publishState, out var multiDirectionalOutput)) return;
-
-            multiDirectional = multiDirectionalOutput;
-            publishState = string.Empty;
-        }
-        
-        private static void SetDefaultStateIfEmpty(ref string publishState, HttpRequest request)
-        {
-            if (!string.IsNullOrEmpty(publishState)) return;
-            
-            publishState = GetDefaultPublishState(request.Host.Host);
-        }
-        
-        private static string GetDefaultPublishState(string host)
-        {
-            const string previewPublishState = "preview";
-            const string previewPublishStateAlt = "draft";
-            const string publishedPublishState = "publish";
-            
-            if (host.Contains(previewPublishState, StringComparison.InvariantCultureIgnoreCase) ||
-                host.Contains(previewPublishStateAlt, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return previewPublishState;
-            }
-            
-            return publishedPublishState;
-        }
-
-        private static void SetContentTypeHeader(HttpRequest req)
-        {
-            var headers = req.HttpContext.Response.Headers;
-            
-            headers.Remove("content-type");
-            headers.Add("content-type", "application/hal+json");
-        }
-
-        private async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQuery query, ILogger log)
-        {
-            log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
-                query.QueryText,
-                query.ContentType);
-
-            try
-            {
-                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.PublishState))).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw ApiFunctionException.InternalServerError("Unable to run query", ex);
-            }
-        }
-
         private static ExecuteQuery BuildQuery(QueryParameters queryParameters, string publishState)
         {   
             const string contentByIdCosmosSql = "select * from c where c.id ='{0}'";

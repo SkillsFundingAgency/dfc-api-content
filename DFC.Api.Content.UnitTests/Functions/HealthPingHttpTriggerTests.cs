@@ -10,7 +10,7 @@ namespace DFC.Api.Content.UnitTests.Functions
 {
     public class HealthPingHttpTriggerTests
     {
-        private readonly ILogger logger = A.Fake<ILogger>();
+        private readonly ILogger _logger = A.Fake<ILogger>();
 
         [Fact]
         public void HealthPingHttpTriggerTestsReturnsOk()
@@ -18,7 +18,7 @@ namespace DFC.Api.Content.UnitTests.Functions
             // Arrange
 
             // Act
-            var result = HealthPingHttpTrigger.Run(new DefaultHttpRequest(new DefaultHttpContext()), logger);
+            var result = HealthPingHttpTrigger.Run(new DefaultHttpRequest(new DefaultHttpContext()), _logger);
 
             // Assert
             Assert.IsType<OkResult>(result);

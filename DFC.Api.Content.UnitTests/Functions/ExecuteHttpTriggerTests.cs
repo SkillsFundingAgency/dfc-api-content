@@ -16,41 +16,31 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace DFC.Api.Content.UnitTests
+namespace DFC.Api.Content.UnitTests.Functions
 {
     public class ExecuteHttpTriggerTests
     {
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly IOptionsMonitor<ContentApiOptions> _ContentTypeNameMapConfig;
         private readonly IDataSourceProvider _dataSource;
-        private readonly IJsonFormatHelper _jsonHelper;
 
         public ExecuteHttpTriggerTests()
         {
             var context = new DefaultHttpContext();
             _request = context.Request;
 
-            _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentApiOptions>>();
-            A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentApiOptions
-            {
-                ContentTypeNameMap = new Dictionary<string, string> { { "test1", "Test2" }, { "test2", "Test3" } }
-            }); 
-
             _dataSource = A.Fake<IDataSourceProvider>();
-
             _log = A.Fake<ILogger>();
-            _jsonHelper = A.Fake<IJsonFormatHelper>();
-
-            _jsonHelper = new JsonFormatHelper();
-            _executeFunction = new Execute(_ContentTypeNameMapConfig, _dataSource, _jsonHelper);
+            
+            var jsonHelper = new JsonFormatHelper();
+            _executeFunction = new Execute(_dataSource, jsonHelper);
         }
 
         [Fact]
         public async Task Execute_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
         {
-            var result = await RunFunction("", null);
+            var result = await RunFunction(string.Empty, null);
 
             var badRequestObjectResult = result as BadRequestObjectResult;
 
@@ -61,7 +51,7 @@ namespace DFC.Api.Content.UnitTests
         }
 
         [Fact]
-        public async Task Execute_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResult()
+        public async Task Execute_WhenContentTypePresentInMap_NoData_ReturnsNotFoundObjectResult()
         {
             var result = await RunFunction("test1", null);
 

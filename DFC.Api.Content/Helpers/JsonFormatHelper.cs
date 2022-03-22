@@ -9,7 +9,7 @@ namespace DFC.Api.Content.Helpers
 {
     public class JsonFormatHelper : IJsonFormatHelper
     {
-        private static readonly List<string> CosmosBuiltInProps = new List<string>
+        private static readonly List<string> CosmosBuiltInPropsToIgnore = new List<string>
         {
             "_rid",
             "_self",
@@ -21,7 +21,6 @@ namespace DFC.Api.Content.Helpers
         public object FormatResponse(
             List<Dictionary<string, object>> records,
             RequestType type,
-            string apiHost,
             bool multiDirectional)
         {
             return type switch
@@ -31,57 +30,11 @@ namespace DFC.Api.Content.Helpers
                 _ => throw new NotSupportedException($"Request Type: {type} not supported")
             };
         }
-
-        private static List<Dictionary<string, object?>> SummaryFormat(List<Dictionary<string, object>> records)
-        {
-            var returnList = new List<Dictionary<string, object?>>();
-
-            foreach (var record in records)
-            {
-                returnList.Add(new Dictionary<string, object?>
-                {
-                    { "skos__prefLabel", record["skos__prefLabel"] },
-                    { "CreatedDate", record.ContainsKey("CreatedDate") ? record["CreatedDate"] : null },
-                    { "ModifiedDate", record["ModifiedDate"] },
-                    { "Uri", record["uri"] }
-                });
-            }
-            
-            return returnList;
-        }
-
-        private static Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional)
-        {
-            if (multiDirectional)
-            {
-                record = ExpandIncomingLinksToContItems(record);
-            }
-            
-            return StripUndesiredProperties(record);
-        }
         
-        private static Dictionary<string, object> StripUndesiredProperties(Dictionary<string, object> record)
-        {
-            var returnProperties = new Dictionary<string, object>();
-
-            foreach (var propertyName in record.Keys)
-            {
-                if (CosmosBuiltInProps.Contains(propertyName))
-                {
-                    continue;
-                }
-
-                var propertyValue = record[propertyName];
-                returnProperties.Add(propertyName, propertyValue);
-            }
-            
-            return returnProperties;
-        }
-
-        private static Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record)
+        public Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record, bool multiDirectional)
         {
             // Expand the incoming links into their own section
-            var recordLinks = (record["_links"] as JObject)!.ToObject<Dictionary<string, object>>();
+            var recordLinks = SafeCastToDictionary(record["_links"]);
             var curies = (recordLinks?["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
 
             var incomingPosition = curies!.FindIndex(curie =>
@@ -100,15 +53,110 @@ namespace DFC.Api.Content.Helpers
             {
                 var contentType = (string)incomingItem["contentType"];
                 var id = (string)incomingItem["id"];
+                var key = $"cont:has{FirstCharToUpper(contentType)}";
 
-                recordLinks.Add($"cont:has{FirstCharToUpper(contentType)}", new Dictionary<string, object>
+                if (recordLinks.ContainsKey(key))
                 {
-                    { "href", $"/{contentType}/{id}" }
+                    continue;
+                }
+                
+                recordLinks.Add(key, new Dictionary<string, object>
+                {
+                    { "href", multiDirectional ? $"/{contentType}/{id}/true" : $"/{contentType}/{id}" },
+                    { "contentType", contentType }
                 });
             }
                 
             record["_links"] = recordLinks;
             return record;
+        }
+        
+        public Dictionary<string, object> SafeCastToDictionary(object value)
+        {
+            if (value is JObject valObj)
+            {
+                return valObj!.ToObject<Dictionary<string, object>>();
+            }
+            
+            return (Dictionary<string, object>)value;
+        }
+        
+        private static List<Dictionary<string, object?>> SummaryFormat(List<Dictionary<string, object>> records)
+        {
+            var returnList = new List<Dictionary<string, object?>>();
+
+            foreach (var record in records)
+            {
+                returnList.Add(new Dictionary<string, object?>
+                {
+                    { "skos__prefLabel", record["skos__prefLabel"] },
+                    { "CreatedDate", record.ContainsKey("CreatedDate") ? record["CreatedDate"] : null },
+                    { "ModifiedDate", record["ModifiedDate"] },
+                    { "Uri", record["uri"] }
+                });
+            }
+            
+            return returnList;
+        }
+
+        public Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional)
+        {
+            if (multiDirectional)
+            {
+                record = ExpandIncomingLinksToContItems(record, true);
+                record = AddMultiDirectionalProperty(record);
+            }
+            
+            return StripUndesiredProperties(record);
+        }
+
+        public Dictionary<string, object> AddMultiDirectionalProperty(Dictionary<string, object> record)
+        {
+            var recordLinks = SafeCastToDictionary(record["_links"]);
+            var newRecordLinks = new Dictionary<string, object>();
+            
+            foreach (var recordLink in recordLinks)
+            {
+                if (recordLink.Key == "self" || recordLink.Key == "curies")
+                {
+                    newRecordLinks.Add(recordLink.Key, recordLink.Value);
+                    continue;
+                }
+
+                var dict = SafeCastToDictionary(recordLink.Value);
+                var href = (string)dict!["href"];
+
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
+                if (href == null || href.EndsWith("/true"))
+                {
+                    newRecordLinks.Add(recordLink.Key, recordLink.Value);
+                    continue;
+                }
+
+                dict["href"] = $"{href}/true";
+                newRecordLinks.Add(recordLink.Key, dict);
+            }
+            
+            record["_links"] = newRecordLinks;
+            return record;
+        }
+
+        private static Dictionary<string, object> StripUndesiredProperties(Dictionary<string, object> record)
+        {
+            var returnProperties = new Dictionary<string, object>();
+
+            foreach (var propertyName in record.Keys)
+            {
+                if (CosmosBuiltInPropsToIgnore.Contains(propertyName))
+                {
+                    continue;
+                }
+
+                var propertyValue = record[propertyName];
+                returnProperties.Add(propertyName, propertyValue);
+            }
+            
+            return returnProperties;
         }
         
         private static string FirstCharToUpper(string input) =>

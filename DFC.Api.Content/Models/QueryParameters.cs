@@ -11,7 +11,7 @@ namespace DFC.Api.Content.Models
             Ids = ids;
         }
 
-        public string ContentType { get; set; }
-        public List<Guid?> Ids { get; set; }
+        public string ContentType { get; }
+        public List<Guid?> Ids { get; }
     }
 }

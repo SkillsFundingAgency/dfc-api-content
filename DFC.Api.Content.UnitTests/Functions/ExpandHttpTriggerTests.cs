@@ -10,20 +10,18 @@ using DFC.Api.Content.Models;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace DFC.Api.Content.UnitTests
+namespace DFC.Api.Content.UnitTests.Functions
 {
     public class ExpandHttpTriggerTests
     {
         private readonly Expand _expandFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private readonly IOptionsMonitor<ContentApiOptions> _ContentTypeNameMapConfig;
         private readonly IDataSourceProvider _dataSource;
 
         public ExpandHttpTriggerTests()
@@ -31,23 +29,16 @@ namespace DFC.Api.Content.UnitTests
             var context = new DefaultHttpContext();
             _request = context.Request;
 
-            _ContentTypeNameMapConfig = A.Fake<IOptionsMonitor<ContentApiOptions>>();
-            A.CallTo(() => _ContentTypeNameMapConfig.CurrentValue).Returns(new ContentApiOptions
-            {
-                ContentTypeNameMap = new Dictionary<string, string> { { "test1", "Test2" }, { "test2", "Test3" } }
-            }); 
-
             _dataSource = A.Fake<IDataSourceProvider>();
-
             _log = A.Fake<ILogger>();
-
-            _expandFunction = new Expand(_dataSource);
+            
+            _expandFunction = new Expand(_dataSource, new JsonFormatHelper());
         }
 
         [Fact]
         public async Task Expand_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
         {
-            var result = await RunFunction("", Guid.NewGuid());
+            var result = await RunFunction(String.Empty, Guid.NewGuid());
 
             var badRequestObjectResult = result as BadRequestObjectResult;
 
@@ -58,7 +49,7 @@ namespace DFC.Api.Content.UnitTests
         }
 
         [Fact]
-        public async Task Expand_WhenContentTypePresentInMap_NoGraphData_ReturnsNotFoundObjectResult()
+        public async Task Expand_WhenNoData_ReturnsNotFoundObjectResult()
         {
             var result = await RunFunction("test1", Guid.NewGuid());
 
@@ -110,25 +101,21 @@ namespace DFC.Api.Content.UnitTests
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputTaxonomy)
                 });
             
-            var result = await RunFunction("page", Guid.NewGuid());
+            var result = await RunFunction("page", Guid.Parse("f60c7388-7b89-40d6-9911-52f5ae6b4a41"));
             var okObjectResult = result as OkObjectResult;
 
             // Assert
             Assert.True(result is OkObjectResult);
-            
-            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value, Formatting.Indented, 
-                new JsonSerializerSettings 
-                { 
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
 
+            var resultJson = JsonConvert.SerializeObject(okObjectResult.Value);
             var equal = JToken.DeepEquals(JToken.Parse(expectedJsonOutput), JToken.Parse(resultJson));
+
             Assert.True(equal);
         }
 
         private async Task<IActionResult> RunFunction(string contentType, Guid id)
         {
-            return await _expandFunction.Run(_request, contentType, id, _log, null, "published").ConfigureAwait(false);
+            return await _expandFunction.Run(_request, contentType, id, _log, "published").ConfigureAwait(false);
         }
     }
 }

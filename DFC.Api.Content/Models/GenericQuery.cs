@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using DFC.Api.Content.Interfaces;
-using IRecord = DFC.Api.Content.Interfaces.IRecord;
 
 namespace DFC.Api.Content.Models
 {
     [ExcludeFromCodeCoverage]
-    public class GenericQuery : IQuery<IRecord>
+    public class GenericQuery
     {
         public GenericQuery(string queryText, string contentType, string publishState)
         {
