@@ -35,15 +35,6 @@
     "sharedAppServicePlanResourceGroup": {
       "value": "dfc-dev-app-sharedresources-rg"
     },
-    "Neo4jUrl": {
-      "value": "http://some-database-instance/"
-    },
-    "Neo4jUser": {
-      "value": "someUsername"
-    },
-    "Neo4jPassword": {
-      "value": "not-a-real-password"
-    },
     "sharedDfcStorageAccountName": {
       "value": "dfcdevsharedstr"
     }

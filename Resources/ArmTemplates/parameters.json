@@ -32,15 +32,6 @@
     "environment": {
       "value": "__ReleaseEnvironmentName__"
     },
-    "Neo4jUrl": {
-      "value": "__ReleaseNeo4jUrl__"
-    },
-    "Neo4jUser": {
-      "value": "__Neo4jUser__"
-    },
-    "Neo4jPassword": {
-      "value": "__Neo4jPassword__"
-    },
     "sharedResourceGroup": {
       "value": "__sharedResourceGroup__"
     },
