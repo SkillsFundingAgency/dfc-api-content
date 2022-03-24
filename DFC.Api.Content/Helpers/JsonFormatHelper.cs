@@ -60,17 +60,29 @@ namespace DFC.Api.Content.Helpers
                 var contentType = (string)incomingItem["contentType"];
                 var id = (string)incomingItem["id"];
                 var key = $"cont:has{FirstCharToUpper(contentType)}";
-
-                if (recordLinks?.ContainsKey(key) != false)
+                var value = new Dictionary<string, object>
                 {
+                    {"href", multiDirectional ? $"/{contentType}/{id}/true" : $"/{contentType}/{id}"},
+                    {"contentType", contentType}
+                };
+
+                if (!recordLinks.ContainsKey(key))
+                {
+                    recordLinks.Add(key, value);
                     continue;
                 }
                 
-                recordLinks.Add(key, new Dictionary<string, object>
+                if (recordLinks[key] is List<Dictionary<string, object>> list)
                 {
-                    { "href", multiDirectional ? $"/{contentType}/{id}/true" : $"/{contentType}/{id}" },
-                    { "contentType", contentType }
-                });
+                    list.Add(value);
+                    continue;
+                }
+                
+                recordLinks[key] = new List<Dictionary<string, object>>
+                {
+                    (Dictionary<string, object>) recordLinks[key],
+                    value
+                };
             }
                 
             record["_links"] = recordLinks!;
@@ -81,12 +93,27 @@ namespace DFC.Api.Content.Helpers
         {
             if (value is JObject valObj)
             {
-                return valObj!.ToObject<Dictionary<string, object>>();
+                return valObj.ToObject<Dictionary<string, object>>();
+            }
+
+            if (!(value is Dictionary<string, object> dictionary))
+            {
+                throw new ArgumentException($"Didn't expect type {value.GetType().Name}");
             }
             
-            return (Dictionary<string, object>)value;
+            return dictionary;
         }
         
+        public List<Dictionary<string, object>> SafeCastToList(object value)
+        {
+            if (value is JArray valAry)
+            {
+                return valAry.ToObject<List<Dictionary<string, object>>>();
+            }
+            
+            return (List<Dictionary<string, object>>)value;
+        }
+
         private static List<Dictionary<string, object?>> SummaryFormat(List<Dictionary<string, object>> records)
         {
             var returnList = new List<Dictionary<string, object?>>();
@@ -129,18 +156,40 @@ namespace DFC.Api.Content.Helpers
                     continue;
                 }
 
-                var dict = SafeCastToDictionary(recordLink.Value);
-                var href = (string)dict!["href"];
-
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
-                if (href == null || href.EndsWith("/true"))
+                if (recordLink.Value is JObject || recordLink.Value is Dictionary<string, object>)
                 {
-                    newRecordLinks.Add(recordLink.Key, recordLink.Value);
-                    continue;
-                }
+                    var dict = SafeCastToDictionary(recordLink.Value);
+                    var href = (string) dict!["href"];
 
-                dict["href"] = $"{href}/true";
-                newRecordLinks.Add(recordLink.Key, dict);
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
+                    if (href == null || href.EndsWith("/true"))
+                    {
+                        newRecordLinks.Add(recordLink.Key, recordLink.Value);
+                        continue;
+                    }
+
+                    dict["href"] = $"{href}/true";
+                    newRecordLinks.Add(recordLink.Key, dict);
+                }
+                else
+                {
+                    var list = SafeCastToList(recordLink.Value);
+
+                    foreach (var dict in list)
+                    {
+                        var href = (string) dict!["href"];
+
+                        // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
+                        if (href == null || href.EndsWith("/true"))
+                        {
+                            continue;
+                        }
+
+                        dict["href"] = $"{href}/true";
+                    }
+                    
+                    newRecordLinks.Add(recordLink.Key, list);
+                }
             }
             
             record["_links"] = newRecordLinks;

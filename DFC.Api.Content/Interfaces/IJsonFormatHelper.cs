@@ -7,11 +7,9 @@ namespace DFC.Api.Content.Interfaces
     {
         object FormatResponse(List<Dictionary<string, object>> records, RequestType type, bool multiDirectional);
 
-        Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record, bool multiDirectional);
-
         Dictionary<string, object> SafeCastToDictionary(object value);
 
-        Dictionary<string, object> AddMultiDirectionalProperty(Dictionary<string, object> record);
+        List<Dictionary<string, object>> SafeCastToList(object value);
 
         Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional);
     }

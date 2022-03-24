@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace DFC.Api.Content.Function
 {
@@ -28,8 +29,10 @@ namespace DFC.Api.Content.Function
             [HttpTrigger(
                 AuthorizationLevel.Anonymous,
                 "get",
-                Route = "Expand/{contentType}/{id:guid}/{publishState?}")]
+                Route = "Expand/{contentType}/{id:guid}/{multiDirectional:bool}/{maxDepth:int}/{publishState?}")]
             HttpRequest request,
+            bool multiDirectional,
+            int maxDepth,
             string contentType,
             Guid id,
             ILogger log,
@@ -57,7 +60,7 @@ namespace DFC.Api.Content.Function
                 }
 
                 var record = recordsResult[0];
-                record = _jsonFormatHelper.BuildSingleResponse(record, true);
+                record = _jsonFormatHelper.BuildSingleResponse(record, multiDirectional);
                 
                 const int level = 0;
                 await GetChildItems(
@@ -66,7 +69,8 @@ namespace DFC.Api.Content.Function
                     log, 
                     new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
                     level,
-                    true);
+                    multiDirectional,
+                    maxDepth);
                 
                 log.LogInformation("Request has successfully been completed with results");
                 SetContentTypeHeader(request);
@@ -93,26 +97,23 @@ namespace DFC.Api.Content.Function
             ILogger log,
             Dictionary<int, List<string>> retrievedCompositeKeys,
             int level,
-            bool multiDirectional)
+            bool multiDirectional,
+            int maxDepth)
         {
+            if (level > maxDepth)
+            {
+                return;
+            }
+            
             if (!record.ContainsKey("_links"))
             {
                 return;
             }
             
             var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
-
             var children = new List<Dictionary<string, object>>();
-            var childIds = recordLinks!
-                .Where(previousItemLink =>
-                    previousItemLink.Key != "self" && previousItemLink.Key != "curies")
-                .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value))
-                .Select(dict => (string) dict!["href"])
-                .Where(uri => !string.IsNullOrEmpty(uri))
-                .Select(GetContentTypeAndId)
-                .GroupBy(contentTypeAndId => contentTypeAndId.ContentType)
-                .ToList();
-
+            var childIds = GetChildIds(recordLinks);
+            
             foreach (var childIdGroup in childIds)
             {
                 var queryParameters = new QueryParameters(
@@ -149,7 +150,8 @@ namespace DFC.Api.Content.Function
                         log,
                         retrievedCompositeKeys,
                         level + 1,
-                        multiDirectional);
+                        multiDirectional,
+                        maxDepth);
                 }
 
                 children.AddRange(childResults);
@@ -157,7 +159,34 @@ namespace DFC.Api.Content.Function
 
             record["ContentItems"] = children;
         }
-        
+
+        private List<IGrouping<string, (string ContentType, Guid Id)>> GetChildIds(Dictionary<string, object> recordLinks)
+        {
+            var filteredRecordLinks = recordLinks
+                .Where(previousItemLink =>
+                    previousItemLink.Key != "self" && previousItemLink.Key != "curies")
+                .ToList();
+            
+            var childIdsObjects = filteredRecordLinks
+                .Where(previousItemLink => previousItemLink.Value is JObject 
+                                           || previousItemLink.Value is Dictionary<string, object>)
+                .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value));
+
+            var childIdsArrays = filteredRecordLinks
+                .Where(previousItemLink => previousItemLink.Value is JArray ||
+                                           previousItemLink.Value is List<Dictionary<string, object>>)
+                .Select(previousItemLink => _jsonFormatHelper.SafeCastToList(previousItemLink.Value))
+                .SelectMany(list => list);
+
+            return childIdsObjects
+                .Union(childIdsArrays)
+                .Select(dict => (string) dict!["href"])
+                .Where(uri => !string.IsNullOrEmpty(uri))
+                .Select(GetContentTypeAndId)
+                .GroupBy(contentTypeAndId => contentTypeAndId.ContentType)
+                .ToList();
+        }
+
         private static bool AncestorsContainsCompositeKey(
             string contentType,
             Guid? id,
