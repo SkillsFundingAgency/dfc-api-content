@@ -131,18 +131,20 @@ namespace DFC.Api.Content.Function
             int maxDepth,
             List<string> typesToInclude)
         {
-            if (level > maxDepth)
-            {
-                return;
-            }
-            
             if (!record.ContainsKey("_links"))
             {
                 return;
             }
             
-            var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
             var children = new List<Dictionary<string, object>>();
+            
+            if (level > maxDepth)
+            {
+                record["ContentItems"] = children;
+                return;
+            }
+
+            var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
             var childIds = GetChildIds(recordLinks);
             
             foreach (var childIdGroup in childIds)
