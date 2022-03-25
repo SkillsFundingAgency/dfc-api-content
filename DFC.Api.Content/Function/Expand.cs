@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.Api.Content.Enums;
@@ -24,20 +27,26 @@ namespace DFC.Api.Content.Function
             _jsonFormatHelper = jsonFormatHelper ?? throw new ArgumentNullException(nameof(jsonFormatHelper));
         }
 
+        [HttpPost]
         [FunctionName("Expand")]
         public async Task<IActionResult> Run(
             [HttpTrigger(
                 AuthorizationLevel.Anonymous,
-                "get",
-                Route = "Expand/{contentType}/{id:guid}/{multiDirectional:bool}/{maxDepth:int}/{publishState?}")]
+                "post",
+                Route = "Expand/{contentType}/{id:guid}/{publishState?}")]
             HttpRequest request,
-            bool multiDirectional,
-            int maxDepth,
             string contentType,
             Guid id,
             ILogger log,
             string publishState = "")
         {
+            var parameters = await GetPostParameters(request);
+
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            
             SetDefaultStateIfEmpty(ref publishState, request);
 
             try
@@ -60,8 +69,8 @@ namespace DFC.Api.Content.Function
                 }
 
                 var record = recordsResult[0];
-                record = _jsonFormatHelper.BuildSingleResponse(record, multiDirectional);
-                
+                record = _jsonFormatHelper.BuildSingleResponse(record, parameters.MultiDirectional);
+
                 const int level = 0;
                 await GetChildItems(
                     record,
@@ -69,8 +78,9 @@ namespace DFC.Api.Content.Function
                     log, 
                     new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
                     level,
-                    multiDirectional,
-                    maxDepth);
+                    parameters.MultiDirectional,
+                    parameters.MaxDepth,
+                    parameters.TypesToInclude.ToList());
                 
                 log.LogInformation("Request has successfully been completed with results");
                 SetContentTypeHeader(request);
@@ -90,7 +100,27 @@ namespace DFC.Api.Content.Function
                 return new InternalServerErrorResult();
             }
         }
+        
+        public async Task<ExpandPostData?> GetPostParameters(HttpRequest request)
+        {
+            if (!request.Body.CanSeek)
+            {
+                // We only do this if the stream isn't *already* seekable,
+                // as EnableBuffering will create a new stream instance
+                // each time it's called
+                request.EnableBuffering();
+            }
 
+            request.Body.Position = 0;
+
+            var reader = new StreamReader(request.Body, Encoding.UTF8);
+
+            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
+            request.Body.Position = 0;
+
+            return string.IsNullOrEmpty(body) ? null : JsonSerializer.Deserialize<ExpandPostData>(body);
+        }
+        
         private async Task GetChildItems(
             Dictionary<string, object> record,
             string publishState,
@@ -98,7 +128,8 @@ namespace DFC.Api.Content.Function
             Dictionary<int, List<string>> retrievedCompositeKeys,
             int level,
             bool multiDirectional,
-            int maxDepth)
+            int maxDepth,
+            List<string> typesToInclude)
         {
             if (level > maxDepth)
             {
@@ -116,10 +147,11 @@ namespace DFC.Api.Content.Function
             
             foreach (var childIdGroup in childIds)
             {
-                var queryParameters = new QueryParameters(
+                    var queryParameters = new QueryParameters(
                     childIdGroup.Key.ToLower(),
                     childIdGroup
                         .Where(grp => !AncestorsContainsCompositeKey(grp.ContentType, grp.Id, retrievedCompositeKeys, level))
+                        .Where(grp => typesToInclude.Contains(grp.ContentType))
                         .Select(grp => (Guid?)grp.Id).ToList());
 
                 if (!queryParameters.Ids.Any())
@@ -151,7 +183,8 @@ namespace DFC.Api.Content.Function
                         retrievedCompositeKeys,
                         level + 1,
                         multiDirectional,
-                        maxDepth);
+                        maxDepth,
+                        typesToInclude);
                 }
 
                 children.AddRange(childResults);

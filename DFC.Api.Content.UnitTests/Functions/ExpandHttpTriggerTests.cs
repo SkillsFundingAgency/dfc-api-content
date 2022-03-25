@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using DFC.Api.Content.Function;
 using DFC.Api.Content.Helpers;
@@ -28,6 +29,15 @@ namespace DFC.Api.Content.UnitTests.Functions
         {
             var context = new DefaultHttpContext();
             _request = context.Request;
+            _request.Body = new MemoryStream();
+            
+            var messageBytes = Encoding.UTF8.GetBytes(@"{
+                ""MultiDirectional"": true,
+                ""MaxDepth"": 5,
+                ""TypesToInclude"": [""pagelocation"",""taxonomy""]
+            }");
+            
+            _request.Body.Write(messageBytes, 0, messageBytes.Length);
 
             _dataSource = A.Fake<IDataSourceProvider>();
             _log = A.Fake<ILogger>();

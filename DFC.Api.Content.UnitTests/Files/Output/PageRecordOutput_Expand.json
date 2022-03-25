@@ -107,10 +107,16 @@
             "cont:hasPageLocation":{
               "href":"http://localhost:7071/api/execute/pagelocation/a6d20c3c-51c0-437a-84c4-ae23cc78c99a/true"
             },
-            "cont:hasTaxonomy":{
-              "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
-              "contentType":"taxonomy"
-            }
+            "cont:hasTaxonomy":[
+              {
+                "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
+                "contentType":"taxonomy"
+              },
+              {
+                "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
+                "contentType":"taxonomy"
+              }
+            ]
           },
           "ModifiedDate":"2020-07-10T09:21:37.9873898Z",
           "uri":"http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408",
@@ -137,10 +143,16 @@
                     ]
                   }
                 ],
-                "cont:hasPagelocation":{
-                  "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
-                  "contentType":"pagelocation"
-                }
+                "cont:hasPagelocation":[
+                  {
+                    "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
+                    "contentType":"pagelocation"
+                  },
+                  {
+                    "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
+                    "contentType":"pagelocation"
+                  }
+                ]
               },
               "ModifiedDate":"2021-06-08T11:35:53.0339228Z",
               "uri":"http://localhost:7071/api/execute/pagelocation/a6d20c3c-51c0-437a-84c4-ae23cc78c99a",
@@ -173,10 +185,16 @@
                 "cont:hasPageLocation":{
                   "href":"http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true"
                 },
-                "cont:hasPage":{
-                  "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
-                  "contentType":"page"
-                }
+                "cont:hasPage":[
+                  {
+                    "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
+                    "contentType":"page"
+                  },
+                  {
+                    "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
+                    "contentType":"page"
+                  }
+                ]
               },
               "CreatedDate":"2020-06-16T13:16:27.1642618Z",
               "ModifiedDate":"2022-03-18T09:57:25.91167Z",
@@ -216,10 +234,16 @@
         "cont:hasPageLocation":{
           "href":"http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true"
         },
-        "cont:hasPage":{
-          "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
-          "contentType":"page"
-        }
+        "cont:hasPage":[
+          {
+            "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
+            "contentType":"page"
+          },
+          {
+            "href":"/page/f60c7388-7b89-40d6-9911-52f5ae6b4a41/true",
+            "contentType":"page"
+          }
+        ]
       },
       "CreatedDate":"2020-06-16T13:16:27.1642618Z",
       "ModifiedDate":"2022-03-18T09:57:25.91167Z",
@@ -252,10 +276,16 @@
             "cont:hasPageLocation":{
               "href":"http://localhost:7071/api/execute/pagelocation/a6d20c3c-51c0-437a-84c4-ae23cc78c99a/true"
             },
-            "cont:hasTaxonomy":{
-              "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
-              "contentType":"taxonomy"
-            }
+            "cont:hasTaxonomy":[
+              {
+                "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
+                "contentType":"taxonomy"
+              },
+              {
+                "href":"/taxonomy/9a9e10ca-7102-49bc-a792-74d131bf58fb/true",
+                "contentType":"taxonomy"
+              }
+            ]
           },
           "ModifiedDate":"2020-07-10T09:21:37.9873898Z",
           "uri":"http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408",
@@ -282,10 +312,16 @@
                     ]
                   }
                 ],
-                "cont:hasPagelocation":{
-                  "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
-                  "contentType":"pagelocation"
-                }
+                "cont:hasPagelocation":[
+                  {
+                    "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
+                    "contentType":"pagelocation"
+                  },
+                  {
+                    "href":"/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408/true",
+                    "contentType":"pagelocation"
+                  }
+                ]
               },
               "ModifiedDate":"2021-06-08T11:35:53.0339228Z",
               "uri":"http://localhost:7071/api/execute/pagelocation/a6d20c3c-51c0-437a-84c4-ae23cc78c99a",
