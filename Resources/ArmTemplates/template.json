@@ -25,25 +25,28 @@
     "aspTier": {
       "type": "string"
     },
-    "ContentTypeUriMap": {
-      "type": "string"
-    },
     "ContentApiOptionsAction": {
       "type": "string"
     },
     "environment": {
       "type": "string"
     },
-    "sharedResourceGroup": {
+    "CosmosDbendpointspreviewConnectionString": {
+      "type": "securestring"
+    },
+    "CosmosDbendpointspreviewDatabaseName": {
       "type": "string"
     },
-    "sharedDfcStorageAccountName": {
+    "CosmosDbendpointspreviewContainerName": {
       "type": "string"
     },
-    "sharedAppServicePlanName": {
+    "CosmosDbendpointspublishedConnectionString": {
+      "type": "securestring"
+    },
+    "CosmosDbendpointspublishedDatabaseName": {
       "type": "string"
     },
-    "sharedAppServicePlanResourceGroup": {
+    "CosmosDbendpointspublishedContainerName": {
       "type": "string"
     }
   },
@@ -170,6 +173,30 @@
               {
                 "name": "ContentApiOptions__Action",
                 "value": "[parameters('ContentApiOptionsAction')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__preview__ConnectionString",
+                "value": "[parameters('CosmosDbendpointspreviewConnectionString')]"
+              },
+                            {
+                "name": "CosmosDb__endpoints__preview__DatabaseName",
+                "value": "[parameters('CosmosDbendpointspreviewDatabaseName')]"
+              },
+                            {
+                "name": "CosmosDb__endpoints__preview__ContainerName",
+                "value": "[parameters('CosmosDbendpointspreviewContainerName')]"
+              },
+                            {
+                "name": "CosmosDb__endpoints__preview__DatabaseName",
+                "value": "[parameters('CosmosDbendpointspublishedConnectionString')]"
+              },
+                            {
+                "name": "CosmosDb__endpoints__published__DatabaseName",
+                "value": "[parameters('CosmosDbendpointspublishedDatabaseName')]"
+              },
+                            {
+                "name": "CosmosDb__endpoints__published__ContainerName",
+                "value": "[parameters('CosmosDbendpointspublishedContainerName')]"
               }
             ]
           }

@@ -43,6 +43,24 @@
     },
     "sharedAppServicePlanResourceGroup": {
       "value": "__appSharedResourceGroup__"
+    },
+    "CosmosDbendpointspreviewConnectionString":{
+      "value": "__CosmosDbendpointspreviewConnectionString__"
+    },
+    "CosmosDbendpointspreviewDatabaseName":{
+      "value": "__CosmosDbendpointspreviewDatabaseName__"
+    },
+    "CosmosDbendpointspreviewContainerName":{
+      "value": "__osmosDbendpointspreviewContainerName__"
+    },
+    "CosmosDbendpointspublishedConnectionString":{
+      "value": "__CosmosDbendpointspublishedConnectionString__"
+    },
+    "CosmosDbendpointspublishedDatabaseName":{
+      "value": "__CosmosDbendpointspublishedDatabaseName__"
+    },
+    "CosmosDbendpointspublishedContainerName":{
+      "value": "__CosmosDbendpointspublishedContainerName__"
     }
   }
 }
