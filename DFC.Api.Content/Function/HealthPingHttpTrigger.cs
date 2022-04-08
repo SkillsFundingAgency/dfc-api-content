@@ -17,7 +17,7 @@ namespace DFC.Api.Content.Function
         public static IActionResult Run(
                 [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/ping")] HttpRequest req, ILogger logger)
         {
-            logger.LogInformation($"pinged");
+            logger.LogInformation("pinged");
 
             return new OkResult();
         }

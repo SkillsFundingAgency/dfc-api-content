@@ -1,0 +1,35 @@
+﻿{
+  "id": "c78a4c9c-df64-4ead-a307-ba73165b7286",
+  "ContentType": "pagelocation",
+  "_links": {
+    "self": "http://localhost:7071/api/execute/pagelocation/c78a4c9c-df64-4ead-a307-ba73165b7286",
+    "curies": [
+      {
+        "name": "cont",
+        "href": "https://localhost:7071/api/execute"
+      },
+      {
+        "name": "incoming",
+        "items": [
+          {
+            "contentType": "pagelocation",
+            "id": "48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"
+          },
+          {
+            "contentType": "page",
+            "id": "f60c7388-7b89-40d6-9911-52f5ae6b4a41"
+          }
+        ]
+      }
+    ]
+  },
+  "ModifiedDate": "2021-06-08T11:35:40.9480338Z",
+  "uri": "http://localhost:7071/api/execute/pagelocation/c78a4c9c-df64-4ead-a307-ba73165b7286",
+  "skos__prefLabel": "alerts",
+  "BreadcrumbText": "Error",
+  "_rid": "vQFKAPL2kNMUAAAAAAAAAA==",
+  "_self": "dbs/vQFKAA==/colls/vQFKAPL2kNM=/docs/vQFKAPL2kNMUAAAAAAAAAA==/",
+  "_etag": "18003b29-0000-1100-0000-623459090000",
+  "_attachments": "attachments/",
+  "_ts": 1647597833
+}

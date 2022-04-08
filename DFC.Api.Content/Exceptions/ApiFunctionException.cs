@@ -5,7 +5,7 @@ using System.Security.Permissions;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
+namespace DFC.Api.Content.Exceptions
 {
     [ExcludeFromCodeCoverage]
     [Serializable]
@@ -45,18 +45,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
             return new ApiFunctionException(new InternalServerErrorResult(), message, innerException);
         }
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected ApiFunctionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             ActionResult = null;
         }
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             // MUST call through to the base class to let it save its own state

@@ -23,35 +23,29 @@
     "aspSize": {
       "value": "__aspSize__"
     },
-    "ContentTypeUriMap": {
-      "value": ""
-    },
     "ContentApiOptionsAction": {
       "value": "__ReleaseContentApiOptionsAction__"
     },
     "environment": {
       "value": "__ReleaseEnvironmentName__"
     },
-    "Neo4jUrl": {
-      "value": "__ReleaseNeo4jUrl__"
+    "CosmosDbendpointspreviewConnectionString":{
+      "value": "__CosmosDbendpointspreviewConnectionString__"
     },
-    "Neo4jUser": {
-      "value": "__Neo4jUser__"
+    "CosmosDbendpointspreviewDatabaseName":{
+      "value": "__CosmosDbendpointspreviewDatabaseName__"
     },
-    "Neo4jPassword": {
-      "value": "__Neo4jPassword__"
+    "CosmosDbendpointspreviewContainerName":{
+      "value": "__CosmosDbendpointspreviewContainerName__"
     },
-    "sharedResourceGroup": {
-      "value": "__sharedResourceGroup__"
+    "CosmosDbendpointspublishedConnectionString":{
+      "value": "__CosmosDbendpointspublishedConnectionString__"
     },
-    "sharedDfcStorageAccountName": {
-      "value": "__sharedDfcStorageAccountName__"
+    "CosmosDbendpointspublishedDatabaseName":{
+      "value": "__CosmosDbendpointspublishedDatabaseName__"
     },
-    "sharedAppServicePlanName": {
-      "value": "__sharedAppServicePlanName__"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "value": "__appSharedResourceGroup__"
+    "CosmosDbendpointspublishedContainerName":{
+      "value": "__CosmosDbendpointspublishedContainerName__"
     }
   }
 }

@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace DFC.ServiceTaxonomy.ApiFunction.Models
+namespace DFC.Api.Content.Models
 {
     public class QueryParameters
     {
-        public QueryParameters(string contentType, Guid? id)
+        public QueryParameters(string contentType, List<Guid?> ids)
         {
             ContentType = contentType;
-            Id = id;
+            Ids = ids;
         }
 
-        public string ContentType { get; set; }
-        public Guid? Id { get; set; }
+        public string ContentType { get; }
+        public List<Guid?> Ids { get; }
     }
 }
