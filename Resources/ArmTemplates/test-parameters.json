@@ -37,6 +37,25 @@
     },
     "sharedDfcStorageAccountName": {
       "value": "dfcdevsharedstr"
+    },
+    "CosmosDbendpointspreviewConnectionString":{
+      "value": "__CosmosDbendpointspreviewConnectionString__"
+    },
+    "CosmosDbendpointspreviewDatabaseName":{
+      "value": "__CosmosDbendpointspreviewDatabaseName__"
+    },
+    "CosmosDbendpointspreviewContainerName":{
+      "value": "__CosmosDbendpointspreviewContainerName__"
+    },
+    "CosmosDbendpointspublishedConnectionString":{
+      "value": "__CosmosDbendpointspublishedConnectionString__"
+    },
+    "CosmosDbendpointspublishedDatabaseName":{
+      "value": "__CosmosDbendpointspublishedDatabaseName__"
+    },
+    "CosmosDbendpointspublishedContainerName":{
+      "value": "__CosmosDbendpointspublishedContainerName__"
     }
+    
   }
 }
