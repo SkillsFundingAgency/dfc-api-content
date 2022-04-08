@@ -17,26 +17,11 @@
     "aspInstances": {
       "value": 2
     },
-    "ContentTypeUriMap": {
-      "value": ""
-    },
     "ContentApiOptionsAction": {
       "value": "getcontent"
     },
     "environment": {
       "value": "dev"
-    },
-    "sharedResourceGroup": {
-      "value": "dfc-dev-shared-rg"
-    },
-    "sharedAppServicePlanName": {
-      "value": "dfc-dev-app-shared-asp"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "value": "dfc-dev-app-sharedresources-rg"
-    },
-    "sharedDfcStorageAccountName": {
-      "value": "dfcdevsharedstr"
     },
     "CosmosDbendpointspreviewConnectionString":{
       "value": "__CosmosDbendpointspreviewConnectionString__"
@@ -55,7 +40,6 @@
     },
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
-    }
-    
+    }    
   }
 }

@@ -23,26 +23,11 @@
     "aspSize": {
       "value": "__aspSize__"
     },
-    "ContentTypeUriMap": {
-      "value": ""
-    },
     "ContentApiOptionsAction": {
       "value": "__ReleaseContentApiOptionsAction__"
     },
     "environment": {
       "value": "__ReleaseEnvironmentName__"
-    },
-    "sharedResourceGroup": {
-      "value": "__sharedResourceGroup__"
-    },
-    "sharedDfcStorageAccountName": {
-      "value": "__sharedDfcStorageAccountName__"
-    },
-    "sharedAppServicePlanName": {
-      "value": "__sharedAppServicePlanName__"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "value": "__appSharedResourceGroup__"
     },
     "CosmosDbendpointspreviewConnectionString":{
       "value": "__CosmosDbendpointspreviewConnectionString__"
