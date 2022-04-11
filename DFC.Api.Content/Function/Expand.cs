@@ -77,7 +77,7 @@ namespace DFC.Api.Content.Function
                     publishState,
                     log, 
                     new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
-                    level,
+                    level + 1,
                     parameters.MultiDirectional,
                     parameters.MaxDepth,
                     parameters.TypesToInclude.ToList());
@@ -149,7 +149,7 @@ namespace DFC.Api.Content.Function
             
             foreach (var childIdGroup in childIds)
             {
-                    var queryParameters = new QueryParameters(
+                var queryParameters = new QueryParameters(
                     childIdGroup.Key.ToLower(),
                     childIdGroup
                         .Where(grp => !AncestorsContainsCompositeKey(grp.ContentType, grp.Id, retrievedCompositeKeys, level))
@@ -171,7 +171,7 @@ namespace DFC.Api.Content.Function
                 
                 foreach (var id in queryParameters.Ids)
                 {
-                    retrievedCompositeKeys[level].Add(childIdGroup.Key + id);
+                    retrievedCompositeKeys[level].Add($"{childIdGroup.Key}{id}");
                 }
 
                 for (var index = 0; index < childResults.Count; index++)
@@ -230,7 +230,7 @@ namespace DFC.Api.Content.Function
         {
             var compositeKey = contentType + id;
             
-            for (var currentLevel = level - 1; currentLevel >= 0; currentLevel--)
+            for (var currentLevel = level; currentLevel >= 0; currentLevel--)
             {
                 if (!retrievedCompositeKeys.ContainsKey(currentLevel))
                 {
