@@ -73,7 +73,7 @@ namespace DFC.Api.Content.Function
 
                 const int level = 0;
                 await GetChildItems(
-                    record,
+                    new List<Dictionary<string, object>> { record },
                     publishState,
                     log, 
                     new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
@@ -122,7 +122,7 @@ namespace DFC.Api.Content.Function
         }
         
         private async Task GetChildItems(
-            Dictionary<string, object> record,
+            List<Dictionary<string, object>> records,
             string publishState,
             ILogger log,
             Dictionary<int, List<string>> retrievedCompositeKeys,
@@ -131,71 +131,104 @@ namespace DFC.Api.Content.Function
             int maxDepth,
             List<string> typesToInclude)
         {
-            if (!record.ContainsKey("_links"))
-            {
-                return;
-            }
+            var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
+            var childIdsByRecordPosition = new Dictionary<int, List<Dictionary<string, object>>>();
             
-            var children = new List<Dictionary<string, object>>();
-            
-            if (level > maxDepth)
+            for (var recordIndex = 0; recordIndex < records.Count; recordIndex++)
             {
-                record["ContentItems"] = children;
-                return;
+                var record = records[recordIndex];
+                if (!record.ContainsKey("_links"))
+                {
+                    continue;
+                }
+                
+                var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
+                PopulateChildIdsByType(recordLinks, childIdsByType, recordIndex, retrievedCompositeKeys, level, typesToInclude);
+                
+                childIdsByRecordPosition.Add(recordIndex, new List<Dictionary<string, object>>());
+                record["ContentItems"] = new List<Dictionary<string, object>>();
             }
 
-            var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
-            var childIds = GetChildIds(recordLinks);
+            if (level > maxDepth)
+            {
+                return;
+            }
             
-            foreach (var childIdGroup in childIds)
+            var allChildResults = new List<Dictionary<string, object>>();
+            
+            foreach (var childIdGroup in childIdsByType)
             {
                 var queryParameters = new QueryParameters(
                     childIdGroup.Key.ToLower(),
-                    childIdGroup
-                        .Where(grp => !AncestorsContainsCompositeKey(grp.ContentType, grp.Id, retrievedCompositeKeys, level))
-                        .Where(grp => typesToInclude.Contains(grp.ContentType))
-                        .Select(grp => (Guid?)grp.Id).ToList());
+                    childIdGroup.Value.Select(grp => (Guid?) grp.Key).ToList());
 
                 if (!queryParameters.Ids.Any())
                 {
                     continue;
                 }
-                
+
                 var queryToExecute = BuildQuery(queryParameters, publishState);
                 var childResults = await ExecuteQuery(queryToExecute, log);
-
+                
                 if (!retrievedCompositeKeys.ContainsKey(level))
                 {
                     retrievedCompositeKeys.Add(level, new List<string>());
                 }
-                
-                foreach (var id in queryParameters.Ids)
+
+                foreach (var queryParameterId in queryParameters.Ids)
                 {
-                    retrievedCompositeKeys[level].Add($"{childIdGroup.Key}{id}");
+                    retrievedCompositeKeys[level].Add($"{childIdGroup.Key}{queryParameterId}");
                 }
 
                 for (var index = 0; index < childResults.Count; index++)
                 {
                     childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResults[index], multiDirectional);
-
-                    await GetChildItems(
-                        childResults[index],
-                        publishState,
-                        log,
-                        retrievedCompositeKeys,
-                        level + 1,
-                        multiDirectional,
-                        maxDepth,
-                        typesToInclude);
                 }
-
-                children.AddRange(childResults);
+                
+                allChildResults.AddRange(childResults);
             }
+            
+            foreach (var childResult in allChildResults)
+            {
+                var id = Guid.Parse((string)childResult["id"]);
+                var positions = childIdsByType
+                    .Where(childId => childId.Value.Any(y => y.Key == id))
+                    .SelectMany(x => x.Value)
+                    .Where(y => y.Key == id)
+                    .SelectMany(x => x.Value);
 
-            record["ContentItems"] = children;
+                foreach (var pos in positions)
+                {
+                    childIdsByRecordPosition[pos].Add(childResult);
+                }
+            }
+            
+            foreach (var output in childIdsByRecordPosition)
+            {
+                var contentItems = (List<Dictionary<string, object>>)records[output.Key]["ContentItems"];
+                contentItems.AddRange(output.Value);
+
+                records[output.Key]["ContentItems"] = contentItems;
+            }
+            
+            await GetChildItems(
+                allChildResults,
+                publishState,
+                log,
+                retrievedCompositeKeys,
+                level + 1,
+                multiDirectional,
+                maxDepth,
+                typesToInclude);
         }
 
-        private List<IGrouping<string, (string ContentType, Guid Id)>> GetChildIds(Dictionary<string, object> recordLinks)
+        private void PopulateChildIdsByType(
+            Dictionary<string, object> recordLinks,
+            Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType,
+            int parentPosition,
+            Dictionary<int, List<string>> retrievedCompositeKeys,
+            int level,
+            List<string> typesToInclude)
         {
             var filteredRecordLinks = recordLinks
                 .Where(previousItemLink =>
@@ -204,22 +237,68 @@ namespace DFC.Api.Content.Function
             
             var childIdsObjects = filteredRecordLinks
                 .Where(previousItemLink => previousItemLink.Value is JObject 
-                                           || previousItemLink.Value is Dictionary<string, object>)
+                    || previousItemLink.Value is Dictionary<string, object>)
                 .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value));
 
             var childIdsArrays = filteredRecordLinks
                 .Where(previousItemLink => previousItemLink.Value is JArray ||
-                                           previousItemLink.Value is List<Dictionary<string, object>>)
+                    previousItemLink.Value is List<Dictionary<string, object>>)
                 .Select(previousItemLink => _jsonFormatHelper.SafeCastToList(previousItemLink.Value))
                 .SelectMany(list => list);
 
-            return childIdsObjects
+            var contentTypeGroupings = childIdsObjects
                 .Union(childIdsArrays)
                 .Select(dict => (string) dict!["href"])
                 .Where(uri => !string.IsNullOrEmpty(uri))
-                .Select(GetContentTypeAndId)
+                .Select(item => GetContentTypeIdAndPosition(item, parentPosition))
                 .GroupBy(contentTypeAndId => contentTypeAndId.ContentType)
                 .ToList();
+
+            foreach (var contentTypeGrouping in contentTypeGroupings)
+            {
+                if (!childIdsByType.ContainsKey(contentTypeGrouping.Key))
+                {
+                    childIdsByType.Add(contentTypeGrouping.Key, new Dictionary<Guid, List<int>>());
+                }
+                
+                var childIdByType = childIdsByType[contentTypeGrouping.Key];
+
+                foreach (var x in contentTypeGrouping)
+                {
+                    if (!childIdByType.ContainsKey(x.Id))
+                    {
+                        childIdByType.Add(x.Id, new List<int>());
+                    }
+                    
+                    if (!AncestorsContainsCompositeKey(x.ContentType.ToLower(), x.Id, retrievedCompositeKeys, level)
+                        && typesToInclude.Contains(x.ContentType.ToLower()))
+                    {
+                        childIdByType[x.Id].Add(x.ParentPosition);
+                    }
+                }
+
+                childIdsByType[contentTypeGrouping.Key] = childIdByType;
+            }
+
+            var keys = childIdsByType.Keys.ToList();
+            
+            // Remove unused
+            for (int idx = 0, len = keys.Count; idx < len; idx++)
+            {
+                var ctKey = keys.ElementAt(idx);
+                var ct = childIdsByType[ctKey];
+                var c = 0;
+
+                foreach (var kvp in ct)
+                {
+                    c += kvp.Value.Count;
+                }
+
+                if (c == 0)
+                {
+                    childIdsByType.Remove(ctKey);
+                }
+            }
         }
 
         private static bool AncestorsContainsCompositeKey(
@@ -230,7 +309,7 @@ namespace DFC.Api.Content.Function
         {
             var compositeKey = contentType + id;
             
-            for (var currentLevel = level; currentLevel >= 0; currentLevel--)
+            for (var currentLevel = level - 1; currentLevel >= 0; currentLevel--)
             {
                 if (!retrievedCompositeKeys.ContainsKey(currentLevel))
                 {
