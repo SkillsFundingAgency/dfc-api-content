@@ -60,6 +60,7 @@ namespace DFC.Api.Content.Helpers
                 var contentType = (string)incomingItem["contentType"];
                 var id = (string)incomingItem["id"];
                 var key = $"cont:has{FirstCharToUpper(contentType)}";
+                
                 var value = new Dictionary<string, object>
                 {
                     {"href", multiDirectional ? $"/{contentType}/{id}/true" : $"/{contentType}/{id}"},
@@ -159,16 +160,19 @@ namespace DFC.Api.Content.Helpers
                 if (recordLink.Value is JObject || recordLink.Value is Dictionary<string, object>)
                 {
                     var dict = SafeCastToDictionary(recordLink.Value);
-                    var href = (string) dict!["href"];
+                    var href = (string?) dict["href"];
 
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
-                    if (href == null || href.EndsWith("/true"))
+                    if (href?.EndsWith("/true") != false)
                     {
                         newRecordLinks.Add(recordLink.Key, recordLink.Value);
                         continue;
                     }
 
-                    dict["href"] = $"{href}/true";
+                    if (!string.IsNullOrEmpty(href))
+                    {
+                        dict["href"] = $"{href}/true";
+                    }
+                    
                     newRecordLinks.Add(recordLink.Key, dict);
                 }
                 else
@@ -177,15 +181,17 @@ namespace DFC.Api.Content.Helpers
 
                     foreach (var dict in list)
                     {
-                        var href = (string) dict!["href"];
+                        var href = (string?)dict["href"];
 
-                        // ReSharper disable once ConditionIsAlwaysTrueOrFalse (Wrong - href can be null)
-                        if (href == null || href.EndsWith("/true"))
+                        if (href?.EndsWith("/true") != false)
                         {
                             continue;
                         }
-
-                        dict["href"] = $"{href}/true";
+                        
+                        if (!string.IsNullOrEmpty(href))
+                        {
+                            dict["href"] = $"{href}/true";
+                        }
                     }
                     
                     newRecordLinks.Add(recordLink.Key, list);
