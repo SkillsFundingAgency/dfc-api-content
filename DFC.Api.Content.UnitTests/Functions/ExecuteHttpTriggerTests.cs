@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
+using DFC.Api.Content.Exceptions;
 using DFC.Api.Content.Function;
 using DFC.Api.Content.Helpers;
 using DFC.Api.Content.Interfaces;
@@ -48,6 +51,18 @@ namespace DFC.Api.Content.UnitTests.Functions
 
             var badRequestObjectResult = result as BadRequestObjectResult;
             Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult!.StatusCode);
+        }
+
+        [Fact]
+        public async Task Execute_WhenDataSourceRunThrowsException_ReturnsInternalServerErrorResult()
+        {
+
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.Ignored))
+                .Throws<Exception>();
+
+            var result = await RunFunction("test1", null);
+            // Assert
+            Assert.IsType<InternalServerErrorResult>(result);
         }
 
         [Fact]
