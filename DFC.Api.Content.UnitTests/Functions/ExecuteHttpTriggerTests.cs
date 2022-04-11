@@ -90,7 +90,7 @@ namespace DFC.Api.Content.UnitTests.Functions
         }
 
         [Fact]
-        public async Task Execute_GetPage_ReturnsCorrectJsonResponse()
+        public async Task Execute_GetPublishedPage_ReturnsCorrectJsonResponse()
         {
             var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetById.json");
             var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetById.json");
@@ -115,9 +115,36 @@ namespace DFC.Api.Content.UnitTests.Functions
             Assert.Equal(JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), resultJson);
         }
 
-        private async Task<IActionResult> RunFunction(string contentType, Guid? id)
+        [Fact]
+        public async Task Execute_GetPreviewPage_ReturnsCorrectJsonResponse()
         {
-            return await _executeFunction.Run(_request, contentType, id, _log, null, "published").ConfigureAwait(false);
+            var recordJsonInput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_GetById.json");
+            var expectedJsonOutput = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Output/PageRecordOutput_GetById.json");
+
+            var recordJson = ((JObject)JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInput)["data"])
+                .ToObject<Dictionary<string, object>>();
+
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.Ignored))
+                .Returns(new List<Dictionary<string, object>>
+                {
+                    recordJson
+                });
+
+            var result = await RunFunction("test1", Guid.NewGuid(), "preview");
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+
+            var okObjectResult = result as OkObjectResult;
+            var resultJson = JsonConvert.SerializeObject(okObjectResult!.Value);
+
+            Assert.Equal(JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), resultJson);
+        }
+
+
+        private async Task<IActionResult> RunFunction(string contentType, Guid? id, string databaseType = "published")
+        {
+            return await _executeFunction.Run(_request, contentType, id, _log, null, databaseType).ConfigureAwait(false);
         }
     }
 }
