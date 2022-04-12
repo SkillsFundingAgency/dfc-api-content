@@ -2,9 +2,9 @@
 
 namespace DFC.Api.Content.Models
 {
-    public class ExecuteQuery
+    public class Query
     {
-        public ExecuteQuery(
+        public Query(
             string queryText,
             Dictionary<string, object> parameters)
         {

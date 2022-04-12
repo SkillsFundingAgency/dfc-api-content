@@ -86,7 +86,7 @@ namespace DFC.Api.Content.Function
             }
         }
         
-        private static ExecuteQueries BuildQuery(QueryParameters queryParameters, string publishState)
+        private static Queries BuildQuery(QueryParameters queryParameters, string publishState)
         {   
             const string contentByIdCosmosSql = "select * from c where c.id = @id0";
             const string contentGetAllCosmosSql = "select * from c";
@@ -94,8 +94,8 @@ namespace DFC.Api.Content.Function
             
             if (!queryParameters.Ids.Any())
             {
-                return new ExecuteQueries(
-                    new[] { new ExecuteQuery(contentGetAllCosmosSql, parameters) },
+                return new Queries(
+                    new[] { new Query(contentGetAllCosmosSql, parameters) },
                     RequestType.GetAll,
                     queryParameters.ContentType,
                     publishState);
@@ -103,8 +103,8 @@ namespace DFC.Api.Content.Function
             
             parameters.Add("@id0", queryParameters.Ids.First()!.Value);
             
-            return new ExecuteQueries(
-                new[] { new ExecuteQuery(contentByIdCosmosSql, parameters) },
+            return new Queries(
+                new[] { new Query(contentByIdCosmosSql, parameters) },
                 RequestType.GetById,
                 queryParameters.ContentType,
                 publishState);

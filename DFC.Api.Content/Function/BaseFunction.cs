@@ -29,13 +29,13 @@ namespace DFC.Api.Content.Function
             return (contentType, id, parentPosition);
         }
         
-        protected async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQueries queries, ILogger log)
+        protected async Task<List<Dictionary<string, object>>> ExecuteQuery(Queries queries, ILogger log)
         {
             try
             {
                 var executingQueries = new List<Task<List<Dictionary<string, object>>>>();
                 
-                foreach (var query in queries.Queries)
+                foreach (var query in queries.Content)
                 {
                     log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
                         query.QueryText,
