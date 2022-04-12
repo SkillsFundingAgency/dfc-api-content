@@ -310,23 +310,18 @@ namespace DFC.Api.Content.Function
                 childIdsByType[contentTypeGrouping.Key] = childIdByType;
             }
 
-            var keys = childIdsByType.Keys.ToList();
+            var contentTypeKeys = childIdsByType.Keys.ToList();
             
             // Remove unused
-            for (int idx = 0, len = keys.Count; idx < len; idx++)
+            for (int idx = 0, len = contentTypeKeys.Count; idx < len; idx++)
             {
-                var ctKey = keys.ElementAt(idx);
-                var ct = childIdsByType[ctKey];
-                var c = 0;
+                var contentTypeKey = contentTypeKeys.ElementAt(idx);
+                var contentType = childIdsByType[contentTypeKey];
+                var count = contentType.Sum(kvp => kvp.Value.Count);
 
-                foreach (var kvp in ct)
+                if (count == 0)
                 {
-                    c += kvp.Value.Count;
-                }
-
-                if (c == 0)
-                {
-                    childIdsByType.Remove(ctKey);
+                    childIdsByType.Remove(contentTypeKey);
                 }
             }
         }
