@@ -29,15 +29,30 @@ namespace DFC.Api.Content.Function
             return (contentType, id, parentPosition);
         }
         
-        protected async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQuery query, ILogger log)
+        protected async Task<List<Dictionary<string, object>>> ExecuteQuery(ExecuteQueries queries, ILogger log)
         {
-            log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
-                query.QueryText,
-                query.ContentType);
-
             try
             {
-                return (await _dataSource.Run(new GenericQuery(query.QueryText, query.ContentType, query.PublishState))).ToList();
+                var executingQueries = new List<Task<List<Dictionary<string, object>>>>();
+                
+                foreach (var query in queries.Queries)
+                {
+                    log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
+                        query.QueryText,
+                        queries.ContentType);   
+                    
+                    executingQueries.Add(_dataSource.Run(
+                        new GenericQuery(query.QueryText, queries.ContentType, queries.PublishState, query.Parameters)));
+                }
+
+                var returnList = new List<Dictionary<string, object>>();
+                
+                foreach (var executingQuery in executingQueries)
+                {
+                    returnList.AddRange((await executingQuery).ToList());
+                }
+                
+                return returnList;
             }
             catch (Exception ex)
             {

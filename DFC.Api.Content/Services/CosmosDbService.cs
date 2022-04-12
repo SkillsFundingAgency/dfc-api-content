@@ -39,7 +39,7 @@ namespace DFC.Api.Content.Services
         public async Task<List<Dictionary<string, object>>> Run(GenericQuery query)
         {
             var container = GetContainer(query.PublishState);
-            return await GetItemFromDatabase(container, query.QueryText, query.ContentType);
+            return await GetItemFromDatabase(container, query.QueryText, query.ContentType, query.Parameters);
         }
         
         private Container GetContainer(string publishState)
@@ -49,11 +49,25 @@ namespace DFC.Api.Content.Services
                 : PublishedCosmosClient.GetDatabase(PublishedDatabaseName).GetContainer(PublishedContainerName);
         }
         
-        private static async Task<List<Dictionary<string, object>>> GetItemFromDatabase(Container container, string queryText, string contentType)
+        private static async Task<List<Dictionary<string, object>>> GetItemFromDatabase(
+            Container container,
+            string queryText,
+            string contentType,
+            Dictionary<string, object> parameters)
         {
+            var queryDefinition = new QueryDefinition(queryText);
+
+            foreach (var parameter in parameters)
+            {
+                queryDefinition = queryDefinition.WithParameter(parameter.Key, parameter.Value);
+            }
+            
             var iteratorLoop = container.GetItemQueryIterator<Dictionary<string, object>>(
-                new QueryDefinition(queryText),
-                requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey(contentType) });
+                queryDefinition,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(contentType)
+                });
 
             var result = await iteratorLoop.ReadNextAsync();
             return result.Resource.ToList();
@@ -63,6 +77,6 @@ namespace DFC.Api.Content.Services
         {
             const string previewPublishState = "preview";
             return publishState.Equals(previewPublishState, StringComparison.InvariantCultureIgnoreCase);
-    }
+        }
     }
 }

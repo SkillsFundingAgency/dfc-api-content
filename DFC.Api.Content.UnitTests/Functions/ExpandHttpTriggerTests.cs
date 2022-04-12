@@ -84,21 +84,21 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
             
             var recordJsonInputPageLocation1 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation1.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation1)
                 });
             
             var recordJsonInputPageLocation2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation2.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation2)
                 });          
 
             var recordJsonInputPageLocation3 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation3.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation3)
@@ -137,21 +137,21 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
             
             var recordJsonInputPageLocation1 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation1.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation1)
                 });
             
             var recordJsonInputPageLocation2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation2.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation2)
                 });          
 
             var recordJsonInputPageLocation3 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation3.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation3)
@@ -200,21 +200,21 @@ namespace DFC.Api.Content.UnitTests.Functions
                 });
             
             var recordJsonInputPageLocation1 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation1.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("c78a4c9c-df64-4ead-a307-ba73165b7286"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation1)
                 });
             
             var recordJsonInputPageLocation2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation2.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation2)
                 });          
 
             var recordJsonInputPageLocation3 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Files/Input/PageRecordInput_Expand_PageLocation3.json");
-            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.QueryText.Contains("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
+            A.CallTo(() => _dataSource.Run(A<GenericQuery>.That.Matches(x => x.Parameters.ContainsValue("a6d20c3c-51c0-437a-84c4-ae23cc78c99a"))))
                 .Returns(new List<Dictionary<string, object>>
                 {
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(recordJsonInputPageLocation3)
