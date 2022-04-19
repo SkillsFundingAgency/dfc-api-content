@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using DFC.Api.Content.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 
 namespace DFC.Api.Content.Services
 {
+    [ExcludeFromCodeCoverage]
     public class CosmosDbService : IDataSourceProvider
     {
         private CosmosClient PreviewCosmosClient { get; }

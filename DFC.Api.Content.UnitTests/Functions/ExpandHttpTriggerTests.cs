@@ -45,6 +45,8 @@ namespace DFC.Api.Content.UnitTests.Functions
             _expandFunction = new Expand(_dataSource, new JsonFormatHelper());
         }
 
+
+
         [Fact]
         public async Task Expand_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
         {
@@ -249,7 +251,17 @@ namespace DFC.Api.Content.UnitTests.Functions
                 JsonConvert.SerializeObject(JToken.Parse(expectedJsonOutput)), 
                 actualJsonOutput);
         }
-        
+
+        [Fact]
+        public async Task Expand_WhenParametersNull_ReturnsArgumentNullException()
+        {
+            _request.Body = new MemoryStream();
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => RunFunction(string.Empty, Guid.NewGuid()));
+        }
+
+
         private async Task<IActionResult> RunFunction(string contentType, Guid id)
         {
             return await _expandFunction.Run(_request, contentType, id, _log, "published").ConfigureAwait(false);
