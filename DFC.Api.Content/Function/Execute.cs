@@ -86,18 +86,25 @@ namespace DFC.Api.Content.Function
             }
         }
         
-        private static ExecuteQuery BuildQuery(QueryParameters queryParameters, string publishState)
+        private static Queries BuildQuery(QueryParameters queryParameters, string publishState)
         {   
-            const string contentByIdCosmosSql = "select * from c where c.id ='{0}'";
+            const string contentByIdCosmosSql = "select * from c where c.id = @id0";
             const string contentGetAllCosmosSql = "select * from c";
+            var parameters = new Dictionary<string, object>();
             
             if (!queryParameters.Ids.Any())
             {
-                return new ExecuteQuery(contentGetAllCosmosSql, RequestType.GetAll, queryParameters.ContentType, publishState);
+                return new Queries(
+                    new[] { new Query(contentGetAllCosmosSql, parameters) },
+                    RequestType.GetAll,
+                    queryParameters.ContentType,
+                    publishState);
             }
             
-            return new ExecuteQuery(
-                string.Format(contentByIdCosmosSql, queryParameters.Ids.First()!.Value),
+            parameters.Add("@id0", queryParameters.Ids.First()!.Value);
+            
+            return new Queries(
+                new[] { new Query(contentByIdCosmosSql, parameters) },
                 RequestType.GetById,
                 queryParameters.ContentType,
                 publishState);
