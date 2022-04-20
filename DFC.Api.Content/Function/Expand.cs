@@ -278,8 +278,6 @@ namespace DFC.Api.Content.Function
                 var childIdsObjects = filteredRecordLinks
                     .Where(previousItemLink => previousItemLink.Value is JObject 
                         || previousItemLink.Value is Dictionary<string, object>)
-                    .Where(previousItemLink => previousItemLink.Value is JObject
-                        || previousItemLink.Value is Dictionary<string, object>)
                     .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value));
 
                 var childIdsArrays = filteredRecordLinks
