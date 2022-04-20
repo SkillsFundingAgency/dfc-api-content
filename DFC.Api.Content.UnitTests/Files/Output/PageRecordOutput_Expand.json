@@ -112,6 +112,7 @@
           "uri": "http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408",
           "skos__prefLabel": "/",
           "BreadcrumbText": "Home",
+          "contentType": "pagelocation",
           "ContentItems": [
             {
               "id": "a6d20c3c-51c0-437a-84c4-ae23cc78c99a",
@@ -216,6 +217,7 @@
           "uri": "http://localhost:7071/api/execute/pagelocation/48b3f8cb-27c5-4e3a-9a53-69b6cfe8e408",
           "skos__prefLabel": "/",
           "BreadcrumbText": "Home",
+          "contentType": "pagelocation",
           "ContentItems": [
             {
               "id": "a6d20c3c-51c0-437a-84c4-ae23cc78c99a",
