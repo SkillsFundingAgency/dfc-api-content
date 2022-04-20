@@ -206,7 +206,8 @@ namespace DFC.Api.Content.Function
 
             var allChildren = new List<Dictionary<string, object>>();
             var childIdsByType = GetChildIdsByType(records, retrievedCompositeKeys, level, typesToInclude);
-            
+            var childRelationships = GetChildRelationships(records);
+
             foreach (var (contentType, idGroup) in childIdsByType)
             {
                 var queryParameters = new QueryParameters(
@@ -227,7 +228,19 @@ namespace DFC.Api.Content.Function
                 
                 for (var index = 0; index < childResults.Count; index++)
                 {
-                    childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResults[index], multiDirectional);
+                    var childResult = childResults[index];
+                    var (_, id, _) = GetContentTypeIdAndPosition((string) childResult["uri"], default);
+
+                    var propertiesToAdd = childRelationships.Any(x => x.Id == id)
+                        ? childRelationships.Single(x => x.Id == id).childRelationship
+                        : new Dictionary<string, object>();
+
+                    foreach (var (key, value) in propertiesToAdd.Where(x => x.Key != "href"))
+                    {
+                        childResult.Add(key, value);
+                    }
+                    
+                    childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResult, multiDirectional);
                 }
                 
                 allChildren.AddRange(childResults);
@@ -252,6 +265,47 @@ namespace DFC.Api.Content.Function
                 typesToInclude);
         }
 
+        private List<(Guid Id, Dictionary<string, object> childRelationship)> GetChildRelationships(
+            List<Dictionary<string, object>> records)
+        {
+            var returnList = new List<Dictionary<string, object>>();
+
+            foreach (var record in records)
+            {
+                var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
+                var filteredRecordLinks = GetFilteredRecordLinks(recordLinks);
+
+                var childIdsObjects = filteredRecordLinks
+                    .Where(previousItemLink => previousItemLink.Value is JObject 
+                        || previousItemLink.Value is Dictionary<string, object>)
+                    .Select(previousItemLink => _jsonFormatHelper.SafeCastToDictionary(previousItemLink.Value));
+
+                var childIdsArrays = filteredRecordLinks
+                    .Where(previousItemLink => previousItemLink.Value is JArray
+                        || previousItemLink.Value is List<Dictionary<string, object>>)
+                    .Select(previousItemLink => _jsonFormatHelper.SafeCastToList(previousItemLink.Value))
+                    .SelectMany(list => list);                
+                
+                returnList.AddRange(childIdsObjects.Union(childIdsArrays));
+            }
+
+            return returnList
+                .Where(childRelationship => !string.IsNullOrEmpty((string) childRelationship["href"]))
+                .Select(childRelationship =>
+                    (GetContentTypeIdAndPosition((string) childRelationship["href"], default).Id, childRelationship))
+                .GroupBy(idEtc => idEtc.Id)
+                .Select(idEtcGroup => idEtcGroup.First())
+                .ToList();
+        }
+        
+        private List<KeyValuePair<string, object>> GetFilteredRecordLinks(Dictionary<string, object> recordLinks)
+        {
+            return recordLinks
+                .Where(previousItemLink =>
+                    previousItemLink.Key != "self" && previousItemLink.Key != "curies")
+                .ToList();
+        }
+        
         private void PopulateChildIdsByType(
             Dictionary<string, object> recordLinks,
             int parentPosition,
