@@ -34,15 +34,22 @@ namespace DFC.Api.Content.Function
             try
             {
                 var executingQueries = new List<Task<List<Dictionary<string, object>>>>();
+                var loopCount = 0;
                 
                 foreach (var query in queries.Content)
                 {
                     log.LogInformation("Attempting to query data source with the following query: {QueryText}, {ContentType}",
                         query.QueryText,
-                        queries.ContentType);   
-                    
+                        queries.ContentType);
+
                     executingQueries.Add(_dataSource.Run(
                         new GenericQuery(query.QueryText, queries.ContentType, queries.PublishState, query.Parameters)));
+
+                    var isLast = loopCount++ == queries.Content.Length - 1;
+                    if (isLast) continue;
+                    
+                    log.LogInformation("Waiting on a task delay for 250ms to not overload Cosmos Db");
+                    await Task.Delay(250);
                 }
 
                 var returnList = new List<Dictionary<string, object>>();
@@ -56,6 +63,7 @@ namespace DFC.Api.Content.Function
             }
             catch (Exception ex)
             {
+                log.LogError(ex, "Error running a query from a count of {Count}", queries.Content.Length);
                 throw ApiFunctionException.InternalServerError("Unable to run query", ex);
             }
         }

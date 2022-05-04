@@ -424,25 +424,17 @@ namespace DFC.Api.Content.Function
             }
             else
             {
-                const string contentByIdMultipleCosmosSql = "select * from c where c.id in ({0})";
-                var idGroups = queryParameters.Ids.Batch(500);
+                const string contentByIdMultipleCosmosSql = "select * from c where ARRAY_CONTAINS(@idList0, c.id)";
+                var idGroups = queryParameters.Ids.Batch(200);
 
                 foreach (var idGroup in idGroups)
                 {
-                    var parameters = new Dictionary<string, object>();
-                    var index = 0;
-                    
-                    var sqlQuery = string.Format(contentByIdMultipleCosmosSql,
-                        string.Join(',', idGroup.Select(id => $"@id{index++}").ToArray()));
-
-                    index = 0;
-                
-                    foreach (var id in idGroup)
-                    {
-                        parameters.Add($"@id{index++}", id!.Value.ToString());                    
-                    }
-                    
-                    queries.Add(new Query(sqlQuery, parameters));
+                    queries.Add(new Query(
+                        contentByIdMultipleCosmosSql,
+                        new Dictionary<string, object>()
+                        {
+                            { "@idList0", idGroup.Select(id => id!.Value).ToArray() }
+                        }));
                 }
             }
             
