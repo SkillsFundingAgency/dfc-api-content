@@ -34,7 +34,6 @@ namespace DFC.Api.Content.Function
             try
             {
                 var executingQueries = new List<Task<List<Dictionary<string, object>>>>();
-                var loopCount = 0;
                 
                 foreach (var query in queries.Content)
                 {
