@@ -128,7 +128,8 @@ namespace DFC.Api.Content.Function
             List<Dictionary<string, object>> records,
             Dictionary<int, List<string>> retrievedContentTypes,
             int level,
-            List<string> typesToInclude)
+            List<string> typesToInclude,
+            bool multiDirectional)
         {
             var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
             
@@ -140,7 +141,7 @@ namespace DFC.Api.Content.Function
                 }
                 
                 var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
-                PopulateChildIdsByType(recordLinks, recordIndex, retrievedContentTypes, level, typesToInclude, ref childIdsByType);
+                PopulateChildIdsByType(recordLinks, recordIndex, retrievedContentTypes, level, typesToInclude, multiDirectional, ref childIdsByType);
             });
 
             return childIdsByType;
@@ -205,7 +206,7 @@ namespace DFC.Api.Content.Function
             var retrievedContentTypeLevel = retrievedContentTypes[level];
 
             var allChildren = new List<Dictionary<string, object>>();
-            var childIdsByType = GetChildIdsByType(records, retrievedContentTypes, level, typesToInclude);
+            var childIdsByType = GetChildIdsByType(records, retrievedContentTypes, level, typesToInclude, multiDirectional);
             var childRelationships = GetChildRelationships(records);
 
             foreach (var (contentType, idGroup) in childIdsByType)
@@ -312,6 +313,7 @@ namespace DFC.Api.Content.Function
             Dictionary<int, List<string>> retrievedContentTypes,
             int level,
             List<string> typesToInclude,
+            bool multiDirectional,
             ref Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType)
         {
             var filteredRecordLinks = recordLinks
@@ -354,7 +356,7 @@ namespace DFC.Api.Content.Function
                         childIdByType.Add(id, new List<int>());
                     }
                     
-                    if (!AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level)
+                    if ((!multiDirectional || !AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level))
                         && typesToInclude.Contains(contentType.ToLower()))
                     {
                         childIdByType[id].Add(index);
