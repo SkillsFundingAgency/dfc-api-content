@@ -79,7 +79,7 @@ namespace DFC.Api.Content.Function
                     new List<Dictionary<string, object>> { record },
                     publishState,
                     log, 
-                    new Dictionary<int, List<string>> { { level, new List<string> { $"{contentType}{id}" } } },
+                    new Dictionary<int, List<string>> { { level, new List<string> { contentType.ToLower() } } },
                     level + 1,
                     parameters.MultiDirectional,
                     parameters.MaxDepth,
@@ -126,9 +126,10 @@ namespace DFC.Api.Content.Function
 
         private Dictionary<string, Dictionary<Guid, List<int>>> GetChildIdsByType(
             List<Dictionary<string, object>> records,
-            Dictionary<int, List<string>> retrievedCompositeKeys,
+            Dictionary<int, List<string>> retrievedContentTypes,
             int level,
-            List<string> typesToInclude)
+            List<string> typesToInclude,
+            bool multiDirectional)
         {
             var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
             
@@ -140,7 +141,7 @@ namespace DFC.Api.Content.Function
                 }
                 
                 var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
-                PopulateChildIdsByType(recordLinks, recordIndex, retrievedCompositeKeys, level, typesToInclude, ref childIdsByType);
+                PopulateChildIdsByType(recordLinks, recordIndex, retrievedContentTypes, level, typesToInclude, multiDirectional, ref childIdsByType);
             });
 
             return childIdsByType;
@@ -183,7 +184,7 @@ namespace DFC.Api.Content.Function
             List<Dictionary<string, object>> records,
             string publishState,
             ILogger log,
-            Dictionary<int, List<string>> retrievedCompositeKeys,
+            Dictionary<int, List<string>> retrievedContentTypes,
             int level,
             bool multiDirectional,
             int maxDepth,
@@ -197,15 +198,15 @@ namespace DFC.Api.Content.Function
             }
             
             // Make sure we can record that we fetched these records
-            if (!retrievedCompositeKeys.ContainsKey(level))
+            if (!retrievedContentTypes.ContainsKey(level))
             {
-                retrievedCompositeKeys.Add(level, new List<string>());
+                retrievedContentTypes.Add(level, new List<string>());
             }
 
-            var retrievedCompositeKeyLevel = retrievedCompositeKeys[level];
+            var retrievedContentTypeLevel = retrievedContentTypes[level];
 
             var allChildren = new List<Dictionary<string, object>>();
-            var childIdsByType = GetChildIdsByType(records, retrievedCompositeKeys, level, typesToInclude);
+            var childIdsByType = GetChildIdsByType(records, retrievedContentTypes, level, typesToInclude, multiDirectional);
             var childRelationships = GetChildRelationships(records);
 
             foreach (var (contentType, idGroup) in childIdsByType)
@@ -224,7 +225,7 @@ namespace DFC.Api.Content.Function
 
                 // Record it was fetched
                 queryParameters.Ids.ForEach(queryParameterId =>
-                    retrievedCompositeKeyLevel.Add($"{queryParameters.ContentType}{queryParameterId}"));
+                    retrievedContentTypeLevel.Add(queryParameters.ContentType.ToLower()));
                 
                 for (var index = 0; index < childResults.Count; index++)
                 {
@@ -258,7 +259,7 @@ namespace DFC.Api.Content.Function
                 allChildren,
                 publishState,
                 log,
-                retrievedCompositeKeys,
+                retrievedContentTypes,
                 level + 1,
                 multiDirectional,
                 maxDepth,
@@ -309,9 +310,10 @@ namespace DFC.Api.Content.Function
         private void PopulateChildIdsByType(
             Dictionary<string, object> recordLinks,
             int parentPosition,
-            Dictionary<int, List<string>> retrievedCompositeKeys,
+            Dictionary<int, List<string>> retrievedContentTypes,
             int level,
             List<string> typesToInclude,
+            bool multiDirectional,
             ref Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType)
         {
             var filteredRecordLinks = recordLinks
@@ -347,17 +349,17 @@ namespace DFC.Api.Content.Function
                 
                 var childIdByType = childIdsByType[contentTypeGrouping.Key];
 
-                foreach (var contentTypeWithId in contentTypeGrouping)
+                foreach (var (contentType, id, index) in contentTypeGrouping)
                 {
-                    if (!childIdByType.ContainsKey(contentTypeWithId.Id))
+                    if (!childIdByType.ContainsKey(id))
                     {
-                        childIdByType.Add(contentTypeWithId.Id, new List<int>());
+                        childIdByType.Add(id, new List<int>());
                     }
                     
-                    if (!AncestorsContainsCompositeKey(contentTypeWithId.ContentType.ToLower(), contentTypeWithId.Id, retrievedCompositeKeys, level)
-                        && typesToInclude.Contains(contentTypeWithId.ContentType.ToLower()))
+                    if ((!multiDirectional || !AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level))
+                        && typesToInclude.Contains(contentType.ToLower()))
                     {
-                        childIdByType[contentTypeWithId.Id].Add(contentTypeWithId.ParentPosition);
+                        childIdByType[id].Add(index);
                     }
                 }
 
@@ -380,14 +382,11 @@ namespace DFC.Api.Content.Function
             }
         }
 
-        private static bool AncestorsContainsCompositeKey(
+        private static bool AncestorsContainsContentType(
             string contentType,
-            Guid? id,
             Dictionary<int, List<string>> retrievedCompositeKeys,
             int level)
         {
-            var compositeKey = contentType + id;
-            
             for (var currentLevel = level - 1; currentLevel >= 0; currentLevel--)
             {
                 if (!retrievedCompositeKeys.ContainsKey(currentLevel))
@@ -397,7 +396,7 @@ namespace DFC.Api.Content.Function
 
                 var levelsList = retrievedCompositeKeys[currentLevel];
 
-                if (levelsList.Contains(compositeKey))
+                if (levelsList.Contains(contentType))
                 {
                     return true;
                 }
@@ -425,7 +424,7 @@ namespace DFC.Api.Content.Function
             else
             {
                 const string contentByIdMultipleCosmosSql = "select * from c where ARRAY_CONTAINS(@idList0, c.id)";
-                var idGroups = queryParameters.Ids.Batch(200);
+                var idGroups = queryParameters.Ids.Batch(5000);
 
                 foreach (var idGroup in idGroups)
                 {
