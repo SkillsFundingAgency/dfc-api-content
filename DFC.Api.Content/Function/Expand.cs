@@ -83,7 +83,8 @@ namespace DFC.Api.Content.Function
                     level + 1,
                     parameters.MultiDirectional,
                     parameters.MaxDepth,
-                    parameters.TypesToInclude.ToList());
+                    parameters.TypesToInclude.ToList(),
+                    false);
                 
                 log.LogInformation("Request has successfully been completed with results");
                 SetContentTypeHeader(request);
@@ -129,7 +130,8 @@ namespace DFC.Api.Content.Function
             Dictionary<int, List<string>> retrievedContentTypes,
             int level,
             List<string> typesToInclude,
-            bool multiDirectional)
+            bool multiDirectional,
+            bool excludePageLocation)
         {
             var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
             
@@ -141,7 +143,16 @@ namespace DFC.Api.Content.Function
                 }
                 
                 var recordLinks = _jsonFormatHelper.SafeCastToDictionary(record["_links"]);
-                PopulateChildIdsByType(recordLinks, recordIndex, retrievedContentTypes, level, typesToInclude, multiDirectional, ref childIdsByType);
+                
+                PopulateChildIdsByType(
+                    recordLinks,
+                    recordIndex,
+                    retrievedContentTypes,
+                    level,
+                    typesToInclude,
+                    multiDirectional,
+                    excludePageLocation,
+                    ref childIdsByType);
             });
 
             return childIdsByType;
@@ -188,7 +199,8 @@ namespace DFC.Api.Content.Function
             int level,
             bool multiDirectional,
             int maxDepth,
-            List<string> typesToInclude)
+            List<string> typesToInclude,
+            bool excludePageLocation)
         {
             ResetContentItems(records);
             
@@ -206,7 +218,14 @@ namespace DFC.Api.Content.Function
             var retrievedContentTypeLevel = retrievedContentTypes[level];
 
             var allChildren = new List<Dictionary<string, object>>();
-            var childIdsByType = GetChildIdsByType(records, retrievedContentTypes, level, typesToInclude, multiDirectional);
+            var childIdsByType = GetChildIdsByType(
+                records,
+                retrievedContentTypes,
+                level,
+                typesToInclude,
+                multiDirectional,
+                excludePageLocation);
+            
             var childRelationships = GetChildRelationships(records);
 
             foreach (var (contentType, idGroup) in childIdsByType)
@@ -263,7 +282,8 @@ namespace DFC.Api.Content.Function
                 level + 1,
                 multiDirectional,
                 maxDepth,
-                typesToInclude);
+                typesToInclude,
+                true);
         }
 
         private List<(Guid Id, Dictionary<string, object> childRelationship)> GetChildRelationships(
@@ -314,6 +334,7 @@ namespace DFC.Api.Content.Function
             int level,
             List<string> typesToInclude,
             bool multiDirectional,
+            bool excludePageLocation,
             ref Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType)
         {
             var filteredRecordLinks = recordLinks
@@ -342,6 +363,15 @@ namespace DFC.Api.Content.Function
 
             foreach (var contentTypeGrouping in contentTypeGroupings)
             {
+                var isPageLocation =
+                    contentTypeGrouping.Key.Equals("pagelocation", StringComparison.CurrentCultureIgnoreCase)
+                    || contentTypeGrouping.Key.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
+                
+                if (isPageLocation && excludePageLocation)
+                {
+                    continue;
+                }
+                
                 if (!childIdsByType.ContainsKey(contentTypeGrouping.Key))
                 {
                     childIdsByType.Add(contentTypeGrouping.Key, new Dictionary<Guid, List<int>>());
