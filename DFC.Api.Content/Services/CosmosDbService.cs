@@ -68,11 +68,11 @@ namespace DFC.Api.Content.Services
                 queryDefinition,
                 requestOptions: new QueryRequestOptions
                 {
-                    PartitionKey = new PartitionKey(contentType)
+                    PartitionKey = new PartitionKey(contentType),
+                    MaxItemCount = int.MaxValue
                 });
 
-            var result = await iteratorLoop.ReadNextAsync();
-            return result.Resource.ToList();
+            return (await iteratorLoop.ReadNextAsync()).ToList();
         }
 
         private static bool IsPreview(string publishState)
