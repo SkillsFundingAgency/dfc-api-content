@@ -45,17 +45,87 @@ stages:
           TestSuffix: 'Tests'
           DotNetCoreVersion: '3.1.100'
 
+- stage: DeployToLabContent
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  displayName: Deploy to LAB_CONTENT
+  variables:
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-lab
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-lab
+  - group: dfc-app-shared-lab
+  - group: 'KeyVault - dfc-lab-shared-kv'
+  - template: VariableTemplates/LabEnvironmentVariables.yml
+  - name: WebAppPrefix
+    value: dfc-lab
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: '$(ResourceGroup)'
+      PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+      FunctionAppDomain: '$(FunctionAppDomain)'
+      FunctionAppName: '$(FunctionAppName)'
+      EnvironmentName: LAB_CONTENT
+      DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis: 
+        -
+          - name: GetContent
+            azureFunctionName: '$(FunctionAppName)'
+
+- stage: DeployToLabDraftContent
+  condition: succeeded()
+  displayName: Deploy to LAB-DRAFT_CONTENT
+  variables:
+  - group: dfc-app-integrationtests-all
+  - group: dfc-shared-lab
+  - group: dfc-app-shared-all
+  - group: dfc-stax-shared-lab
+  - group: dfc-app-shared-lab
+  - group: 'KeyVault - dfc-lab-shared-kv'
+  - template: VariableTemplates/LabDraftEnvironmentVariables.yml
+  - name: WebAppPrefix
+    value: dfc-lab-draft
+  jobs:
+    - template: JobTemplates/deploy-environment.yml
+      parameters:
+        AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+        EnvironmentTag: '$(EnvironmentTag)'
+        ParentBusiness: '$(ParentBusiness)'
+        ServiceOffering: '$(ServiceOffering)'
+        ResourceGroup: '$(ResourceGroup)'
+        PackageFile:  "$(Pipeline.Workspace)/DFC.Api.Content.DeploymentPackages/DFC.Api.Content.zip"
+        ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.Api.Content.Resources.ArmTemplates/"
+        FunctionAppDomain: '$(FunctionAppDomain)'
+        FunctionAppName: '$(FunctionAppName)'
+        EnvironmentName: LAB-DRAFT_CONTENT
+        DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
+        # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+        # The top level -`s here defines an array of "something"
+        # The inner level -'s defines an array of mappings.
+        Apis: 
+          -
+            - name: GetDraftContent
+              azureFunctionName: '$(FunctionAppName)'
+
 - stage: DeployToDevContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to DEV_CONTENT
   variables:
-  - template: VariableTemplates/DevEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-dev
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-dev
   - group: dfc-app-shared-dev
   - group: 'KeyVault - dfc-dev-shared-kv'
+  - template: VariableTemplates/DevEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-dev
   jobs:
@@ -81,16 +151,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToDevDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to DEV-DRAFT_CONTENT
   variables:
-  - template: VariableTemplates/DevDraftEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-dev
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-dev
   - group: dfc-app-shared-dev
   - group: 'KeyVault - dfc-dev-shared-kv'
+  - template: VariableTemplates/DevDraftEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-dev-draft
   jobs:
@@ -116,16 +186,16 @@ stages:
               azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToSitContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to SIT_CONTENT
   variables:
-  - template: VariableTemplates/SitEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-sit
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-sit
   - group: dfc-app-shared-sit
   - group: 'KeyVault - dfc-sit-shared-kv'
+  - template: VariableTemplates/SitEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-sit
   jobs:
@@ -151,16 +221,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToSitDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: succeeded()
   displayName: Deploy to SIT-DRAFT_CONTENT
   variables:
-  - template: VariableTemplates/SitDraftEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-sit
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-sit
   - group: dfc-app-shared-sit
   - group: 'KeyVault - dfc-sit-shared-kv'
+  - template: VariableTemplates/SitDraftEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-sit-draft
   jobs:
@@ -186,16 +256,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PP_CONTENT
   variables:
-  - template: VariableTemplates/PPEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-pp
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-pp
   - group: dfc-app-shared-pp
   - group: 'KeyVault - dfc-pp-shared-kv'
+  - template: VariableTemplates/PPEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-pp
   jobs:
@@ -221,16 +291,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPPContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PP-DRAFT_CONTENT
   variables:
-  - template: VariableTemplates/PPDraftEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-pp
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-pp
   - group: dfc-app-shared-pp
   - group: 'KeyVault - dfc-pp-shared-kv'
+  - template: VariableTemplates/PPDraftEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-pp-draft
   jobs:
@@ -256,16 +326,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPPDraftContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PRD_CONTENT
   variables:
-  - template: VariableTemplates/PrdEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-prd
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-prd
   - group: dfc-app-shared-prd
   - group: 'KeyVault - dfc-prd-shared-kv'
+  - template: VariableTemplates/PrdEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-prd
   jobs:
@@ -291,16 +361,16 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDDraftContent
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPRDContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PRD-DRAFT_CONTENT
   variables:
-  - template: VariableTemplates/PrdDraftEnvironmentVariables.yml
   - group: dfc-app-integrationtests-all
   - group: dfc-shared-prd
   - group: dfc-app-shared-all
   - group: dfc-stax-shared-prd
   - group: dfc-app-shared-prd
   - group: 'KeyVault - dfc-prd-shared-kv'
+  - template: VariableTemplates/PrdDraftEnvironmentVariables.yml
   - name: WebAppPrefix
     value: dfc-prd-draft
   jobs:

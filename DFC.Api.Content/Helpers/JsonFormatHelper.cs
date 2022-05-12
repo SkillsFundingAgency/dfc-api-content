@@ -1,144 +1,231 @@
 ﻿using DFC.Api.Content.Enums;
-using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
-using DFC.ServiceTaxonomy.ApiFunction.Models;
-using Microsoft.Extensions.Options;
-using Neo4j.Driver;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DFC.Api.Content.Interfaces;
+using Newtonsoft.Json.Linq;
 
 namespace DFC.Api.Content.Helpers
 {
     public class JsonFormatHelper : IJsonFormatHelper
     {
-        private readonly IOptionsMonitor<ContentApiOptions> _settings;
-
-        public JsonFormatHelper(IOptionsMonitor<ContentApiOptions> settings)
+        private static readonly List<string> CosmosBuiltInPropsToIgnore = new List<string>
         {
-            _settings = settings;
+            "_rid",
+            "_self",
+            "_etag",
+            "_attachments",
+            "_ts",
+        };
+
+        public object FormatResponse(
+            List<Dictionary<string, object>> records,
+            RequestType type,
+            bool multiDirectional)
+        {
+            return type switch
+            {
+                RequestType.GetAll => SummaryFormat(records),
+                RequestType.GetById => BuildSingleResponse(records.Single(), multiDirectional),
+                _ => throw new NotSupportedException($"Request Type: {type} not supported")
+            };
         }
-
-        public object FormatResponse(IEnumerable<IRecord> recordsResult, RequestType type, string apiHost)
+        
+        public Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record, bool multiDirectional)
         {
-            switch (type)
+            // Expand the incoming links into their own section
+            var recordLinks = SafeCastToDictionary(record["_links"]);
+
+            if (recordLinks == null)
             {
-                case RequestType.GetAll:
-                    return recordsResult.SelectMany(z => z.Values).Select(y => CreateSingleRootObject(ReplaceNamespaces(y.Value), apiHost, false));
-                case RequestType.GetById:
-                    var recordValues = recordsResult.Select(z => z.Values).FirstOrDefault()?.Values.FirstOrDefault();
-                    if (recordValues != null)
-                    {
-                        return this.CreateSingleRootObject(this.ReplaceNamespaces(recordValues), apiHost, true);
-                    }
-
-                    throw ApiFunctionException.InternalServerError($"Request Type: {type} records contain unformattable response");
-
-                default:
-                    throw new NotSupportedException($"Request Type: {type} not supported");
+                throw new MissingFieldException("Links property missing");
             }
-        }
+            
+            var curies = (recordLinks?["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
 
-        private object CreateSingleRootObject(object input, string apiHost, bool includeLinks)
-        {
-            var objToReturn = new JObject();
+            var incomingPosition = curies!.FindIndex(curie =>
+                (string)curie["name"] == "incoming");
+                
+            var incomingObject = curies.Count > incomingPosition ? curies[incomingPosition] : null;
 
-            JObject neoJsonObj = JObject.Parse(input.ToString() ?? string.Empty);
-
-            foreach (var child in neoJsonObj["data"]!.Children())
+            if (incomingObject == null)
             {
-                objToReturn.Add(child);
+                throw new MissingFieldException("Incoming property missing");
             }
-
-            if (includeLinks)
+                
+            var incomingList = (incomingObject["items"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
+                
+            foreach (var incomingItem in incomingList!)
             {
-                ConvertLinksToHAL(apiHost, objToReturn, neoJsonObj);
-            }
-
-            return objToReturn;
-        }
-
-        /// <summary>
-        /// Converts the Links collection into a HAL format
-        /// </summary>
-        /// <param name="apiHost"></param>
-        /// <param name="objToReturn"></param>
-        /// <param name="neoJsonObj"></param>
-        private static void ConvertLinksToHAL(string apiHost, JObject objToReturn, JObject neoJsonObj)
-        {
-            var uri = new Uri(neoJsonObj["data"]!["uri"]!.ToString());
-            objToReturn.Add(new JProperty("id", uri.Segments.LastOrDefault().TrimEnd('/')));
-
-            JArray existingLinksAsJsonObj = (JArray)neoJsonObj["_links"]!;
-
-            var linksJObject = new JObject();
-
-            if (!existingLinksAsJsonObj.All(x => string.IsNullOrWhiteSpace(x["href"]!.ToString())))
-            {
-                linksJObject.Add("self", uri.ToString());
-
-                var curiesJArray = new JArray();
-
-                var curiesJObject = new JObject();
-                curiesJObject.Add("name", "cont");
-                curiesJObject.Add("href", apiHost.ToLower());
-
-                curiesJArray.Add(curiesJObject);
-
-                linksJObject.Add(new JProperty("curies", curiesJArray));
-
-                Dictionary<string, List<JObject>> relationshipGroupings = new Dictionary<string, List<JObject>>();
-
-                foreach (var child in existingLinksAsJsonObj)
+                var contentType = (string)incomingItem["contentType"];
+                var id = (string)incomingItem["id"];
+                var key = $"cont:has{FirstCharToUpper(contentType)}";
+                
+                var value = new Dictionary<string, object>
                 {
-                    var childKey = child["relationship"]!.ToString();
+                    {"href", multiDirectional ? $"/{contentType}/{id}/true" : $"/{contentType}/{id}"},
+                    {"contentType", contentType}
+                };
 
-                    var itemUri = new Uri(child["href"]!.ToString());
+                if (!recordLinks.ContainsKey(key))
+                {
+                    recordLinks.Add(key, value);
+                    continue;
+                }
+                
+                if (recordLinks[key] is List<Dictionary<string, object>> list)
+                {
+                    list.Add(value);
+                    continue;
+                }
+                
+                recordLinks[key] = new List<Dictionary<string, object>>
+                {
+                    (Dictionary<string, object>) recordLinks[key],
+                    value
+                };
+            }
+                
+            record["_links"] = recordLinks!;
+            return record;
+        }
+        
+        public Dictionary<string, object> SafeCastToDictionary(object value)
+        {
+            if (value is JObject valObj)
+            {
+                return valObj.ToObject<Dictionary<string, object>>();
+            }
 
-                    var jObjectToAdd = new JObject(new JProperty("href", $"/{child["contentType"]}/{itemUri.Segments.LastOrDefault().Trim('/')}".ToLowerInvariant()), new JProperty("title", child["title"]), new JProperty("contentType", child["contentType"]));
+            if (!(value is Dictionary<string, object> dictionary))
+            {
+                throw new ArgumentException($"Didn't expect type {value.GetType().Name}");
+            }
+            
+            return dictionary;
+        }
+        
+        public List<Dictionary<string, object>> SafeCastToList(object value)
+        {
+            if (value is JArray valAry)
+            {
+                return valAry.ToObject<List<Dictionary<string, object>>>();
+            }
+            
+            return (List<Dictionary<string, object>>)value;
+        }
 
-                    foreach (var prop in child["props"]!)
-                    {
-                        jObjectToAdd.Add(prop);
-                    }
+        private static List<Dictionary<string, object?>> SummaryFormat(List<Dictionary<string, object>> records)
+        {
+            var returnList = new List<Dictionary<string, object?>>();
 
-                    if (relationshipGroupings.ContainsKey(childKey))
-                    {
-                        relationshipGroupings[childKey].Add(jObjectToAdd);
-                    }
-                    else
-                    {
-                        relationshipGroupings.Add(childKey, new List<JObject>() { jObjectToAdd });
-                    }
+            foreach (var record in records)
+            {
+                returnList.Add(new Dictionary<string, object?>
+                {
+                    { "skos__prefLabel", record["skos__prefLabel"] },
+                    { "CreatedDate", record.ContainsKey("CreatedDate") ? record["CreatedDate"] : null },
+                    { "ModifiedDate", record["ModifiedDate"] },
+                    { "Uri", record["uri"] }
+                });
+            }
+            
+            return returnList;
+        }
+
+        public Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional)
+        {
+            if (multiDirectional)
+            {
+                record = ExpandIncomingLinksToContItems(record, true);
+                record = AddMultiDirectionalProperty(record);
+            }
+            
+            return StripUndesiredProperties(record);
+        }
+
+        public Dictionary<string, object> AddMultiDirectionalProperty(Dictionary<string, object> record)
+        {
+            var recordLinks = SafeCastToDictionary(record["_links"]);
+            var newRecordLinks = new Dictionary<string, object>();
+            
+            foreach (var recordLink in recordLinks)
+            {
+                if (recordLink.Key == "self" || recordLink.Key == "curies")
+                {
+                    newRecordLinks.Add(recordLink.Key, recordLink.Value);
+                    continue;
                 }
 
-                foreach (var group in relationshipGroupings)
+                if (recordLink.Value is JObject || recordLink.Value is Dictionary<string, object>)
                 {
-                    if (group.Value.Count > 1)
+                    var dict = SafeCastToDictionary(recordLink.Value);
+                    var href = (string?) dict["href"];
+
+                    if (href?.EndsWith("/true") != false)
                     {
-                        linksJObject.Add(new JProperty($"cont:{group.Key}", new JArray { group.Value }));
+                        newRecordLinks.Add(recordLink.Key, recordLink.Value);
+                        continue;
                     }
-                    else
+
+                    if (!string.IsNullOrEmpty(href))
                     {
-                        linksJObject.Add(new JProperty($"cont:{group.Key}", group.Value.FirstOrDefault()));
+                        dict["href"] = $"{href}/true";
                     }
+                    
+                    newRecordLinks.Add(recordLink.Key, dict);
+                }
+                else
+                {
+                    var list = SafeCastToList(recordLink.Value);
+
+                    foreach (var dict in list)
+                    {
+                        var href = (string?)dict["href"];
+
+                        if (href?.EndsWith("/true") != false)
+                        {
+                            continue;
+                        }
+                        
+                        if (!string.IsNullOrEmpty(href))
+                        {
+                            dict["href"] = $"{href}/true";
+                        }
+                    }
+                    
+                    newRecordLinks.Add(recordLink.Key, list);
                 }
             }
-
-            objToReturn.Add(new JProperty("_links", linksJObject));
+            
+            record["_links"] = newRecordLinks;
+            return record;
         }
 
-        private object ReplaceNamespaces(object input)
+        private static Dictionary<string, object> StripUndesiredProperties(Dictionary<string, object> record)
         {
-            var serializedJson = JsonConvert.SerializeObject(input);
+            var returnProperties = new Dictionary<string, object>();
 
-            foreach (var key in _settings.CurrentValue.ReversedContentTypeNameMap.Keys)
+            foreach (var propertyName in record.Keys)
             {
-                serializedJson = serializedJson.Replace($"\"{key}\"", $"\"{_settings.CurrentValue.ReversedContentTypeNameMap[key]}\"");
-            }
+                if (CosmosBuiltInPropsToIgnore.Contains(propertyName))
+                {
+                    continue;
+                }
 
-            return JsonConvert.DeserializeObject<object>(serializedJson);
+                var propertyValue = record[propertyName];
+                returnProperties.Add(propertyName, propertyValue);
+            }
+            
+            return returnProperties;
         }
+        
+        private static string FirstCharToUpper(string input) =>
+            input switch
+            {
+                null => throw new ArgumentNullException(nameof(input)),
+                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+                _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
+            };
     }
 }

@@ -25,34 +25,28 @@
     "aspTier": {
       "type": "string"
     },
-    "ContentTypeUriMap": {
-      "type": "string"
-    },
     "ContentApiOptionsAction": {
       "type": "string"
     },
     "environment": {
       "type": "string"
     },
-    "Neo4jUrl": {
-      "type": "string"
-    },
-    "Neo4jUser": {
-      "type": "string"
-    },
-    "Neo4jPassword": {
+    "CosmosDbendpointspreviewConnectionString": {
       "type": "securestring"
     },
-    "sharedResourceGroup": {
+    "CosmosDbendpointspreviewDatabaseName": {
       "type": "string"
     },
-    "sharedDfcStorageAccountName": {
+    "CosmosDbendpointspreviewContainerName": {
       "type": "string"
     },
-    "sharedAppServicePlanName": {
+    "CosmosDbendpointspublishedConnectionString": {
+      "type": "securestring"
+    },
+    "CosmosDbendpointspublishedDatabaseName": {
       "type": "string"
     },
-    "sharedAppServicePlanResourceGroup": {
+    "CosmosDbendpointspublishedContainerName": {
       "type": "string"
     }
   },
@@ -173,52 +167,36 @@
                 "value": "[reference(variables('FunctionAppInsightName')).outputs.InstrumentationKey.value]"
               },
               {
-                "name": "ContentApiOptions__ContentTypeUriMap__occupation",
-                "value": "[concat(parameters('ContentTypeUriMap'), '/occupation/{0}')]"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeUriMap__skill",
-                "value": "[concat(parameters('ContentTypeUriMap'), '/skill/{0}')]"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeNameMap__occupation",
-                "value": "esco__occupation"
-              },
-              {
-                "name": "ContentApiOptions__ContentTypeNameMap__skill",
-                "value": "esco__skill"
-              },
-              {
                 "name": "ContentApiOptions__scheme",
                 "value": "https"
               },
               {
-                "name": "Neo4j__Endpoints__0__Enabled",
-                "value": "true"
-              },
-              {
-                "name": "Neo4j__Endpoints__0__Uri",
-                "value": "[parameters('Neo4jUrl')]"
-              },
-              {
-                "name": "Neo4j__Endpoints__0__Username",
-                "value": "[parameters('Neo4jUser')]"
-              },
-              {
-                "name": "Neo4j__Endpoints__0__Password",
-                "value": "[parameters('Neo4jPassword')]"
-              },
-              {
-                "name": "Neo4j__ReplicaSets__0__GraphInstances__0__Enabled",
-                "value": "true"
-              },
-              {
-                "name": "Neo4j__ReplicaSets__0__GraphInstances__1__Enabled",
-                "value": "false"
-              },
-              {
                 "name": "ContentApiOptions__Action",
                 "value": "[parameters('ContentApiOptionsAction')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__preview__ConnectionString",
+                "value": "[parameters('CosmosDbendpointspreviewConnectionString')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__preview__DatabaseName",
+                "value": "[parameters('CosmosDbendpointspreviewDatabaseName')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__preview__ContainerName",
+                "value": "[parameters('CosmosDbendpointspreviewContainerName')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__published__ConnectionString",
+                "value": "[parameters('CosmosDbendpointspublishedConnectionString')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__published__DatabaseName",
+                "value": "[parameters('CosmosDbendpointspublishedDatabaseName')]"
+              },
+              {
+                "name": "CosmosDb__endpoints__published__ContainerName",
+                "value": "[parameters('CosmosDbendpointspublishedContainerName')]"
               }
             ]
           }
