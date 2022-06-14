@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using DFC.Api.Content.Interfaces;
 using DFC.Api.Content.Models;
@@ -72,7 +71,14 @@ namespace DFC.Api.Content.Services
                     MaxItemCount = int.MaxValue
                 });
 
-            return (await iteratorLoop.ReadNextAsync()).ToList();
+            var returnList = new List<Dictionary<string, object>>();
+
+            while (iteratorLoop.HasMoreResults)
+            {
+                returnList.AddRange(await iteratorLoop.ReadNextAsync());
+            }
+
+            return returnList;
         }
 
         private static bool IsPreview(string publishState)
