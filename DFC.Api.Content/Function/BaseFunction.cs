@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DFC.Api.Content.Exceptions;
 using DFC.Api.Content.Interfaces;
@@ -49,7 +48,7 @@ namespace DFC.Api.Content.Function
                 
                 foreach (var executingQuery in executingQueries)
                 {
-                    returnList.AddRange((await executingQuery).ToList());
+                    returnList.AddRange(await executingQuery);
                 }
                 
                 return returnList;
