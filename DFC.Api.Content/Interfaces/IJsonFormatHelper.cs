@@ -11,6 +11,6 @@ namespace DFC.Api.Content.Interfaces
 
         List<Dictionary<string, object>> SafeCastToList(object value);
 
-        Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional);
+        Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional, string incomingMarkerKey);
     }
 }
