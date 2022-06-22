@@ -23,6 +23,7 @@ namespace DFC.Api.Content.Function
     public class Expand : BaseFunction
     {
         private const string ContentItemsKey = "ContentItems";
+        private const string IncomingMarker = "isIncoming";
         
         public Expand(IDataSourceProvider dataSource, IJsonFormatHelper jsonFormatHelper)
         {
@@ -72,7 +73,7 @@ namespace DFC.Api.Content.Function
                 }
 
                 var record = recordsResult[0];
-                record = _jsonFormatHelper.BuildSingleResponse(record, parameters.MultiDirectional);
+                record = _jsonFormatHelper.BuildSingleResponse(record, parameters.MultiDirectional, IncomingMarker);
 
                 const int level = 0;
                 await GetChildItems(
@@ -83,8 +84,7 @@ namespace DFC.Api.Content.Function
                     level + 1,
                     parameters.MultiDirectional,
                     parameters.MaxDepth,
-                    parameters.TypesToInclude.ToList(),
-                    false);
+                    parameters.TypesToInclude.ToList());
                 
                 log.LogInformation("Request has successfully been completed with results");
                 SetContentTypeHeader(request);
@@ -130,8 +130,7 @@ namespace DFC.Api.Content.Function
             Dictionary<int, List<string>> retrievedContentTypes,
             int level,
             List<string> typesToInclude,
-            bool multiDirectional,
-            bool excludePageLocation)
+            bool multiDirectional)
         {
             var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
             
@@ -151,11 +150,70 @@ namespace DFC.Api.Content.Function
                     level,
                     typesToInclude,
                     multiDirectional,
-                    excludePageLocation,
                     ref childIdsByType);
+
+                record["_links"] = RemoveIncomingMarkers(recordLinks);
             });
 
             return childIdsByType;
+        }
+
+        public Dictionary<string, object> RemoveIncomingMarkers(Dictionary<string, object> recordLinks)
+        {
+            var newLinks = new Dictionary<string, object>
+            {
+                {"self", recordLinks["self"]},
+                {"curies", recordLinks["curies"]}
+            };
+
+            foreach (var recordLink in GetFilteredRecordLinks(recordLinks))
+            {
+                switch (recordLink.Value)
+                {
+                    case Dictionary<string, object> valDict:
+                    {
+                        if (valDict.ContainsKey(IncomingMarker))
+                        {
+                            valDict.Remove(IncomingMarker);
+                        }
+                    
+                        newLinks.Add(recordLink.Key, valDict);
+                        break;
+                    }
+                    case JObject valueJObject:
+                    {
+                        var newDictionary = valueJObject.ToObject<Dictionary<string, object>>();
+
+                        if (newDictionary.ContainsKey(IncomingMarker))
+                        {
+                            newDictionary.Remove(IncomingMarker);
+                        }
+                    
+                        newLinks.Add(recordLink.Key, newDictionary);
+                        break;
+                    }
+                    case JArray valueJArray:
+                    {
+                        var valueList = valueJArray.ToList();
+                        var newList = new List<object>();
+
+                        foreach (var newItemDictionary in valueList.Select(item => item.ToObject<Dictionary<string, object>>()))
+                        {
+                            if (newItemDictionary.ContainsKey(IncomingMarker))
+                            {
+                                newItemDictionary.Remove(IncomingMarker);
+                            }
+                        
+                            newList.Add(newItemDictionary);
+                        }
+                    
+                        newLinks.Add(recordLink.Key, newList);
+                        break;
+                    }
+                }
+            }
+
+            return newLinks;
         }
 
         private Dictionary<int, List<Dictionary<string, object>>> GetChildIdsByRecordPosition(
@@ -199,8 +257,7 @@ namespace DFC.Api.Content.Function
             int level,
             bool multiDirectional,
             int maxDepth,
-            List<string> typesToInclude,
-            bool excludePageLocation)
+            List<string> typesToInclude)
         {
             ResetContentItems(records);
             
@@ -223,8 +280,7 @@ namespace DFC.Api.Content.Function
                 retrievedContentTypes,
                 level,
                 typesToInclude,
-                multiDirectional,
-                excludePageLocation);
+                multiDirectional);
             
             var childRelationships = GetChildRelationships(records);
 
@@ -249,7 +305,7 @@ namespace DFC.Api.Content.Function
                 for (var index = 0; index < childResults.Count; index++)
                 {
                     var childResult = childResults[index];
-                    var (_, id, _) = GetContentTypeIdAndPosition((string) childResult["uri"], default);
+                    var (_, id, _, _) = GetContentTypeIdPositionAndIncoming((string) childResult["uri"], default, default);
 
                     var propertiesToAdd = childRelationships.Any(x => x.Id == id)
                         ? childRelationships.Single(x => x.Id == id).childRelationship
@@ -260,7 +316,7 @@ namespace DFC.Api.Content.Function
                         childResult.Add(key, value);
                     }
                     
-                    childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResult, multiDirectional);
+                    childResults[index] = _jsonFormatHelper.BuildSingleResponse(childResult, multiDirectional, IncomingMarker);
                 }
                 
                 allChildren.AddRange(childResults);
@@ -282,8 +338,7 @@ namespace DFC.Api.Content.Function
                 level + 1,
                 multiDirectional,
                 maxDepth,
-                typesToInclude,
-                true);
+                typesToInclude);
         }
 
         private List<(Guid Id, Dictionary<string, object> childRelationship)> GetChildRelationships(
@@ -313,12 +368,12 @@ namespace DFC.Api.Content.Function
             return returnList
                 .Where(childRelationship => !string.IsNullOrEmpty((string) childRelationship["href"]))
                 .Select(childRelationship =>
-                    (GetContentTypeIdAndPosition((string) childRelationship["href"], default).Id, childRelationship))
+                    (GetContentTypeIdPositionAndIncoming((string) childRelationship["href"], default, default).Id, childRelationship))
                 .GroupBy(idEtc => idEtc.Id)
                 .Select(idEtcGroup => idEtcGroup.First())
                 .ToList();
         }
-        
+
         private List<KeyValuePair<string, object>> GetFilteredRecordLinks(Dictionary<string, object> recordLinks)
         {
             return recordLinks
@@ -334,13 +389,9 @@ namespace DFC.Api.Content.Function
             int level,
             List<string> typesToInclude,
             bool multiDirectional,
-            bool excludePageLocation,
             ref Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType)
         {
-            var filteredRecordLinks = recordLinks
-                .Where(previousItemLink =>
-                    previousItemLink.Key != "self" && previousItemLink.Key != "curies")
-                .ToList();
+            var filteredRecordLinks = GetFilteredRecordLinks(recordLinks);
             
             var childIdsObjects = filteredRecordLinks
                 .Where(previousItemLink => previousItemLink.Value is JObject 
@@ -355,23 +406,16 @@ namespace DFC.Api.Content.Function
 
             var contentTypeGroupings = childIdsObjects
                 .Union(childIdsArrays)
-                .Select(dict => (string) dict!["href"])
-                .Where(uri => !string.IsNullOrEmpty(uri))
-                .Select(item => GetContentTypeIdAndPosition(item, parentPosition))
+                .Where(dict => !string.IsNullOrEmpty((string)dict!["href"]))
+                .Select(dict => GetContentTypeIdPositionAndIncoming(
+                    (string)dict!["href"],
+                    parentPosition, 
+                    dict.ContainsKey(IncomingMarker) && (bool)dict[IncomingMarker]))
                 .GroupBy(contentTypeAndId => contentTypeAndId.ContentType)
                 .ToList();
 
             foreach (var contentTypeGrouping in contentTypeGroupings)
             {
-                var isPageLocation =
-                    contentTypeGrouping.Key.Equals("pagelocation", StringComparison.CurrentCultureIgnoreCase)
-                    || contentTypeGrouping.Key.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
-                
-                if (isPageLocation && excludePageLocation)
-                {
-                    continue;
-                }
-                
                 if (!childIdsByType.ContainsKey(contentTypeGrouping.Key))
                 {
                     childIdsByType.Add(contentTypeGrouping.Key, new Dictionary<Guid, List<int>>());
@@ -379,14 +423,16 @@ namespace DFC.Api.Content.Function
                 
                 var childIdByType = childIdsByType[contentTypeGrouping.Key];
 
-                foreach (var (contentType, id, index) in contentTypeGrouping)
+                foreach (var (contentType, id, index, incoming) in contentTypeGrouping)
                 {
                     if (!childIdByType.ContainsKey(id))
                     {
                         childIdByType.Add(id, new List<int>());
                     }
-                    
-                    if ((!multiDirectional || !AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level))
+
+                    var ancestorContainsContentType = AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level);
+
+                    if ((!multiDirectional || !ancestorContainsContentType || IsIncomingPageLocation(contentType, incoming))
                         && typesToInclude.Contains(contentType.ToLower()))
                     {
                         childIdByType[id].Add(index);
@@ -411,6 +457,18 @@ namespace DFC.Api.Content.Function
                 }
             }
         }
+
+        private static bool IsIncomingPageLocation(string contentType, bool isIncoming)
+        {
+            if (!isIncoming)
+            {
+                return false;
+            }
+            
+            return contentType.Equals("pagelocation", StringComparison.CurrentCultureIgnoreCase)
+                || contentType.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
+        }
+
 
         private static bool AncestorsContainsContentType(
             string contentType,

@@ -26,12 +26,12 @@ namespace DFC.Api.Content.Helpers
             return type switch
             {
                 RequestType.GetAll => SummaryFormat(records),
-                RequestType.GetById => BuildSingleResponse(records.Single(), multiDirectional),
+                RequestType.GetById => BuildSingleResponse(records.Single(), multiDirectional, string.Empty),
                 _ => throw new NotSupportedException($"Request Type: {type} not supported")
             };
         }
         
-        public Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record, bool multiDirectional)
+        public Dictionary<string, object> ExpandIncomingLinksToContItems(Dictionary<string, object> record, bool multiDirectional, string incomingMarkerKey)
         {
             // Expand the incoming links into their own section
             var recordLinks = SafeCastToDictionary(record["_links"]);
@@ -41,7 +41,7 @@ namespace DFC.Api.Content.Helpers
                 throw new MissingFieldException("Links property missing");
             }
             
-            var curies = (recordLinks?["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
+            var curies = (recordLinks["curies"] as JArray)!.ToObject<List<Dictionary<string, object>>>();
 
             var incomingPosition = curies!.FindIndex(curie =>
                 (string)curie["name"] == "incoming");
@@ -67,6 +67,11 @@ namespace DFC.Api.Content.Helpers
                     {"contentType", contentType}
                 };
 
+                if (!string.IsNullOrEmpty(incomingMarkerKey))
+                {
+                    value.Add(incomingMarkerKey, true);
+                }
+
                 if (!recordLinks.ContainsKey(key))
                 {
                     recordLinks.Add(key, value);
@@ -81,7 +86,7 @@ namespace DFC.Api.Content.Helpers
                 
                 recordLinks[key] = new List<Dictionary<string, object>>
                 {
-                    (Dictionary<string, object>) recordLinks[key],
+                    (Dictionary<string, object>)recordLinks[key],
                     value
                 };
             }
@@ -133,11 +138,11 @@ namespace DFC.Api.Content.Helpers
             return returnList;
         }
 
-        public Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional)
+        public Dictionary<string, object> BuildSingleResponse(Dictionary<string, object> record, bool multiDirectional, string incomingMarkerKey)
         {
             if (multiDirectional)
             {
-                record = ExpandIncomingLinksToContItems(record, true);
+                record = ExpandIncomingLinksToContItems(record, true, incomingMarkerKey);
                 record = AddMultiDirectionalProperty(record);
             }
             
