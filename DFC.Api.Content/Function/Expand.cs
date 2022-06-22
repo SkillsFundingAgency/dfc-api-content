@@ -158,7 +158,7 @@ namespace DFC.Api.Content.Function
             return childIdsByType;
         }
 
-        private Dictionary<string, object> RemoveIncomingMarkers(Dictionary<string, object> recordLinks)
+        public Dictionary<string, object> RemoveIncomingMarkers(Dictionary<string, object> recordLinks)
         {
             var newLinks = new Dictionary<string, object>
             {

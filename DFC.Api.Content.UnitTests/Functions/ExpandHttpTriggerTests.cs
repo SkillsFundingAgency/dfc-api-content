@@ -45,7 +45,43 @@ namespace DFC.Api.Content.UnitTests.Functions
             _expandFunction = new Expand(_dataSource, new JsonFormatHelper());
         }
 
+        [Fact]
+        public void Expand_WhenRemoveIncomingMarkersRan_RunsWithoutError()
+        {
+            // Arrange
+            var recordLinks = new Dictionary<string, object>
+            {
+                {"self", string.Empty},
+                {"curies", new JArray()},
+                {
+                    "Array", new JArray
+                    {
+                        JToken.FromObject(new Dictionary<string, object>
+                        {
+                            { "A", "B"},
+                            { "isIncoming", true}
+                        })
+                    }
+                },
+                {
+                    "Dictionary", new Dictionary<string, object>
+                    {
+                        { "A", "B"},
+                        { "isIncoming", true}
+                    }
+                },
+                {
+                    "JObject", JToken.FromObject(new Dictionary<string, object>
+                    {
+                        { "A", "B"},
+                        { "isIncoming", true}
+                    })
+                }
+            };
 
+            // Act
+            _expandFunction.RemoveIncomingMarkers(recordLinks);
+        }
 
         [Fact]
         public async Task Expand_WhenNoParametersPresent_ReturnsBadRequestObjectResult()
