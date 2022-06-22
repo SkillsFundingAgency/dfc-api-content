@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +47,61 @@ namespace DFC.Api.Content.UnitTests.Functions
         }
 
         [Fact]
+        public void Expand_WhenPopulateChildIdsByTypeRan_RemovesTwoWayItems()
+        {
+            // Arrange
+            var recordLinks = new Dictionary<string, object>
+            {
+                {"self", string.Empty},
+                {"curies", new JArray()},
+                {
+                    "Dictionary1", new Dictionary<string, object>
+                    {
+                        { "href", "https://example.org/api/execute/pagelocation/c125170d-f9db-4096-b0bd-b5c737201828"},
+                        { "isIncoming", true}
+                    }
+                },
+                {
+                    "Dictionary2", new Dictionary<string, object>
+                    {
+                        { "href", "https://example.org/api/execute/pagelocation/a125170d-f9db-4096-b0bd-b5c737201828"},
+                        { "isIncoming", true},
+                        { "twoWay", true}
+                    }
+                },
+                {
+                    "Dictionary3", new Dictionary<string, object>
+                    {
+                        { "href", "https://example.org/api/execute/pagelocation/b125170d-f9db-4096-b0bd-b5c737201828"},
+                        { "isIncoming", true}
+                    }
+                },
+            };
+            var childIds = new Dictionary<string, Dictionary<Guid, List<int>>>();
+            var retrievedContentTypes = new Dictionary<int, List<string>> {{0, new List<string> {"pagelocation"}}};
+
+            var typesToInclude = new List<string>()
+            {
+                "pagelocation"
+            };
+            
+            // Act
+            _expandFunction.PopulateChildIdsByType(
+                recordLinks,
+                default,
+                retrievedContentTypes,
+                1,
+                typesToInclude,
+                true,
+                ref childIds
+            );
+            
+            // Assert
+            Assert.Single(childIds);
+            Assert.Equal(2, childIds.First().Value.Count);
+        }
+        
+        [Fact]
         public void Expand_WhenRemoveIncomingMarkersRan_RunsWithoutError()
         {
             // Arrange
@@ -80,7 +136,7 @@ namespace DFC.Api.Content.UnitTests.Functions
             };
 
             // Act
-            _expandFunction.RemoveIncomingMarkers(recordLinks);
+            Expand.RemoveIncomingMarkers(recordLinks);
         }
 
         [Fact]
