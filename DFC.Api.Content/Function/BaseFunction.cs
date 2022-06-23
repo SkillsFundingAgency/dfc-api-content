@@ -16,10 +16,7 @@ namespace DFC.Api.Content.Function
         // ReSharper disable once InconsistentNaming
         protected IJsonFormatHelper _jsonFormatHelper = null!;
         
-        protected static (string ContentType, Guid Id, int ParentPosition, bool Incoming) GetContentTypeIdPositionAndIncoming(
-            string uri,
-            int parentPosition,
-            bool incoming)
+        protected static (string ContentType, Guid Id) GetContentTypeAndId(string uri)
         {
             var pathOnly = uri.StartsWith("http") ? new Uri(uri, UriKind.Absolute).AbsolutePath : uri;
             pathOnly = pathOnly.ToLower().Replace("/api/execute", string.Empty);
@@ -28,7 +25,7 @@ namespace DFC.Api.Content.Function
             var contentType = uriParts[0].ToLower();
             var id = Guid.Parse(uriParts[1]);
             
-            return (contentType, id, parentPosition, incoming);
+            return (contentType, id);
         }
         
         protected async Task<List<Dictionary<string, object>>> ExecuteQuery(Queries queries, ILogger log)
