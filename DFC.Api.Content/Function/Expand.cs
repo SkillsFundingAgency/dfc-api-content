@@ -442,7 +442,7 @@ namespace DFC.Api.Content.Function
                             childIdByType.Add(id, new List<int>());
                         }
                         
-                        `childIdByType[id].Add(index);
+                        childIdByType[id].Add(index);
                     }
                 }
 
