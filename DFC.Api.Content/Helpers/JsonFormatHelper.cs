@@ -67,6 +67,11 @@ namespace DFC.Api.Content.Helpers
                     {"contentType", contentType}
                 };
 
+                if (incomingItem.ContainsKey("twoWay") && (bool)incomingItem["twoWay"])
+                {
+                    value.Add("twoWay", true);
+                }
+                
                 if (!string.IsNullOrEmpty(incomingMarkerKey))
                 {
                     value.Add(incomingMarkerKey, true);

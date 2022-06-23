@@ -432,16 +432,16 @@ namespace DFC.Api.Content.Function
 
                 foreach (var (contentType, id, index, incoming, twoWay) in contentTypeGrouping)
                 {
-                    if (!childIdByType.ContainsKey(id))
-                    {
-                        childIdByType.Add(id, new List<int>());
-                    }
-
                     var ancestorContainsContentType = AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level);
 
                     if ((!multiDirectional || !ancestorContainsContentType || IsIncomingOnlyPageLocation(contentType, incoming, twoWay))
                         && typesToInclude.Contains(contentType.ToLower()))
                     {
+                        if (!childIdByType.ContainsKey(id))
+                        {
+                            childIdByType.Add(id, new List<int>());
+                        }
+                        
                         childIdByType[id].Add(index);
                     }
                 }
@@ -456,22 +456,6 @@ namespace DFC.Api.Content.Function
             {
                 var contentTypeKey = contentTypeKeys.ElementAt(idx);
                 var contentType = childIdsByType[contentTypeKey];
-
-                var values = contentType.Values.ToList();
-                var keys = contentType.Keys.ToList();
-
-                for (int jdx = 0, jen = values.Count; jdx < jen; jdx++)
-                {
-                    var valueList = values.ElementAt(jdx);
-                    if (valueList.Any())
-                    {
-                        continue;
-                    }
-                    
-                    var key = keys.ElementAt(jdx);
-                    childIdsByType[contentTypeKey].Remove(key);
-                }
-
                 var count = contentType.Sum(kvp => kvp.Value.Count);
                 
                 if (count == 0)
