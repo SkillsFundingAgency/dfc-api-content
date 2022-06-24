@@ -170,6 +170,23 @@ namespace DFC.Api.Content.Function
             {
                 switch (recordLink.Value)
                 {
+                    case List<Dictionary<string, object>> valList:
+                    {
+                        var newList = new List<Dictionary<string, object>>();
+                        
+                        foreach (var valDict in valList)
+                        {
+                            if (valDict.ContainsKey(IncomingMarker))
+                            {
+                                valDict.Remove(IncomingMarker);
+                            }
+
+                            newList.Add(valDict);
+                        }
+
+                        newLinks.Add(recordLink.Key, newList);
+                        break;
+                    }
                     case Dictionary<string, object> valDict:
                     {
                         if (valDict.ContainsKey(IncomingMarker))
@@ -195,7 +212,7 @@ namespace DFC.Api.Content.Function
                     case JArray valueJArray:
                     {
                         var valueList = valueJArray.ToList();
-                        var newList = new List<object>();
+                        var newList = new List<Dictionary<string, object>>();
 
                         foreach (var newItemDictionary in valueList.Select(item => item.ToObject<Dictionary<string, object>>()))
                         {
@@ -442,7 +459,7 @@ namespace DFC.Api.Content.Function
                             childIdByType.Add(id, new List<int>());
                         }
                         
-                        `childIdByType[id].Add(index);
+                        childIdByType[id].Add(index);
                     }
                 }
 
