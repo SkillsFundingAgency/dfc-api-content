@@ -451,16 +451,18 @@ namespace DFC.Api.Content.Function
                 {
                     var ancestorContainsContentType = AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level);
 
-                    if ((!multiDirectional || !ancestorContainsContentType || IsIncomingOnlyPageLocation(contentType, incoming, twoWay))
-                        && typesToInclude.Contains(contentType.ToLower()))
+                    var canAdd = typesToInclude.Contains(contentType.ToLower()) &&
+                         ((IsPageLocation(contentType) && (IsIncomingOnly(incoming, twoWay) || level == 1))
+                         || (!IsPageLocation(contentType) && (!multiDirectional || !ancestorContainsContentType)));
+
+                    if (!canAdd) continue;
+                    
+                    if (!childIdByType.ContainsKey(id))
                     {
-                        if (!childIdByType.ContainsKey(id))
-                        {
-                            childIdByType.Add(id, new List<int>());
-                        }
-                        
-                        childIdByType[id].Add(index);
+                        childIdByType.Add(id, new List<int>());
                     }
+                        
+                    childIdByType[id].Add(index);
                 }
 
                 childIdsByType[contentTypeGrouping.Key] = childIdByType;
@@ -482,17 +484,16 @@ namespace DFC.Api.Content.Function
             }
         }
 
-        private static bool IsIncomingOnlyPageLocation(string contentType, bool isIncoming, bool isTwoWay)
+        private static bool IsIncomingOnly(bool isIncoming, bool isTwoWay)
         {
-            if (!isIncoming || isTwoWay)
-            {
-                return false;
-            }
-            
-            return contentType.Equals("pagelocation", StringComparison.CurrentCultureIgnoreCase)
-                || contentType.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
+            return isIncoming && !isTwoWay;
         }
 
+        private static bool IsPageLocation(string contentType)
+        {
+            return contentType.Equals("pagelocation", StringComparison.CurrentCultureIgnoreCase)
+                   || contentType.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
+        }
 
         private static bool AncestorsContainsContentType(
             string contentType,

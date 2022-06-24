@@ -47,7 +47,7 @@ namespace DFC.Api.Content.UnitTests.Functions
         }
 
         [Fact]
-        public void Expand_WhenPopulateChildIdsByTypeRan_RemovesTwoWayItems()
+        public void Expand_WhenPopulateChildIdsByTypeRanLevel2_RemovesTwoWayItems()
         {
             // Arrange
             var recordLinks = new Dictionary<string, object>
@@ -90,7 +90,7 @@ namespace DFC.Api.Content.UnitTests.Functions
                 recordLinks,
                 default,
                 retrievedContentTypes,
-                1,
+                2,
                 typesToInclude,
                 true,
                 ref childIds
