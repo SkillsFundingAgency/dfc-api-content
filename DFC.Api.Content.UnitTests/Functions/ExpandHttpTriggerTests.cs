@@ -134,14 +134,14 @@ namespace DFC.Api.Content.UnitTests.Functions
                     })
                 },
                 {
-                    "List", JToken.FromObject(new List<Dictionary<string, object>>
+                    "List", new List<Dictionary<string, object>>
                     {
                         new Dictionary<string, object>
                             {
                             { "A", "B"},
                             { "isIncoming", true}
                         }
-                    })
+                    }
                 }
             };
 
