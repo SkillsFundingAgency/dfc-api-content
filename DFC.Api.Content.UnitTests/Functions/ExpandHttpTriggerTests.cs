@@ -78,7 +78,7 @@ namespace DFC.Api.Content.UnitTests.Functions
                 },
             };
             var childIds = new Dictionary<string, Dictionary<Guid, List<int>>>();
-            var retrievedContentTypes = new Dictionary<int, List<string>> {{0, new List<string> {"pagelocation"}}};
+            var retrievedIdsAndContentTypes = new Dictionary<int, List<string>> {{0, new List<string> {Guid.Empty.ToString(), "pagelocation"}}};
 
             var typesToInclude = new List<string>()
             {
@@ -89,10 +89,11 @@ namespace DFC.Api.Content.UnitTests.Functions
             _expandFunction.PopulateChildIdsByType(
                 recordLinks,
                 default,
-                retrievedContentTypes,
+                retrievedIdsAndContentTypes,
                 2,
                 typesToInclude,
                 true,
+                false,
                 ref childIds
             );
             

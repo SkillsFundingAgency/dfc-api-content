@@ -80,9 +80,10 @@ namespace DFC.Api.Content.Function
                     new List<Dictionary<string, object>> { record },
                     publishState,
                     log, 
-                    new Dictionary<int, List<string>> { { level, new List<string> { contentType.ToLower() } } },
+                    new Dictionary<int, List<string>> { { level, new List<string> { contentType.ToLower(), id.ToString() } } },
                     level + 1,
                     parameters.MultiDirectional,
+                    parameters.CheckAncestryById,
                     parameters.MaxDepth,
                     parameters.TypesToInclude.ToList());
                 
@@ -127,10 +128,11 @@ namespace DFC.Api.Content.Function
 
         private Dictionary<string, Dictionary<Guid, List<int>>> GetChildIdsByType(
             List<Dictionary<string, object>> records,
-            Dictionary<int, List<string>> retrievedContentTypes,
+            Dictionary<int, List<string>> retrievedIdsAndContentTypes,
             int level,
             List<string> typesToInclude,
-            bool multiDirectional)
+            bool multiDirectional,
+            bool checkAncestryById)
         {
             var childIdsByType = new Dictionary<string, Dictionary<Guid, List<int>>>();
             
@@ -146,10 +148,11 @@ namespace DFC.Api.Content.Function
                 PopulateChildIdsByType(
                     recordLinks,
                     recordIndex,
-                    retrievedContentTypes,
+                    retrievedIdsAndContentTypes,
                     level,
                     typesToInclude,
                     multiDirectional,
+                    checkAncestryById,
                     ref childIdsByType);
 
                 record["_links"] = RemoveIncomingMarkers(recordLinks);
@@ -270,9 +273,10 @@ namespace DFC.Api.Content.Function
             List<Dictionary<string, object>> records,
             string publishState,
             ILogger log,
-            Dictionary<int, List<string>> retrievedContentTypes,
+            Dictionary<int, List<string>> retrievedIdsAndContentTypes,
             int level,
             bool multiDirectional,
+            bool checkAncestryById,
             int maxDepth,
             List<string> typesToInclude)
         {
@@ -284,20 +288,21 @@ namespace DFC.Api.Content.Function
             }
             
             // Make sure we can record that we fetched these records
-            if (!retrievedContentTypes.ContainsKey(level))
+            if (!retrievedIdsAndContentTypes.ContainsKey(level))
             {
-                retrievedContentTypes.Add(level, new List<string>());
+                retrievedIdsAndContentTypes.Add(level, new List<string>());
             }
 
-            var retrievedContentTypeLevel = retrievedContentTypes[level];
+            var retrievedContentTypeLevel = retrievedIdsAndContentTypes[level];
 
             var allChildren = new List<Dictionary<string, object>>();
             var childIdsByType = GetChildIdsByType(
                 records,
-                retrievedContentTypes,
+                retrievedIdsAndContentTypes,
                 level,
                 typesToInclude,
-                multiDirectional);
+                multiDirectional,
+                checkAncestryById);
             
             var childRelationships = GetChildRelationships(records);
 
@@ -317,7 +322,17 @@ namespace DFC.Api.Content.Function
 
                 // Record it was fetched
                 queryParameters.Ids.ForEach(queryParameterId =>
-                    retrievedContentTypeLevel.Add(queryParameters.ContentType.ToLower()));
+                {
+                    if (!retrievedContentTypeLevel.Contains(contentType.ToLower()))
+                    {
+                        retrievedContentTypeLevel.Add(contentType.ToLower());                        
+                    }
+
+                    if (queryParameterId != null)
+                    {
+                        retrievedContentTypeLevel.Add(queryParameterId.ToString()!);
+                    }
+                });
                 
                 for (var index = 0; index < childResults.Count; index++)
                 {
@@ -351,9 +366,10 @@ namespace DFC.Api.Content.Function
                 allChildren,
                 publishState,
                 log,
-                retrievedContentTypes,
+                retrievedIdsAndContentTypes,
                 level + 1,
                 multiDirectional,
+                checkAncestryById,
                 maxDepth,
                 typesToInclude);
         }
@@ -402,10 +418,11 @@ namespace DFC.Api.Content.Function
         public void PopulateChildIdsByType(
             Dictionary<string, object> recordLinks,
             int parentPosition,
-            Dictionary<int, List<string>> retrievedContentTypes,
+            Dictionary<int, List<string>> retrievedIdsAndContentTypes,
             int level,
             List<string> typesToInclude,
             bool multiDirectional,
+            bool checkAncestryById,
             ref Dictionary<string, Dictionary<Guid, List<int>>> childIdsByType)
         {
             var filteredRecordLinks = GetFilteredRecordLinks(recordLinks);
@@ -449,11 +466,11 @@ namespace DFC.Api.Content.Function
 
                 foreach (var (contentType, id, index, incoming, twoWay) in contentTypeGrouping)
                 {
-                    var ancestorContainsContentType = AncestorsContainsContentType(contentType.ToLower(), retrievedContentTypes, level);
+                    var ancestorContainsId = AncestorsContains(id, contentType.ToLower(), retrievedIdsAndContentTypes, level, checkAncestryById);
 
                     var canAdd = typesToInclude.Contains(contentType.ToLower()) &&
                          ((IsPageLocation(contentType) && (IsIncomingOnly(incoming, twoWay) || level == 1))
-                         || (!IsPageLocation(contentType) && (!multiDirectional || !ancestorContainsContentType)));
+                         || (!IsPageLocation(contentType) && (!multiDirectional || !ancestorContainsId)));
 
                     if (!canAdd) continue;
                     
@@ -495,21 +512,23 @@ namespace DFC.Api.Content.Function
                    || contentType.Equals("pagelocationparent", StringComparison.CurrentCultureIgnoreCase);
         }
 
-        private static bool AncestorsContainsContentType(
+        private static bool AncestorsContains(
+            Guid id,
             string contentType,
-            Dictionary<int, List<string>> retrievedCompositeKeys,
-            int level)
+            Dictionary<int, List<string>> retrievedIdsAndContentTypes,
+            int level,
+            bool checkAncestryById)
         {
             for (var currentLevel = level - 1; currentLevel >= 0; currentLevel--)
             {
-                if (!retrievedCompositeKeys.ContainsKey(currentLevel))
+                if (!retrievedIdsAndContentTypes.ContainsKey(currentLevel))
                 {
                     continue;
                 }
 
-                var levelsList = retrievedCompositeKeys[currentLevel];
+                var levelsList = retrievedIdsAndContentTypes[currentLevel];
 
-                if (levelsList.Contains(contentType))
+                if (levelsList.Contains(checkAncestryById ? id.ToString() : contentType))
                 {
                     return true;
                 }
