@@ -43,7 +43,6 @@ stages:
           BuildConfiguration: 'release'
           PublishWebApp: true
           TestSuffix: 'Tests'
-          DotNetCoreVersion: '3.1.100'
 
 - stage: DeployToLabContent
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
