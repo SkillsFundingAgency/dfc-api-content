@@ -60,16 +60,16 @@ namespace DFC.Api.Content
                 return path;
             }
             
-            path = new Uri(Assembly.GetExecutingAssembly()?.CodeBase!)?.LocalPath;
+            path = new Uri(Assembly.GetExecutingAssembly()?.Location!)?.LocalPath;
 
             if (string.IsNullOrEmpty(path))
             {
                 return path ?? throw new Exception("Path for settings could not be determined");
             }
 
-            path = Path.GetDirectoryName(path);
+            path = Path.GetDirectoryName(path) ?? string.Empty;
             DirectoryInfo? parentDir = Directory.GetParent(path);
-            path = parentDir.FullName;
+            path = parentDir?.FullName;
 
             return path ?? throw new Exception("Path for settings could not be determined");
         }
