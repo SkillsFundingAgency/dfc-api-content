@@ -45,13 +45,11 @@ namespace DFC.Api.Content.Exceptions
             return new ApiFunctionException(new InternalServerErrorResult(), message, innerException);
         }
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected ApiFunctionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             ActionResult = null;
         }
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
