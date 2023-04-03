@@ -104,7 +104,7 @@ namespace DFC.Api.Content.Helpers
         {
             if (value is JObject valObj)
             {
-                return valObj.ToObject<Dictionary<string, object>>();
+                return valObj.ToObject<Dictionary<string, object>>() ?? throw new Exception("JObject could not be cast to dictionary");
             }
 
             if (!(value is Dictionary<string, object> dictionary))
@@ -119,7 +119,7 @@ namespace DFC.Api.Content.Helpers
         {
             if (value is JArray valAry)
             {
-                return valAry.ToObject<List<Dictionary<string, object>>>();
+                return valAry.ToObject<List<Dictionary<string, object>>>() ?? throw new Exception("JArray could not be cast to list");
             }
             
             return (List<Dictionary<string, object>>)value;

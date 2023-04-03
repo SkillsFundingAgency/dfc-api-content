@@ -204,12 +204,15 @@ namespace DFC.Api.Content.Function
                     {
                         var newDictionary = valueJObject.ToObject<Dictionary<string, object>>();
 
-                        if (newDictionary.ContainsKey(IncomingMarker))
-                        {
-                            newDictionary.Remove(IncomingMarker);
-                        }
-                    
-                        newLinks.Add(recordLink.Key, newDictionary);
+                            if (newDictionary != null)
+                            {
+                                if (newDictionary.ContainsKey(IncomingMarker))
+                                {
+                                    newDictionary.Remove(IncomingMarker);
+                                }
+
+                                newLinks.Add(recordLink.Key, newDictionary);
+                            }
                         break;
                     }
                     case JArray valueJArray:
@@ -219,12 +222,15 @@ namespace DFC.Api.Content.Function
 
                         foreach (var newItemDictionary in valueList.Select(item => item.ToObject<Dictionary<string, object>>()))
                         {
-                            if (newItemDictionary.ContainsKey(IncomingMarker))
-                            {
-                                newItemDictionary.Remove(IncomingMarker);
-                            }
-                        
-                            newList.Add(newItemDictionary);
+                                if (newItemDictionary != null)
+                                {
+                                    if (newItemDictionary.ContainsKey(IncomingMarker))
+                                    {
+                                        newItemDictionary.Remove(IncomingMarker);
+                                    }
+
+                                    newList.Add(newItemDictionary);
+                                }
                         }
                     
                         newLinks.Add(recordLink.Key, newList);

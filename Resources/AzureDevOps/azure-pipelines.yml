@@ -43,10 +43,9 @@ stages:
           BuildConfiguration: 'release'
           PublishWebApp: true
           TestSuffix: 'Tests'
-          DotNetCoreVersion: '3.1.100'
 
 - stage: DeployToLabContent
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: succeeded()
   displayName: Deploy to LAB_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -256,7 +255,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPContent
-  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PP_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -291,7 +290,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPPDraftContent
-  condition: and(eq(dependencies.DeployToPPContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PP-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -326,7 +325,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDContent
-  condition: and(eq(dependencies.DeployToPPDraftContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PRD_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
@@ -361,7 +360,7 @@ stages:
             azureFunctionName: '$(FunctionAppName)'
 
 - stage: DeployToPRDDraftContent
-  condition: and(eq(dependencies.DeployToPRDContent.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PRD-DRAFT_CONTENT
   variables:
   - group: dfc-app-integrationtests-all
