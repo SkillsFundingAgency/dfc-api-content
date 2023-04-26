@@ -40,6 +40,9 @@
     },
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
+    },
+    "appInsightsName": {
+        "value": "dfc-foo-shared-ai"
     }    
   }
 }
