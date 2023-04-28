@@ -47,8 +47,8 @@
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
     },
-    "appInsightsName": {
-        "value": "__appInsightsName__" 
+    "appInsightsInstrumentationKey": {
+        "value": "__appInsightsInstrumentationKey__" 
     }
   }
 }
