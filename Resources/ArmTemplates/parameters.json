@@ -46,6 +46,9 @@
     },
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
+    },
+    "appInsightsInstrumentationKey": {
+        "value": "__appInsightsInstrumentationKey__" 
     }
   }
 }
