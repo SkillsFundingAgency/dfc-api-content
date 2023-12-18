@@ -40,6 +40,12 @@
     },
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
+    },
+    "workspaceName": {
+      "value": "aTestLogAnalyticsAccount"
+    },
+    "workspaceResourceGroup": {
+      "value": "aResourceGroup"
     }    
   }
 }
