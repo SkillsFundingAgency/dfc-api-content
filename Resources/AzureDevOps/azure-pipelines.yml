@@ -36,7 +36,7 @@ stages:
           ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
           SolutionBaseName: 'DFC.Api.Content'
 
-      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
+      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build.yml@dfc-devops
         parameters:
           SolutionBaseName: 'DFC.Api.Content'
           BuildPlatform: 'any cpu'
