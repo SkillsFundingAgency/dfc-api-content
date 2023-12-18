@@ -46,6 +46,12 @@
     },
     "CosmosDbendpointspublishedContainerName":{
       "value": "__CosmosDbendpointspublishedContainerName__"
+    },
+    "workspaceName": {
+      "value": "__sharedLogAnalyticsWorkspace__"
+    },
+    "workspaceResourceGroup": {
+        "value": "__sharedLogAnalyticsResourceGroup__"
     }
   }
 }
