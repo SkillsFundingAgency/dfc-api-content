@@ -1,12 +1,6 @@
 variables:
 - name: DfcContentTestsBuildId
   value: 1
-- name: aspTier
-  value: Standard
-- name: aspInstances
-  value: 2
-- name: aspSize
-  value: 2
 - name: FunctionAppName
   value: $(ResourcePrefix)-fa
 - name: FunctionalTestsSqlDatabaseConnStr
