@@ -8,14 +8,11 @@
     "appSharedStorageAccountName": {
       "value": "dfcdevappsharedstr"
     },
-    "aspTier": {
-      "value": "Standard"
+    "appServicePlanSuffix": {
+      "value": "-migrated"
     },
-    "aspSize": {
-      "value": "1"
-    },
-    "aspInstances": {
-      "value": 2
+    "functionAppName": {
+      "value": "dfc-foo-api-cont-fa-ver"
     },
     "ContentApiOptionsAction": {
       "value": "getcontent"
@@ -46,6 +43,6 @@
     },
     "workspaceResourceGroup": {
       "value": "aResourceGroup"
-    }    
+    }
   }
 }
